@@ -1,5 +1,5 @@
-function prod = mtimes(sys2, sys1)
-% Computes product of two LTI systems: u --> sys2 --> sys1 --> y
+function prod = mtimes(sys1, sys2)
+% Computes product of two LTI systems: u --> sys1 --> sys2 --> y
 % ------------------------------------------------------------------
 % prod = sys1*sys2; prod = mtimes(sys1, sys2);
 % Inputs:       sys1, sys2: factor sss-objects
@@ -11,7 +11,7 @@ function prod = mtimes(sys2, sys1)
 % For updates and further information please visit www.rt.mw.tum.de
 % ------------------------------------------------------------------
 % Authors:      Heiko Panzer (heiko@mytum.de)
-% Last Change:  28 Nov 2013 Yvonne Stuerz
+% Last Change:  02 Feb 2011
 % ------------------------------------------------------------------
 
 if (sys1.n==0 && isempty(sys1.D)) || (sys2.n==0 && isempty(sys2.D))
@@ -24,6 +24,6 @@ end
 
 prod = sss([sys1.A sparse(sys1.n,sys2.n); sys2.B*sys1.C sys2.A], ...
           [sys1.B; sys2.B*sys1.D], ...
-          [sys2.D*sys1.C, sys2.C], ...
-          sys2.D*sys1.D, ...
+          [sys1.C*sys2.D, sys2.C], ...
+          sys1.D * sys2.D, ...
           [sys1.E sparse(sys1.n,sys2.n); sparse(sys2.n,sys1.n) sys2.E]);
