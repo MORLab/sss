@@ -25,7 +25,6 @@ if nargin==1
     end
     
     varargout{1} = [size(sys.c,1) size(sys.b,2)];
-%     varargout{2} = size(sys.b,2);
 
 elseif nargin==2
     if varargin{2} == 1
