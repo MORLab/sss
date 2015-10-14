@@ -7,7 +7,7 @@ function [issd, numericalAbscissa] = issd(sys)
 %   [issd,numericalAbscissa] = ISSD(sys)
 %
 % Description:
-%   This function determines wether the LTI, sss system "sys" is 
+%   This function determines whether the LTI, sss system "sys" is 
 %   given in a strictly dissipative realization. The computations are meant 
 %   to avoid operations on full matrices. However, whenever this is not 
 %   possible, a warning is issued.
@@ -37,8 +37,9 @@ function [issd, numericalAbscissa] = issd(sys)
 %   For any suggestions, submission and/or bug reports, mail us at
 %                   -> sssMOR@rt.mw.tum.de <-
 % ------------------------------------------------------------------
-% Authors:      Heiko Panzer, Alessandro Castagnotto
-% Last Change:  01 Sep 2015
+% Authors:      Heiko Panzer, Alessandro Castagnotto,
+%               Maria Cruz Varona 
+% Last Change:  14 Oct 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
