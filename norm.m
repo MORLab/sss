@@ -1,35 +1,51 @@
 function [nrm, varargout] = norm(sys, varargin)
-% Computes the p-norm of an LTI system
+% NORM - Computes the p-norm of an sss LTI system
 % ------------------------------------------------------------------
-% [nrm, H_inf_peakfreq] = norm(sys, p)
+% [nrm, H_inf_peakfreq] = NORM(sys, p)
 % Inputs:       * sys: an sss-object containing the LTI system
 %    [optional] * p: 2 for H_2-norm or inf for H_inf-norm
 % Outputs:      * nrm: value of norm
 %    [H_inf]    * H_inf_peakfreq: peak frequency of magnitude
 % ------------------------------------------------------------------
-% This file is part of the MORLAB_GUI, a Model Order Reduction and
-% System Analysis Toolbox developed at the
-% Institute of Automatic Control, Technische Universitaet Muenchen
+% USAGE:  This function computes the p-norm of an LTI system given
+% as a sparse state-space (sss) object sys. The value of p can be 
+% passed as a second optional argument to the function and is set to
+% 2 otherwise.
+%
+% See also NORM, SSS, LYAPCHOL
+%
+% ------------------------------------------------------------------
+% REFERENCES:
+% [1] Antoulas (2005), Approximation of large-scale Dnymical Systems
+% ------------------------------------------------------------------
+% This file is part of sssMOR, a Sparse State Space, Model Order
+% Reduction and System Analysis Toolbox developed at the Institute 
+% of Automatic Control, Technische Universitaet Muenchen.
 % For updates and further information please visit www.rt.mw.tum.de
+% For any suggestions, submission and/or bug reports, mail us at
+%                      -> sssMOR@tum.de <-
 % ------------------------------------------------------------------
 % Authors:      Heiko Panzer (heiko@mytum.de), Sylvia Cremer, Rudy Eid
-% Last Change:  03 Feb 2011
+%               Alessandro Castagnotto, Maria Cruz Varona
+% Last Change:  14 Oct 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
 p=2;    % default: H_2
 if nargin>1
-    if strcmp(class(varargin{1}), 'double')
+    if isa(varargin{1}, 'double')
         p=varargin{1};
-    end
-    if strcmp(varargin{1},'inf')
+    elseif strcmp(varargin{1},'inf')
         p=inf;
+    else
+        error('Input must be ''double''.');
     end
 end
 
 if isinf(p)
     % H_inf-norm
     if isempty(sys.H_inf_norm)
-        mag = bode(sys); %#ok<NASGU>
+        mag = sigma(sys);
         if nargout>1
             varargout{1}=sys.H_inf_peakfreq;
         end
@@ -57,11 +73,7 @@ elseif p==2
             if isempty(sys.ConGram)
                 if isempty(sys.ObsGram)
                     % No, it is not. Solve Lyapunov equation.
-                    if sys.is_dae
-                        %mit E^-1 durchmultipliziert
-                    %     S = lyapchol(sys.A,sys.B,sys.E);
-                    %     R = lyapchol(transpose(E\A),C');
-                        %Zustandstrafo
+                    if sys.isdescriptor
                         try
                             try
                                 sys.ConGramChol = lyapchol(sys.A,sys.B,sys.E); % P=S'*S3
@@ -69,7 +81,7 @@ elseif p==2
                                 if ~isreal(nrm)
                                     error('Gramian must be positive definite');
                                 end
-                            catch ex3 %#ok<NASGU>
+                            catch ex3
                                 P = lyapchol(sys.A',sys.C',sys.E');
                                 nrm=norm(P*sys.B,'fro');
                             end
@@ -78,38 +90,43 @@ elseif p==2
                             try
                                 try
                                     X = lyap(sys.A, sys.B*sys.B', [], sys.E);
-                                    nrm=sqrt(sys.C*X*sys.C');
+                                    nrm=sqrt(trace(sys.C*X*sys.C'));
                                     if ~isreal(nrm)
                                         error('Gramian must be positive definite');
                                     end
-                                catch ex3 %#ok<NASGU>
+                                catch ex3
                                     Y = lyap(sys.A', sys.C'*sys.C, [], sys.E');
-                                    nrm=sqrt(sys.B'*Y*sys.B);
+                                    nrm=sqrt(trace(sys.B'*Y*sys.B));
                                 end
                             catch ex2
                                 warning(ex2.message, 'Error solving Lyapunov equation. Premultiplying by E^(-1)...')
                                 tmp = sys.E\sys.B;
                                 X = lyap(sys.E\sys.A, tmp*tmp');
-                                nrm=sqrt(sys.C*X*sys.C');
+                                nrm=sqrt(trace(sys.C*X*sys.C'));
                             end
-                            return
                         end
                     else
                         try
-                            sys.ConGramChol = lyapchol(sys.A,sys.B); % P = R'*R
+                            sys.ConGramChol = lyapchol(sys.A,sys.B);
                             nrm=norm(sys.ConGramChol*sys.C','fro');
                         catch ex
-                            warning(ex.message, 'Error solving Lyapunov equation. Trying without Cholesky factorization...')
-                            sys.ConGram = lyap(sys.A, sys.B*sys.B');                
-                            nrm=sqrt(norm(sys.C*sys.ConGram*sys.C'));
+                            if strcmp(ex.identifier,'Control:foundation:LyapChol4');
+                                %Unstable system. Set the norm to infinity
+                                warning('System appears to be unstable. The norm will be set to Inf.')
+                                nrm = Inf;
+                            else
+                                warning(ex.message, 'Error solving Lyapunov equation. Trying without Cholesky factorization...')
+                                sys.ConGram = lyap(sys.A, sys.B*sys.B');                
+                                nrm=sqrt(trace(sys.C*sys.ConGram*sys.C'));
+                            end
                         end
                         
                     end
                 else
-                    nrm=sqrt(norm(sys.B'*sys.ObsGram*sys.B));
+                    nrm=sqrt(trace(sys.B'*sys.ObsGram*sys.B));
                 end
             else
-                nrm=sqrt(norm(sys.C*sys.ConGram*sys.C'));
+                nrm=sqrt(trace(sys.C*sys.ConGram*sys.C'));
             end
         else
             nrm=norm(sys.ObsGramChol*sys.B, 'fro');
@@ -117,8 +134,10 @@ elseif p==2
     else
         nrm=norm(sys.ConGramChol*sys.C','fro');
     end
-    % L=R'*R;
-    % nrm = sqrt(trace(sys.C*L*transpose(sys.C)));
+    
+    if imag(nrm)~=0
+        nrm=Inf;
+    end
     
     sys.H_2_norm=nrm;
     if inputname(1)
