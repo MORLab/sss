@@ -12,8 +12,9 @@ function  [mag, phase, omega] = bode(varargin)
 % Institute of Automatic Control, Technische Universitaet Muenchen
 % For updates and further information please visit www.rt.mw.tum.de
 % ------------------------------------------------------------------
-% Authors:      Heiko Panzer (heiko@mytum.de), Sylvia Cremer, Rudy Eid,
-%               Alessandro Castagnotto, Lisa Jeschek
+% Authors:      Heiko Panzer (heiko@mytum.de), Stefan Jaensch, 
+%               Sylvia Cremer, Rudy Eid, Alessandro Castagnotto, 
+%               Lisa Jeschek
 % Last Change:  14 Oct 2015
 % ------------------------------------------------------------------
 
