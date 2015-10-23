@@ -13,11 +13,11 @@ function stable = maxGrowthRate(sys)
 %                         Discrete time: maximum absolute value.
 % ------------------------------------------------------------------
 % Authors:      Stefan Jaensch (jaensch@tfd.mw.tum.de)
-% Last Change:  15 Jun 2015
+% Last Change:  23 Out 2015
 % ------------------------------------------------------------------
 
 if sys.Ts == 0
-    stable = full(max(real(eig(sys))));
+    stable = eigs(sys,'lr');
 else
-    stable = full(max(abs(eig(sys))));
+    stable = eigs(sys,'lm');
 end

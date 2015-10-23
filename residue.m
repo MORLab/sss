@@ -43,6 +43,10 @@ end
 
 % transform system to diagonal form
 p=diag(J).';
+rcondNumber=rcond(T);
+if rcondNumber)<eps
+    warning('Matrix of eigenvectors is close to singular or badly scaled. Results may be inaccurate. RCOND =',num2str(rcondNumber));
+end
 B=(sys.E*T)\sys.B;
 C=sys.C*T;
 d=sys.D;
@@ -65,14 +69,13 @@ return
 % 1000 values of the impulse response
 sys.SimulationTime=toc;
 tic
-cellfun(@(x) sum((diag(x)*conj(exp(3'*p))'),1),r,'UniformOutput',false);
+cellfun(@(x) sum((diag(x)*exp(3'*p)).',1),r,'UniformOutput',false);
 simtime=toc;
 
 % store results to caller workspace
 sys.residues=r;
 sys.poles=p;
 sys.SimulationTime=sys.SimulationTime+1000*simtime;
-sys.d=d;
 if inputname(1)
     assignin('caller', inputname(1), sys);
 end
