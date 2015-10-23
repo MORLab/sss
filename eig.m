@@ -18,6 +18,10 @@ function varargout = eig(sys, varargin)
 % ------------------------------------------------------------------
 % see also: eig
 
+if sys.n>10000
+    warning(['System order is very large: ',num2str(sys.n),'. Compute time will be very long'])
+end
+
 if any(any(sys.E-speye(size(sys.E))))
     if nargout==1||nargout==0
         [varargout{1}] = eig(full(sys.a), full(sys.e),varargin{:});
