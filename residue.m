@@ -19,24 +19,13 @@ function [r,p,d] = residue(sys)
 if ~isempty(sys.poles) && ~isempty(sys.residues)
     p=sys.poles;
     r=sys.residues;
-    d=sys.d;
+    d=sys.D;
     return
 end
 
-
-tic
 %perform eigen-decomposition of system
 try
-    if sys.is_dae
-        
-        [T,J] = eig(full(sys.A),full(sys.E));
-        
-        if max(max(J))==inf
-            error('System contains algebraic states.')
-        end
-    else
-        [T,J] = eig(full(sys.A));
-    end
+    [T,J] = eig(sys);
 catch err
     error('Computation of the eigenvalues and eigenvectors failed with message:%s',err.message);
 end
@@ -44,7 +33,7 @@ end
 % transform system to diagonal form
 p=diag(J).';
 rcondNumber=rcond(T);
-if rcondNumber)<eps
+if rcondNumber<eps
     warning('Matrix of eigenvectors is close to singular or badly scaled. Results may be inaccurate. RCOND =',num2str(rcondNumber));
 end
 B=(sys.E*T)\sys.B;
@@ -63,19 +52,10 @@ else
     r = {C .*B.'};
 end
 
-return
-
-% measure time required for diagonalization and computation of
-% 1000 values of the impulse response
-sys.SimulationTime=toc;
-tic
-cellfun(@(x) sum((diag(x)*exp(3'*p)).',1),r,'UniformOutput',false);
-simtime=toc;
-
 % store results to caller workspace
 sys.residues=r;
 sys.poles=p;
-sys.SimulationTime=sys.SimulationTime+1000*simtime;
 if inputname(1)
     assignin('caller', inputname(1), sys);
 end
+return
