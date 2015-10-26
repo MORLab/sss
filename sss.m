@@ -177,6 +177,7 @@ classdef sss
                 E = speye(sys.n);
             end
         end
+        
         function x0 = get.x0(sys)
             x0 = sys.x0;
             if isempty(x0)
@@ -297,11 +298,7 @@ classdef sss
         end
         
         function isDescriptor = get.isDescriptor(sys)
-            if any(any(sys.E-speye(size(sys.E))))
-                isDescriptor = 1;
-            else
-                isDescriptor = 0;
-            end
+            isDescriptor = logical(full(any(any(sys.E-speye(size(sys.E))))));
         end
         
         function sys = resolveDae(sys, varargin)
