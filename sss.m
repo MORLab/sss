@@ -175,7 +175,6 @@ classdef sss
                 D = sparse(sys.p,sys.m);
             end
         end
-        
         function E = get.E(sys)
             E = sys.E;
             if isempty(E)
@@ -213,18 +212,18 @@ classdef sss
         
         function sys = set.D(sys, D)
             D = sparse(D);
-                      
+            
             if isempty(D)
-                sys.D = sparse(sys.p, sys.m);
+                sys.D = [];
             elseif isempty(sys.A)&&isempty(sys.B)&&isempty(sys.C)
-                    m = size(D,2);
-                    n = 0;
-                    p = size(D,1);
-                    
-                    sys.A = sparse(n,n);
-                    sys.B = sparse(n,m);
-                    sys.C = sparse(p,n);
-                    sys.D = D;
+                m_ = size(D,2);
+                n_ = 0;
+                p_ = size(D,1);
+                
+                sys.A = sparse(n_,n_);
+                sys.B = sparse(n_,m_);
+                sys.C = sparse(p_,n_);
+                sys.D = D;
             else
                 if size(D,2) ~= sys.m
                     error('B and D must have the same number of columns.')
@@ -245,7 +244,7 @@ classdef sss
                 if (size(E) ~= size(sys.A))
                     error('E and A must have the same size.')
                 end
-                % check whether descriptor matrix is unity
+                % check whether descriptor matrix is not unity
                 if any(any(E-speye(size(E))))
                     sys.E = E;
                 else
@@ -287,40 +286,19 @@ classdef sss
         end
         
         %% Compatibility with small letters
-        function a = get.a(sys)
-            a = sys.A;
-        end
-        function b = get.b(sys)
-            b = sys.B;
-        end
-        function c = get.c(sys)
-            c = sys.C;
-        end
-        function d = get.d(sys)
-            d = sys.D;
-        end
-        function e = get.e(sys)
-            e = sys.E;
-        end
+        function a = get.a(sys); a = sys.A; end
+        function b = get.b(sys); b = sys.B; end
+        function c = get.c(sys); c = sys.C; end
+        function d = get.d(sys); d = sys.D; end
+        function e = get.e(sys); e = sys.E; end
         
-        function sys = set.a(sys, a)
-            sys.A = a;
-        end
-        function sys = set.b(sys, b)
-            sys.B = b;
-        end
-        function sys = set.c(sys, c)
-            sys.C = c;
-        end
-        function sys = set.d(sys, d)
-            sys.D = d;
-        end
-        function sys = set.e(sys, e)
-            sys.E = e;
-        end
+        function sys = set.a(sys, a); sys.A = a; end
+        function sys = set.b(sys, b); sys.B = b; end
+        function sys = set.c(sys, c); sys.C = c; end
+        function sys = set.d(sys, d); sys.D = d; end
+        function sys = set.e(sys, e); sys.E = e; end
         
-        function [A,B,C,D,E] = ABCDE(sys)
-            % returns system matrices
+        function [A,B,C,D,E] = ABCDE(sys) % returns system matrices
             A=sys.A; B=sys.B; C=sys.C; D=sys.D; E=sys.E;
         end
         
