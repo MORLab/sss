@@ -154,7 +154,7 @@ classdef sss
             end
         end
         
-        %% get functions
+        %% Get Basic Properties
         function m = get.m(sys) % number of inputs
             m = size(sys.B,2);
         end
@@ -163,10 +163,6 @@ classdef sss
         end
         function p = get.p(sys) % number of outputs
             p = size(sys.C,1);
-        end
-        
-        function isMimo = get.isMimo(sys)
-            isMimo = (sys.p>1)||(sys.m>1);
         end
         
         function D = get.D(sys)
@@ -188,6 +184,11 @@ classdef sss
             end
         end
         
+        function [A,B,C,D,E] = ABCDE(sys) % returns system matrices
+            A=sys.A; B=sys.B; C=sys.C; D=sys.D; E=sys.E;
+        end
+        
+        %% Set basic properties
         function sys = set.A(sys, A)
             if size(A,1) ~= size(A,2)
                 error('A must be square.')
@@ -269,6 +270,24 @@ classdef sss
             end
         end
         
+        %% Compatibility with small letters
+        function a = get.a(sys); a = sys.A; end
+        function b = get.b(sys); b = sys.B; end
+        function c = get.c(sys); c = sys.C; end
+        function d = get.d(sys); d = sys.D; end
+        function e = get.e(sys); e = sys.E; end
+        
+        function sys = set.a(sys, a); sys.A = a; end
+        function sys = set.b(sys, b); sys.B = b; end
+        function sys = set.c(sys, c); sys.C = c; end
+        function sys = set.d(sys, d); sys.D = d; end
+        function sys = set.e(sys, e); sys.E = e; end
+        
+        %% Get helper functions
+        function isMimo = get.isMimo(sys)
+            isMimo = (sys.p>1)||(sys.m>1);
+        end
+        
         function isDae = get.isDae(sys)
             if condest(sys.E)==Inf
                 isDae = 1;
@@ -285,23 +304,89 @@ classdef sss
             end
         end
         
-        %% Compatibility with small letters
-        function a = get.a(sys); a = sys.A; end
-        function b = get.b(sys); b = sys.B; end
-        function c = get.c(sys); c = sys.C; end
-        function d = get.d(sys); d = sys.D; end
-        function e = get.e(sys); e = sys.E; end
-        
-        function sys = set.a(sys, a); sys.A = a; end
-        function sys = set.b(sys, b); sys.B = b; end
-        function sys = set.c(sys, c); sys.C = c; end
-        function sys = set.d(sys, d); sys.D = d; end
-        function sys = set.e(sys, e); sys.E = e; end
-        
-        function [A,B,C,D,E] = ABCDE(sys) % returns system matrices
-            A=sys.A; B=sys.B; C=sys.C; D=sys.D; E=sys.E;
+        function sys = resolveDae(sys, varargin)
+            if nargin==1
+                sys.A = sys.E\sys.A;
+                sys.B = sys.E\sys.B;
+                sys.E = [];
+            elseif varargin{1}==1
+                %***
+            elseif varargin{1}==2
+            end
         end
         
+        %% Overload Brackets sys.([],[]) to select I/O channels
+        function [varargout] = subsref(sys, arg)
+            % Returns selected I/O-channel of a sparse LTI MIMO system
+            if strcmp(arg(1).type, '()')
+                if length(arg(1).subs)==2
+                    sys = sys.truncate(arg(1).subs{1}, arg(1).subs{2});
+                    if length(arg)==1
+                        varargout = {sys};
+                        return
+                    end
+                end
+            elseif strcmp(arg(1).type, '.')
+                [varargout{1:nargout}] = builtin('subsref',sys,arg);
+                return
+            end
+            if length(arg)>1
+                [varargout{1:nargout}] = builtin('subsref',sys,arg(2:end));
+            end
+        end
+        
+        %% Delay set and get functions
+        function sys = set.InputDelay(sys, del); sys.InputDelay = del; end
+        function sys = set.OutputDelay(sys, del); sys.OutputDelay = del; end
+        function sys = set.InternalDelay(sys, del); sys.InternalDelay = del; end
+        
+        function del = get.InputDelay(sys); del = sys.InputDelay; end
+        function del = get.OutputDelay(sys); del = sys.OutputDelay; end
+        function del = get.InternalDelay(sys); del = sys.InternalDelay; end
+        
+        %% Input, state and output name set and get functions
+        % Output
+        function yname = get.y(sys); yname = sys.OutputName; end
+        function sys = set.y(sys,name); sys.OutputName = name; end
+        function name = get.OutputName(sys)
+            name = cell(repmat({''}, sys.p, 1));
+            name(1:size(sys.OutputName,1),1) = sys.OutputName;
+        end
+        function sys = set.OutputName(sys, name)
+            if (length(name)==sys.p)
+                sys.OutputName = name;
+            else
+                error('Output label vector too long.')
+            end
+        end
+        % State
+        function name = get.StateName(sys)
+            name = cell(repmat({''}, sys.n, 1));
+            name(1:size(sys.StateName,1),1) = sys.StateName;
+        end
+        function sys = set.StateName(sys, name)
+            if (length(name)==sys.n)
+                sys.StateName = name;
+            else
+                error('State label vector too long.')
+            end
+        end
+        % Input
+        function name = get.u(sys); name = sys.InputName; end
+        function sys = set.u(sys,name); sys.InputName = name; end
+        function name = get.InputName(sys)
+            name = cell(repmat({''}, sys.m, 1));
+            name(1:size(sys.InputName,1),1) = sys.InputName;
+        end
+        function sys = set.InputName(sys, name)
+            if (length(name)==sys.m)
+                sys.InputName = name;
+            else
+                error('Input label vector too long.')
+            end
+        end
+        
+        %% Display functions
         function str = dispMorInfo(sys)
             if isempty(sys.morInfo)
                 str=[];
@@ -334,109 +419,6 @@ classdef sss
                 disp(['  ' str char(10)]);
             end
         end
-        
-        function [varargout] = subsref(sys, arg)
-            % Returns selected I/O-channel of a sparse LTI MIMO system
-%             if arg
-            if strcmp(arg(1).type, '()')
-                if length(arg(1).subs)==2
-                    sys = sys.truncate(arg(1).subs{1}, arg(1).subs{2});
-                    if length(arg)==1
-                        varargout = {sys};
-                        return
-                    end
-                end
-            elseif strcmp(arg(1).type, '.')
-                [varargout{1:nargout}] = builtin('subsref',sys,arg);
-                return
-            end
-            if length(arg)>1
-                [varargout{1:nargout}] = builtin('subsref',sys,arg(2:end));
-            end
-        end
-        
-        function sys = resolveDae(sys, varargin)
-            if nargin==1
-                sys.A = sys.E\sys.A;
-                sys.B = sys.E\sys.B;
-                sys.E = [];
-            elseif varargin{1}==1
-                %***
-            elseif varargin{1}==2
-            end
-        end
-        
-        %% Delay set and get functions
-        function obj = set.InputDelay(obj, del)
-            obj.InputDelay = del;
-        end
-        function obj = set.OutputDelay(obj, del)
-            obj.OutputDelay = del;
-        end
-        function obj = set.InternalDelay(obj, del)
-            obj.InternalDelay = del;
-        end
-        
-        function del = get.InputDelay(obj)
-            del = obj.InputDelay;
-        end
-        function del = get.OutputDelay(obj)
-            del = obj.OutputDelay;
-        end
-        function del = get.InternalDelay(obj)
-            del = obj.InternalDelay;
-        end
-        
-        %% Input, state and output name set and get functions
-        function yname = get.y(sys)
-            yname = sys.OutputName;
-        end
-        function sys = set.y(sys,name)
-            sys.OutputName = name;
-        end
-        function name = get.OutputName(sys)
-            name = cell(repmat({''}, sys.p, 1));
-            name(1:size(sys.OutputName,1),1) = sys.OutputName;
-        end
-        function sys = set.OutputName(sys, name)
-            if (length(name)==sys.p)
-                sys.OutputName = name;
-            else
-                error('Output label vector too long.')
-            end
-        end
-        
-        function name = get.StateName(sys)
-            name = cell(repmat({''}, sys.n, 1));
-            name(1:size(sys.StateName,1),1) = sys.StateName;
-        end
-        function sys = set.StateName(sys, name)
-            if (length(name)==sys.n)
-                sys.StateName = name;
-            else
-                error('State label vector too long.')
-            end
-        end
-        
-        function name = get.u(sys)
-            name = sys.InputName;
-        end
-        function sys = set.u(sys,name)
-            sys.InputName = name;
-        end
-        function name = get.InputName(sys)
-            name = cell(repmat({''}, sys.m, 1));
-            name(1:size(sys.InputName,1),1) = sys.InputName;
-        end
-        function sys = set.InputName(sys, name)
-            if (length(name)==sys.m)
-                sys.InputName = name;
-            else
-                error('Input label vector too long.')
-            end
-        end
-        
-        
     end
     
     methods(Access = private)
