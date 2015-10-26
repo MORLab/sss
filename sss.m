@@ -257,7 +257,7 @@ classdef sss
         end
 
         function sys = set.x0(sys, x0)
-            if size(x0,1) ~= size(sys.A,1)
+            if (~isempty(x0)) && (any(size(x0) ~= [sys.n,1]))
                 error('A and x0 must have the same number of rows.')
             end
             sys.x0 = sparse(x0);
