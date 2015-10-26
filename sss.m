@@ -25,7 +25,7 @@ classdef sss
     % ------------------------------------------------------------------
     % Authors:      Heiko Panzer (heiko@mytum.de), Sylvia Cremer,
     %               Thomas Emmert (emmert@tfd.mw.tum.de)
-    % Last Change:  12 Oct 2015
+    % Last Change:  26 Okt 2015
     % ------------------------------------------------------------------
     % Copyright (C) 2015  Lehrstuhl fuer Regelungstechnik
     % http://www.rt.mw.tum.de/
@@ -61,6 +61,7 @@ classdef sss
         n,p,m
         isMimo
         isDae
+        isDescriptor
         u,y
     end
     properties(Hidden)
@@ -74,8 +75,6 @@ classdef sss
         T_bal, T_bal_inv
         ConGram, ConGramChol
         ObsGram, ObsGramChol
-        
-        isDescriptor
         
         simulationTime
         
@@ -98,9 +97,9 @@ classdef sss
                 if isa (varargin{1}, 'sss')
                     sys = varargin{1};
                     return
-                end 
+                end
                 %% Convert matlab LTI systems
-                if (isa(varargin{1},'idpoly'))||(isa(varargin{1},'idtf')) 
+                if (isa(varargin{1},'idpoly'))||(isa(varargin{1},'idtf'))
                     varargin{1} = ss(varargin{1},'augmented');
                 end
                 if isa(varargin{1},'tf')
@@ -109,12 +108,11 @@ classdef sss
                 if isa(varargin{1}, 'ss') % convert ss to sss
                     sys_ss = varargin{1};
                     
-                    sys.A = sparse(sys_ss.A);
-                    sys.B = sparse(sys_ss.B);
-                    sys.C = sparse(sys_ss.C);
-                    sys.D = sparse(sys_ss.D);
-                    sys.E = sparse(sys_ss.E);
-                    sys.x0 = sparse(sys_ss.B);
+                    sys.A = sys_ss.A;
+                    sys.B = sys_ss.B;
+                    sys.C = sys_ss.C;
+                    sys.D = sys_ss.D;
+                    sys.E = sys_ss.E;
                     sys.Ts = sys_ss.Ts;
                     
                     sys.y = sys_ss.y;
@@ -127,61 +125,24 @@ classdef sss
                     return
                 end
                 %% Static gain
-                if isnumeric(varargin{1}) 
-                    d = varargin{1};
-                    sys.D = sparse(d);
+                if isnumeric(varargin{1})
+                    sys.D = varargin{1};
                     return
                 end
-                
             elseif nargin==2
                 error('Please specify matrices A, B, C.')
-                
             elseif nargin>=3
-                sys.A = sparse(varargin{1});
-                if size(sys.A,1) ~= size(sys.A,2)
-                    error('A must be square.')
-                end
-                sys.B = sparse(varargin{2});
-                if size(sys.B,1) ~= size(sys.A,1)
-                    error('A and B must have the same number of rows.')
-                end
-                sys.C = sparse(varargin{3});
-                if size(sys.C,2) ~= size(sys.A,2)
-                    error('A and C must have the same number of columns.')
-                end
+                sys.A = varargin{1};
+                sys.B = varargin{2};
+                sys.C = varargin{3};
             end
             
             if nargin>=4
-                if (~isscalar(varargin{4}) && ~isempty(varargin{4})) || any(any(varargin{4}~=0))
-                    % non-zero D is given
-                    if size(sparse(varargin{4}),2) ~= size(sys.B,2)
-                        error('B and D must have the same number of columns.')
-                    end
-                    if size(sparse(varargin{4}),1) ~= size(sys.C,1)
-                        error('C and D must have the same number of rows.')
-                    end
-                    sys.D = sparse(varargin{4});
-                else
-                    % zero or a zero matrix is given
-                    sys.D = sparse(sys.p, sys.m);
-                end
-            else
-                sys.D = sparse(sys.p, sys.m);
+                sys.D = varargin{4};
             end
             
-            if nargin>=5 && ~isempty(varargin{5})
-                if size(varargin{5},1) ~= size(varargin{5},2)
-                    error('E must be square.')
-                end
-                if size(sys.A,1) ~= size(varargin{5},1)
-                    error('A and E must have the same size.')
-                end
-                if any(any(sparse(varargin{5})-speye(sys.n)))
-                    sys.E = sparse(varargin{5});
-                    sys.isDescriptor = 1; 
-                else
-                    sys.E = [];
-                end
+            if nargin>=5
+                sys.E = varargin{5};
             end
             
             if nargin >= 6
@@ -194,25 +155,24 @@ classdef sss
         end
         
         %% get functions
-        function m = get.m(sys)
-            % number of inputs
+        function m = get.m(sys) % number of inputs
             m = size(sys.B,2);
         end
-        
-        function n = get.n(sys)
-            % system order
+        function n = get.n(sys) % system order
             n = size(sys.A,1);
         end
-        
-        function p = get.p(sys)
-            % number of outputs
+        function p = get.p(sys) % number of outputs
             p = size(sys.C,1);
+        end
+        
+        function isMimo = get.isMimo(sys)
+            isMimo = (sys.p>1)||(sys.m>1);
         end
         
         function D = get.D(sys)
             D = sys.D;
             if isempty(D)
-                D = sparse(sys.m,sys.p);
+                D = sparse(sys.p,sys.m);
             end
         end
         
@@ -222,35 +182,13 @@ classdef sss
                 E = speye(sys.n);
             end
         end
-        
         function x0 = get.x0(sys)
             x0 = sys.x0;
-            if isempty(x0) 
+            if isempty(x0)
                 x0 = sparse(1:sys.n,1,0);
             end
         end
         
-        function isMimo = get.isMimo(sys)
-            isMimo = (sys.p>1)||(sys.m>1);
-        end
-        
-        function isDae = get.isDae(sys)
-            if condest(sys.E)==Inf
-                isDae = 1;
-            else
-                isDae = 0;
-            end
-        end
-        
-        function isDescriptor = get.isDescriptor(sys) 
-            if any(any(sys.E-speye(size(sys.E))))
-                isDescriptor = 1;
-            else
-                isDescriptor = 0;
-            end
-        end
-        
-        %% set functions
         function sys = set.A(sys, A)
             if size(A,1) ~= size(A,2)
                 error('A must be square.')
@@ -302,15 +240,14 @@ classdef sss
             E = sparse(E);
             
             if isempty(E)
-                sys.E = []; 
+                sys.E = [];
             else
                 if (size(E) ~= size(sys.A))
                     error('E and A must have the same size.')
                 end
                 % check whether descriptor matrix is unity
-                if any(any(E-speye(size(E))))   
+                if any(any(E-speye(size(E))))
                     sys.E = E;
-                    sys.isDescriptor=1;
                 else
                     sys.E = [];
                 end
@@ -331,7 +268,23 @@ classdef sss
             else
                 error('Ts must be scalar.')
             end
-        end       
+        end
+        
+        function isDae = get.isDae(sys)
+            if condest(sys.E)==Inf
+                isDae = 1;
+            else
+                isDae = 0;
+            end
+        end
+        
+        function isDescriptor = get.isDescriptor(sys)
+            if any(any(sys.E-speye(size(sys.E))))
+                isDescriptor = 1;
+            else
+                isDescriptor = 0;
+            end
+        end
         
         %% Compatibility with small letters
         function a = get.a(sys)
@@ -351,27 +304,26 @@ classdef sss
         end
         
         function sys = set.a(sys, a)
-            sys.A = set.A(sys,a);
+            sys.A = a;
         end
         function sys = set.b(sys, b)
-            sys.B = set.B(sys,b);
+            sys.B = b;
         end
         function sys = set.c(sys, c)
-            sys.C = set.C(sys,c);
+            sys.C = c;
         end
         function sys = set.d(sys, d)
-            sys.D = set.D(sys,d);
+            sys.D = d;
         end
         function sys = set.e(sys, e)
-            sys.E = set.E(sys,e);
+            sys.E = e;
         end
         
-        %% system matrices
         function [A,B,C,D,E] = ABCDE(sys)
+            % returns system matrices
             A=sys.A; B=sys.B; C=sys.C; D=sys.D; E=sys.E;
         end
         
-        %% display system information
         function str = dispMorInfo(sys)
             if isempty(sys.morInfo)
                 str=[];
@@ -383,12 +335,10 @@ classdef sss
         end
         
         function varargout = disp(sys)
-            mc = metaclass(sys); 
+            mc = metaclass(sys);
+            str = [];
             if ~isempty(mc.Name) && ~isempty(sys.Name)
                 str = [mc.Name ' Model ' sys.Name];
-            else
-                str = 'Sparse State Space Model';
-                str = [str '.' char(10)];
             end
             if sys.isDae
                 str = [str ' (DAE)'];
@@ -407,8 +357,7 @@ classdef sss
             end
         end
         
-        %% subsref
-        function [varargout] = subsref(sys, arg)  
+        function [varargout] = subsref(sys, arg)
             % Returns selected I/O-channel of a sparse LTI MIMO system
 %             if arg
             if strcmp(arg(1).type, '()')
@@ -428,7 +377,7 @@ classdef sss
             end
         end
         
-        function sys = resolveDae(sys, varargin) 
+        function sys = resolveDae(sys, varargin)
             if nargin==1
                 sys.A = sys.E\sys.A;
                 sys.B = sys.E\sys.B;
@@ -467,11 +416,11 @@ classdef sss
         function sys = set.y(sys,name)
             sys.OutputName = name;
         end
-        function name = get.OutputName(sys) 
+        function name = get.OutputName(sys)
             name = cell(repmat({''}, sys.p, 1));
             name(1:size(sys.OutputName,1),1) = sys.OutputName;
         end
-        function sys = set.OutputName(sys, name) 
+        function sys = set.OutputName(sys, name)
             if (length(name)==sys.p)
                 sys.OutputName = name;
             else
@@ -483,7 +432,7 @@ classdef sss
             name = cell(repmat({''}, sys.n, 1));
             name(1:size(sys.StateName,1),1) = sys.StateName;
         end
-        function sys = set.StateName(sys, name) 
+        function sys = set.StateName(sys, name)
             if (length(name)==sys.n)
                 sys.StateName = name;
             else
@@ -497,11 +446,11 @@ classdef sss
         function sys = set.u(sys,name)
             sys.InputName = name;
         end
-        function name = get.InputName(sys) 
+        function name = get.InputName(sys)
             name = cell(repmat({''}, sys.m, 1));
             name(1:size(sys.InputName,1),1) = sys.InputName;
         end
-        function sys = set.InputName(sys, name) 
+        function sys = set.InputName(sys, name)
             if (length(name)==sys.m)
                 sys.InputName = name;
             else
@@ -516,11 +465,11 @@ classdef sss
         sys = connect_sss(sys, K)
     end
     
-    methods(Static)       
-        [y,x_,index] = sim_backwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
-        [y,x_,index] = sim_discrete(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
-        [y,x_,index] = sim_forwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
-        [y,x_,index] = sim_RK4(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)        
+    methods(Static)        
+        [y,x_,index] = sim_backwardEuler(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
+        [y,x_,index] = sim_discrete(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
+        [y,x_,index] = sim_forwardEuler(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
+        [y,x_,index] = sim_RK4(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
     end
     
 end
