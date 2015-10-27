@@ -1,4 +1,4 @@
-function [y,x_,index] = backwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,is_dae)
+function [y,x_,index] = sim_backwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample)
 % Integrates sss model using backward Euler
 % ------------------------------------------------------------------
 % [y,x_,index] = RK4(A,B,C,D,E,u,x,Ts,Ts_sample,is_dae)

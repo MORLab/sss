@@ -1,4 +1,4 @@
-function [y,x_,index] = discrete(A,B,C,D,E,u,x,Ts,Ts_sample,is_dae)
+function [y,x_,index] = sim_discrete(A,B,C,D,E,u,x,Ts,Ts_sample,is_dae)
 % Integrates discrete time model
 % ------------------------------------------------------------------
 % [y,x_,index] = RK4(A,B,C,D,E,u,x,Ts,Ts_sample,is_dae)

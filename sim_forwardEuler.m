@@ -1,4 +1,4 @@
-function [y,x_,index] = forwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,is_dae)
+function [y,x_,index] = sim_forwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,is_dae)
 % Integrates sss model using forward Euler
 % ------------------------------------------------------------------
 % [y,x_,index] = RK4(A,B,C,D,E,u,x,Ts,Ts_sample,is_dae)
