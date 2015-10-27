@@ -1,5 +1,5 @@
 classdef sss 
-    % Sparse LTI system (sss) class
+    % Sparse state space LTI system (sss) class
     % ------------------------------------------------------------------
     % This file is part of the MORLAB_GUI, a Model Order Reduction and
     % System Analysis Toolbox developed at the
@@ -23,11 +23,11 @@ classdef sss
     % Input:        * D: static gain matrix
     % Output:       * sys: sparse state space (sss)-object
     % ------------------------------------------------------------------
-    % Authors:      Heiko Panzer (heiko@mytum.de), Sylvia Cremer,
+    % Authors:      Heiko Panzer, Sylvia Cremer, Alessandro Castanotto
     %               Thomas Emmert (emmert@tfd.mw.tum.de)
-    % Last Change:  26 Okt 2015
+    % Last Change:  27 Oct 2015
     % ------------------------------------------------------------------
-    % Copyright (C) 2015  Lehrstuhl fuer Regelungstechnik
+    % Copyright (C) 2015  Chair of Automatic Control
     % http://www.rt.mw.tum.de/
     %
     % This program is free software; you can redistribute it and/or
@@ -42,7 +42,8 @@ classdef sss
     %
     % You should have received a copy of the GNU General Public License
     % along with this program; if not, write to the Free Software
-    % Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+    % Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
+    % MA  02110-1301, USA.
     
     properties
         A,B,C,D,E,x0;
@@ -301,15 +302,10 @@ classdef sss
             isDescriptor = logical(full(any(any(sys.E-speye(size(sys.E))))));
         end
         
-        function sys = resolveDae(sys, varargin)
-            if nargin==1
-                sys.A = sys.E\sys.A;
-                sys.B = sys.E\sys.B;
-                sys.E = [];
-            elseif varargin{1}==1
-                %***
-            elseif varargin{1}==2
-            end
+        function sys = resolveDescriptor(sys)
+            sys.A = sys.E\sys.A;
+            sys.B = sys.E\sys.B;
+            sys.E = [];
         end
         
         %% Overload Brackets sys.([],[]) to select I/O channels
