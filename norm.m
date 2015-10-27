@@ -73,7 +73,7 @@ elseif p==2
             if isempty(sys.ConGram)
                 if isempty(sys.ObsGram)
                     % No, it is not. Solve Lyapunov equation.
-                    if sys.isdescriptor
+                    if sys.isDescriptor
                         try
                             try
                                 sys.ConGramChol = lyapchol(sys.A,sys.B,sys.E); % P=S'*S3
