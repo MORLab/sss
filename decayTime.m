@@ -1,4 +1,4 @@
-function tmax = decay_time(sys)
+function tmax = decayTime(sys)
 % Computes the time period in which a sparse LTI system levels off
 % ------------------------------------------------------------------
 % tmax = decay_time(sys)
@@ -49,6 +49,6 @@ end
 
 % store system to caller workspace
 if inputname(1)
-    sys.decay_time=tmax;
+    sys.decayTime=tmax;
     assignin('caller', inputname(1), sys);
 end

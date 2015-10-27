@@ -32,7 +32,11 @@ end
 
 % transform system to diagonal form
 p=diag(J).';
-rcondNumber=rcond(T);
+if issparse(T)
+    rcondNumber = 1/condest(T);
+else
+    rcondNumber=rcond(T);
+end
 if rcondNumber<eps
     warning('Matrix of eigenvectors is close to singular or badly scaled. Results may be inaccurate. RCOND =',num2str(rcondNumber));
 end
@@ -41,7 +45,7 @@ C=sys.C*T;
 d=sys.D;
 
 % calculate residues
-if sys.is_mimo
+if sys.isMimo
     %mimo
     r = cell(sys.n, 1);
     for i=1:sys.n

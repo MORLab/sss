@@ -44,10 +44,10 @@ else
     % no, retrieve time values automatically
     
     % is decay_time already available?
-    if ~isempty(sys.decay_time)
-        tmax = sys.decay_time;
+    if ~isempty(sys.decayTime)
+        tmax = sys.decayTime;
     else
-        tmax = decay_time(sys);
+        tmax = decayTime(sys);
         % store system to caller workspace
         if inputname(1)
             assignin('caller', inputname(1), sys);
