@@ -36,17 +36,17 @@ if isempty(Ts)
     error('nonconstant time steps are not supported');
 end
 
-if sys.Ts ~= 0 && sys.Ts~=Ts
+if sys.Ts ~= 0 && sys.Ts ~= Ts
     error('Sampling time of model and data must match')
 end
-if nargin==2 
-    if sys.Ts ==0
+if nargin == 2 
+    if sys.Ts == 0
         method = 'RK4';        
     else
         method = 'discrete';
     end      
     Ts_sample = Ts;
-elseif nargin==3
+elseif nargin == 3
     Ts_sample = Ts;
 end
 switch method
