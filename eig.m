@@ -19,7 +19,7 @@ function varargout = eig(sys, varargin)
 % see also: eig
 
 if sys.n>10000
-    warning(['System order is very large: ',num2str(sys.n),'. Compute time will be very long'])
+    warning(['System order is very large: ',num2str(sys.n),'. You may want to try eigs(sys) instead.'])
 end
 
 if any(any(sys.E-speye(size(sys.E))))
