@@ -43,65 +43,8 @@ for i = 1:length(varargin)
                 m = freqrespCell(varargin{i},exp(1i* omega*varargin{i}.Ts));
             end
         else
-            % --------- frequency range needs to be chosen ---------
-            dc = freqrespCell(varargin{i},0);    % G(0)=DCgain
-            ft = freqrespCell(varargin{i},inf);  % G(inf)=feedthrough
-            
-            %determine minimum frequency
-            if any(any(cellfun(@isinf,dc))) || any(any(cellfun(@isnan,dc))) % pole at s=0
-                wmin = 0;   %***
-                dc = num2cell(ones(size(dc)));
-            elseif any(any(cellfun(@abs,dc)<1e-14))   % transfer zero at s=0
-                wmin = 0;   %***
-                dc = num2cell(ones(size(dc)));
-            else
-                wmin=0; t = freqrespCell(varargin{i}, 10^wmin);
-                while cellfun(@(x,y) norm(x-y)/norm(y),t,dc) > 1e-2
-                    wmin=wmin-1; t = freqrespCell(varargin{i}, 1i*10^wmin);
-                end
-                while cellfun(@(x,y) norm(x-y)/norm(y),t,dc) < 1e-2
-                    wmin=wmin+1; t = freqrespCell(varargin{i}, 1i*10^wmin);
-                end
-                wmin=wmin-1;
-            end
-            
-            %determine maximum frequency
-            wmax=0; t = freqrespCell(varargin{i}, 10^wmax);
-            while cellfun(@(x,y,z) norm(x-y)/norm(z),t,ft,dc) > 1e-6
-                wmax=wmax+1; t = freqrespCell(varargin{i}, 1i*10^wmax);
-            end
-            while cellfun(@(x,y,z) norm(x-y)/norm(z),t,ft,dc) < 1e-6
-                wmax=wmax-1; t = freqrespCell(varargin{i}, 1i*10^wmax);
-            end
-            wmax=wmax+1;
-            
-            delta = (wmax-wmin)/19; % initial resolution (insert odd number only!)
-            omega = 10.^(wmin:delta:wmax);
-            m = freqrespCell(varargin{i}, 1i* omega);
-            
-            while(1)
-                % increase plot density until vertical change per step is below 1%
-                for k=1:length(omega)-1
-                    if cellfun(@(x) abs(abs(x(k)) - abs(x(k+1)))/(abs(x(k)) + abs(x(k+1))),m) > 0.01
-                        break
-                    end
-                end
-                if k==length(omega)-1
-                    break
-                end
-                % do not refine above 2000 points
-                if length(omega)>1000
-                    break
-                end
-                delta = delta/2;
-                omega = 10.^(wmin:delta:wmax);
-                
-                % calculate new values of frequency response
-                temp=freqrespCell(varargin{i}, 1j*omega(2:2:length(omega)));
-                
-                % update array of results (insert new values)
-                m=cellfun(@(x,y) [reshape([x(1:length(x)-1);y],1,2*length(x)-2),x(end)],m,temp,'UniformOutput',false);
-            end
+            % TODO: fix for Ts~=0
+            m = getFreqRange(varargin{i});
         end
         
         % output
@@ -128,10 +71,7 @@ for i = 1:length(varargin)
         end
         
         % create frequency response data model
-%         nInput=size(varargin{i}.B,2); %inputs
-%         nOutput=size(varargin{i}.C,1); %outputs
-        
-%         temp=zeros(varargin{i}.p, varargin{i}.m,length(omega));
+        temp = zeros(varargin{i}.p,varargin{i}.m,length(omega));
         for iO = 1:varargin{i}.p
             for iI = 1:varargin{i}.m
                 temp(iO,iI,:) = m{iO,iI};
@@ -164,4 +104,67 @@ m = freqresp(varargin{1},varargin{2});
 warning('off', 'MATLAB:mat2cell:TrailingUnityVectorArgRemoved');
 m = mat2cell(m,ones(size(m,1),1),ones(size(m,2),1),size(m,3));
 m = cellfun(@(x) x(:,:),m, 'UniformOutput', false);
+end
+
+function m = getFreqRange(sys)
+
+% --------- frequency range needs to be chosen ---------
+dc = freqrespCell(sys,0);    % G(0)=DCgain
+ft = freqrespCell(sys,inf);  % G(inf)=feedthrough
+
+%determine minimum frequency
+if any(any(cellfun(@isinf,dc))) || any(any(cellfun(@isnan,dc))) % pole at s=0
+    wmin = 0;   %***
+    dc = num2cell(ones(size(dc)));
+elseif any(any(cellfun(@abs,dc)<1e-14))   % transfer zero at s=0
+    wmin = 0;   %***
+    dc = num2cell(ones(size(dc)));
+else
+    wmin=0; t = freqrespCell(sys, 10^wmin);
+    while cellfun(@(x,y) norm(x-y)/norm(y),t,dc) > 1e-2
+        wmin=wmin-1; t = freqrespCell(sys, 1i*10^wmin);
+    end
+    while cellfun(@(x,y) norm(x-y)/norm(y),t,dc) < 1e-2
+        wmin=wmin+1; t = freqrespCell(sys, 1i*10^wmin);
+    end
+    wmin=wmin-1;
+end
+
+%determine maximum frequency
+wmax=0; t = freqrespCell(sys, 10^wmax);
+while cellfun(@(x,y,z) norm(x-y)/norm(z),t,ft,dc) > 1e-6
+    wmax=wmax+1; t = freqrespCell(sys, 1i*10^wmax);
+end
+while cellfun(@(x,y,z) norm(x-y)/norm(z),t,ft,dc) < 1e-6
+    wmax=wmax-1; t = freqrespCell(sys, 1i*10^wmax);
+end
+wmax=wmax+1;
+
+delta = (wmax-wmin)/19; % initial resolution (insert odd number only!)
+omega = 10.^(wmin:delta:wmax);
+m = freqrespCell(sys, 1i* omega);
+
+while(1)
+    % increase plot density until vertical change per step is below 1%
+    for k=1:length(omega)-1
+        if cellfun(@(x) abs(abs(x(k)) - abs(x(k+1)))/(abs(x(k)) + abs(x(k+1))),m) > 0.01
+            break
+        end
+    end
+    if k==length(omega)-1
+        break
+    end
+    % do not refine above 2000 points
+    if length(omega)>1000
+        break
+    end
+    delta = delta/2;
+    omega = 10.^(wmin:delta:wmax);
+    
+    % calculate new values of frequency response
+    temp=freqrespCell(sys, 1j*omega(2:2:length(omega)));
+    
+    % update array of results (insert new values)
+    m=cellfun(@(x,y) [reshape([x(1:length(x)-1);y],1,2*length(x)-2),x(end)],m,temp,'UniformOutput',false);
+end
 end
