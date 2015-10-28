@@ -1,7 +1,7 @@
-function [y,x_,index] = sim_forwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
+function [y,x_,index] = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % Integrates sss model using forward Euler
 % ------------------------------------------------------------------
-% [y,x_,index] = RK4(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
+% [y,x_,index] = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % Inputs:       * A,B,C,D,E: state space matrices
 %               * u: input vector in [Nsample,Ninput]
 %               * x: start vector for time integration
@@ -28,13 +28,13 @@ if nargout == 1
     x_ = [];
 else
     m = round(Ts_sample/Ts);
-    x_ = zeros(length(A),round(size(u,1)/m ));    
+    x_ = zeros(length(A),round(size(u,1)/m));    
     k = 1;
     index = [];
 end
 
 y(:,1) = C*x + D*u(1,:)';
-ETsA =E+Ts*A; TsB = Ts*B;
+ETsA = E+Ts*A; TsB = Ts*B;
 if isDescriptor
     [L,U,p] = lu(E,'vector');
 end
@@ -46,9 +46,9 @@ for i = 2:size(u,1)
         x = ETsA*x + TsB*u(i-1,:)';
         x = U\(L\(x(p,:)));
     end
-    y(:,i) =C*x  + D*u(i,:)';
+    y(:,i) = C*x + D*u(i,:)';
     if ~isempty(x_)
-        if mod(i,m)==0
+        if mod(i,m) == 0
             x_(:,k) = x;
             index = [index i];
             k = k+1;            

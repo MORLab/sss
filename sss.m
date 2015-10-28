@@ -447,10 +447,10 @@ classdef sss
     end
     
     methods(Static)        
-        [y,x_,index] = sim_backwardEuler(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
-        [y,x_,index] = sim_discrete(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
-        [y,x_,index] = sim_forwardEuler(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
-        [y,x_,index] = sim_RK4(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
+        [y,x_,index] = simBackwardEuler(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
+        [y,x_,index] = simDiscrete(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
+        [y,x_,index] = simForwardEuler(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
+        [y,x_,index] = simRK4(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
     end
     
 end

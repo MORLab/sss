@@ -1,7 +1,7 @@
-function [y,x_,index] = sim_discrete(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
-% Integrates discrete time model
+function [y,x_,index] = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample)
+% Integrates sss model using backward Euler
 % ------------------------------------------------------------------
-% [y,x_,index] = RK4(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
+% [y,x_,index] = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % Inputs:       * A,B,C,D,E: state space matrices
 %               * u: input vector in [Nsample,Ninput]
 %               * x: start vector for time integration
@@ -21,33 +21,30 @@ function [y,x_,index] = sim_discrete(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % Last Change:
 % ------------------------------------------------------------------
 %
-% see also: sss/sim, RK4, backwardEuler
+% see also: sss/sim, forwardEuler, RK4
 
 y = zeros(size(C,1),size(u,1));
 if nargout == 1
     x_ = [];
 else
     m = round(Ts_sample/Ts);
-    x_ = zeros(length(A),round(size(u,1)/m ));    
+    x_ = zeros(length(A),round(size(u,1)/m));    
     k = 1;
     index = [];
 end
 
 y(:,1) = C*x + D*u(1,:)';
-if isDescriptor
-    [L,U,p] = lu(E,'vector');
-end
+ETsA = E-Ts*A; TsB = Ts*B;
+[L,U,p] = lu(ETsA,'vector');
 
-for i = 2:size(u,1)    
-    if ~isDescriptor
-        x = A*x + B*u(i-1,:)';
-    else
-        x = A*x + B*u(i-1,:)';
-        x = U\(L\(x(p,:)));
-    end
-    y(:,i) =C*x  + D*u(i,:)';
+for i = 2:size(u,1)
+%     x = ETsA\(E*x + TsB*u(i,:)');
+    g = E*x + TsB*u(i,:)';
+    x = U\(L\(g(p,:)));
+
+    y(:,i) = C*x + D*u(i,:)';
     if ~isempty(x_)
-        if mod(i,m)==0
+        if mod(i,m) == 0
             x_(:,k) = x;
             index = [index i];
             k = k+1;            

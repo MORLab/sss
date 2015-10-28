@@ -52,30 +52,30 @@ end
 switch method
     case 'forwardEuler'
         if nargout == 1
-            y = sss.sim_forwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
+            y = sss.simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
         else
-            [y,X,index] = sss.sim_forwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
+            [y,X,index] = sss.simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
             tx = data.SamplingInstants(index);
         end
     case 'backwardEuler'
         if nargout == 1
-            y = sss.sim_backwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
+            y = sss.simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample);
         else
-            [y,X,index] = sss.sim_backwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
+            [y,X,index] = sss.simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample);
             tx = data.SamplingInstants(index);
         end
     case 'RK4'
         if nargout == 1
-            y = sss.sim_RK4(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
+            y = sss.simRK4(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
         else
-            [y,X,index] = sss.sim_RK4(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
+            [y,X,index] = sss.simRK4(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
             tx = data.SamplingInstants(index);
         end
     case 'discrete'
         if nargout == 1
-            y = sss.sim_discrete(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
+            y = sss.simDiscrete(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
         else
-            [y,X,index] = sss.sim_discrete(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
+            [y,X,index] = sss.simDiscrete(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
             tx = data.SamplingInstants(index);
         end
 end

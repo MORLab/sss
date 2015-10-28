@@ -25,8 +25,8 @@ sys.B = sys.B(:,idxIn);
 sys.C = sys.C(idxOut,:);
 sys.D = sys.D(idxOut,idxIn);
 % truncate IO labels
-sys.u = sys.u(idxIn);
-sys.y = sys.y(idxOut);
+% sys.u = sys.u(idxIn);
+% sys.y = sys.y(idxOut);
 % truncate the groups:
 InGroups = sys.InputGroup;
 if not(isempty(InGroups))
