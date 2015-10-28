@@ -21,7 +21,11 @@ function [data,X,tx] = sim(sys,data,method,Ts_sample)
 % Last Change:
 % ------------------------------------------------------------------
 
-sys = sys.truncate(:,data.InputName);
+if ~any(cellfun(@(x) strcmp('',x),sys.u))
+    sys = sys.truncate(':',data.InputName);
+else
+    warning('InputName of sys is not specifing. Ignoring InputName definition in iddata')
+end
 [A,B,C,D,E] = ABCDE(sys);
 
 x = sys.x0;
@@ -48,30 +52,30 @@ end
 switch method
     case 'forwardEuler'
         if nargout == 1
-            y = sim_forwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,sys.is_dae);
+            y = sss.sim_forwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
         else
-            [y,X,index] = sss.sim_forwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,sys.is_dae);
+            [y,X,index] = sss.sim_forwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
             tx = data.SamplingInstants(index);
         end
     case 'backwardEuler'
         if nargout == 1
-            y = sss.sim_backwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,sys.is_dae);
+            y = sss.sim_backwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
         else
-            [y,X,index] = sss.sim_backwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,sys.is_dae);
+            [y,X,index] = sss.sim_backwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
             tx = data.SamplingInstants(index);
         end
     case 'RK4'
         if nargout == 1
-            y = sss.sim_RK4(A,B,C,D,E,u,x,Ts,Ts_sample,sys.is_dae);
+            y = sss.sim_RK4(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
         else
-            [y,X,index] = sss.sim_RK4(A,B,C,D,E,u,x,Ts,Ts_sample,sys.is_dae);
+            [y,X,index] = sss.sim_RK4(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
             tx = data.SamplingInstants(index);
         end
     case 'discrete'
         if nargout == 1
-            y = sss.sim_discrete(A,B,C,D,E,u,x,Ts,Ts_sample,sys.is_dae);
+            y = sss.sim_discrete(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
         else
-            [y,X,index] = sss.sim_discrete(A,B,C,D,E,u,x,Ts,Ts_sample,sys.is_dae);
+            [y,X,index] = sss.sim_discrete(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
             tx = data.SamplingInstants(index);
         end
 end

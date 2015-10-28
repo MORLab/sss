@@ -1,13 +1,13 @@
-function [y,x_,index] = sim_RK4(A,B,C,D,E,u,x,Ts,Ts_sample,is_dae)
+function [y,x_,index] = sim_RK4(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % Integrates sss model using Runge-Kutta 4
 % ------------------------------------------------------------------
-% [y,x_,index] = RK4(A,B,C,D,E,u,x,Ts,Ts_sample,is_dae)
+% [y,x_,index] = RK4(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % Inputs:       * A,B,C,D,E: state space matrices
 %               * u: input vector in [Nsample,Ninput]
 %               * x: start vector for time integration
 %               * Ts: Sampling time
 %               * Ts_sample: Sampling time for matrix of state-vectors
-%               * is_dae: is descriptor
+%               * isDescriptor: is descriptor
 % Outputs:      * y: output vector
 %               * X: matrix of state vectors [Optional]
 %               * index: time index for X  [Optional]
@@ -33,7 +33,7 @@ else
     k = 1;
     index = [];
 end
-if is_dae
+if isDescriptor
     [L,U,p] = lu(E,'vector');
 end
 
@@ -41,7 +41,7 @@ y(:,1) = C*x + D*u(1,:)';
 for i = 2:size(u,1)  
     
     Bu = B*u(i-1,:)';    
-    if ~is_dae
+    if ~isDescriptor
         k1 = A*x + Bu;
         k2 = A*(x + Ts/2*k1) + Bu;
         k3 = A*(x + Ts/2*k2) + Bu;

@@ -1,13 +1,13 @@
-function [y,x_,index] = sim_backwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample)
+function [y,x_,index] = sim_backwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % Integrates sss model using backward Euler
 % ------------------------------------------------------------------
-% [y,x_,index] = RK4(A,B,C,D,E,u,x,Ts,Ts_sample,is_dae)
+% [y,x_,index] = RK4(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % Inputs:       * A,B,C,D,E: state space matrices
 %               * u: input vector in [Nsample,Ninput]
 %               * x: start vector for time integration
 %               * Ts: Sampling time
 %               * Ts_sample: Sampling time for matrix of state-vectors
-%               * is_dae: is descriptor
+%               * isDescriptor: is descriptor
 % Outputs:      * y: output vector
 %               * X: matrix of state vectors [Optional]
 %               * index: time index for X  [Optional]

@@ -1,13 +1,13 @@
-function [y,x_,index] = sim_forwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,is_dae)
+function [y,x_,index] = sim_forwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % Integrates sss model using forward Euler
 % ------------------------------------------------------------------
-% [y,x_,index] = RK4(A,B,C,D,E,u,x,Ts,Ts_sample,is_dae)
+% [y,x_,index] = RK4(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % Inputs:       * A,B,C,D,E: state space matrices
 %               * u: input vector in [Nsample,Ninput]
 %               * x: start vector for time integration
 %               * Ts: Sampling time
 %               * Ts_sample: Sampling time for matrix of state-vectors
-%               * is_dae: is descriptor
+%               * isDescriptor: is descriptor
 % Outputs:      * y: output vector
 %               * X: matrix of state vectors [Optional]
 %               * index: time index for X  [Optional]
@@ -35,12 +35,12 @@ end
 
 y(:,1) = C*x + D*u(1,:)';
 ETsA =E+Ts*A; TsB = Ts*B;
-if is_dae
+if isDescriptor
     [L,U,p] = lu(E,'vector');
 end
 
 for i = 2:size(u,1)    
-    if ~is_dae
+    if ~isDescriptor
         x = ETsA*x + TsB*u(i-1,:)';
     else
         x = ETsA*x + TsB*u(i-1,:)';
