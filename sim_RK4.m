@@ -29,7 +29,7 @@ if nargout == 1
     x_ = [];
 else
     m = round(Ts_sample/Ts);
-    x_ = zeros(length(A),round(size(u,1)/m ));    
+    x_ = zeros(length(A),round(size(u,1)/m));    
     k = 1;
     index = [];
 end
@@ -56,10 +56,10 @@ for i = 2:size(u,1)
         k4 = A*(x + Ts*k3) + Bu;
         k4 = U\(L\(k4(p,:)));
     end
-    x =  (x + Ts/6* (k1 + 2*k2 + 2*k3 + k4));
-    y(:,i) =C*x  + D*u(i,:)';
+    x = (x + Ts/6* (k1 + 2*k2 + 2*k3 + k4));
+    y(:,i) = C*x + D*u(i,:)';
     if ~isempty(x_)
-        if mod(i,m)==0
+        if mod(i,m) == 0
             x_(:,k) = x;
             index = [index i];
             k = k+1;            

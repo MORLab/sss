@@ -23,8 +23,8 @@ classdef sss
     % Input:        * D: static gain matrix
     % Output:       * sys: sparse state space (sss)-object
     % ------------------------------------------------------------------
-    % Authors:      Heiko Panzer, Sylvia Cremer, Alessandro Castanotto
-    %               Thomas Emmert (emmert@tfd.mw.tum.de)
+    % Authors:      Heiko Panzer, Sylvia Cremer, Thomas Emmert (emmert@tfd.mw.tum.de)
+    %               Alessandro Castanotto, Maria Cruz Varona
     % Last Change:  27 Oct 2015
     % ------------------------------------------------------------------
     % Copyright (C) 2015  Chair of Automatic Control
@@ -60,6 +60,9 @@ classdef sss
     properties(Dependent, Hidden)
         a,b,c,d,e
         n,p,m
+        isSiso
+        isSimo
+        isMiso
         isMimo
         isDae
         isDescriptor
@@ -282,6 +285,18 @@ classdef sss
         function sys = set.e(sys, e); sys.E = e; end
         
         %% Get helper functions
+        function isSiso = get.isSiso(sys)
+            isSiso = (sys.p==1)&&(sys.m==1);
+        end
+        
+        function isSimo = get.isSimo(sys)
+            isSimo = (sys.p>1)&&(sys.m==1);
+        end
+        
+        function isMiso = get.isMiso(sys)
+            isMiso = (sys.p==1)&&(sys.m>1);
+        end
+        
         function isMimo = get.isMimo(sys)
             isMimo = (sys.p>1)||(sys.m>1);
         end
@@ -397,7 +412,20 @@ classdef sss
                 str = [mc.Name ' Model ' sys.Name];
             end
             if sys.isDae
-                str = [str ' (DAE)'];
+                str = [str '(DAE)'];
+            elseif sys.isDescriptor
+                str = [str '(DSS)'];
+            else
+                str = [str '(SSS)'];
+            end
+            if sys.isSiso
+                str = [str '(SISO)'];
+            elseif sys.isSimo
+                str = [str '(SIMO)'];
+            elseif sys.isMiso
+                str = [str '(MISO)'];
+            elseif sys.isMimo
+                str = [str '(MIMO)'];
             end
             str = [str  char(10), num2str(sys.n) ' states, ' num2str(sys.m) ...
                 ' inputs, ' num2str(sys.p) ' outputs'];
