@@ -135,7 +135,11 @@ for i = 1:length(varargin)
         nOutput=size(varargin{i}.C,1); %outputs
         
         temp=zeros(nOutput, nInput,length(omega));
-        temp(:,:,:) = cell2mat(m);
+        for iO = 1:nOutput
+            for iI = 1:nInput
+                temp(iO,iI,:) = m{iO,iI};
+            end
+        end
        
         varargin{i} = frd(temp,omega,varargin{i}.Ts,...
             'InputName',varargin{i}.InputName,'OutputName',varargin{i}.OutputName,...
