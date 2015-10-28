@@ -38,9 +38,9 @@ for i = 1:length(varargin)
         if exist('omega', 'var') && ~isempty(omega)
             % --------- frequency range values given ---------
             if varargin{i}.Ts == 0
-                m = freqresp(varargin{i},1i* omega);
+                m = freqrespCell(varargin{i},1i* omega);
             else
-                m = freqresp(varargin{i},exp(1i* omega*varargin{i}.Ts));
+                m = freqrespCell(varargin{i},exp(1i* omega*varargin{i}.Ts));
             end
         else
             % --------- frequency range needs to be chosen ---------
@@ -128,12 +128,12 @@ for i = 1:length(varargin)
         end
         
         % create frequency response data model
-        nInput=size(varargin{i}.B,2); %inputs
-        nOutput=size(varargin{i}.C,1); %outputs
+%         nInput=size(varargin{i}.B,2); %inputs
+%         nOutput=size(varargin{i}.C,1); %outputs
         
-        temp=zeros(nOutput, nInput,length(omega));
-        for iO = 1:nOutput
-            for iI = 1:nInput
+%         temp=zeros(varargin{i}.p, varargin{i}.m,length(omega));
+        for iO = 1:varargin{i}.p
+            for iI = 1:varargin{i}.m
                 temp(iO,iI,:) = m{iO,iI};
             end
         end
