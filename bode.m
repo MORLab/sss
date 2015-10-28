@@ -44,7 +44,7 @@ for i = 1:length(varargin)
             end
         else
             % TODO: fix for Ts~=0
-            m = getFreqRange(varargin{i});
+            [m, omega] = getFreqRange(varargin{i});
         end
         
         % output
@@ -106,7 +106,7 @@ m = mat2cell(m,ones(size(m,1),1),ones(size(m,2),1),size(m,3));
 m = cellfun(@(x) x(:,:),m, 'UniformOutput', false);
 end
 
-function m = getFreqRange(sys)
+function [m,omega] = getFreqRange(sys)
 
 % --------- frequency range needs to be chosen ---------
 dc = freqrespCell(sys,0);    % G(0)=DCgain
