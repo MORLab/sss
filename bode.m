@@ -12,8 +12,8 @@ function  [varargout] = bode(varargin)
 % Institute of Automatic Control, Technische Universitaet Muenchen
 % For updates and further information please visit www.rt.mw.tum.de
 % ------------------------------------------------------------------
-% Authors:      Heiko Panzer (heiko@mytum.de), Stefan Jaensch, 
-%               Sylvia Cremer, Rudy Eid, Alessandro Castagnotto, 
+% Authors:      Heiko Panzer (heiko@mytum.de), Stefan Jaensch,
+%               Sylvia Cremer, Rudy Eid, Alessandro Castagnotto,
 %               Lisa Jeschek
 % Last Change:  14 Oct 2015
 % ------------------------------------------------------------------
@@ -45,7 +45,7 @@ for i = 1:length(varargin)
             % --------- frequency range needs to be chosen ---------
             dc = freqrespCell(varargin{i},0);    % G(0)=DCgain
             ft = freqrespCell(varargin{i},inf);  % G(inf)=feedthrough
-
+            
             %determine minimum frequency
             if any(any(cellfun(@isinf,dc))) || any(any(cellfun(@isnan,dc))) % pole at s=0
                 wmin = 0;   %***
@@ -63,7 +63,7 @@ for i = 1:length(varargin)
                 end
                 wmin=wmin-1;
             end
-
+            
             %determine maximum frequency
             wmax=0; t = freqrespCell(varargin{i}, 10^wmax);
             while cellfun(@(x,y,z) norm(x-y)/norm(z),t,ft,dc) > 1e-6
@@ -73,7 +73,7 @@ for i = 1:length(varargin)
                 wmax=wmax-1; t = freqrespCell(varargin{i}, 1i*10^wmax);
             end
             wmax=wmax+1;
-
+            
             delta = (wmax-wmin)/19; % initial resolution (insert odd number only!)
             omega = 10.^(wmin:delta:wmax);
             m = freqrespCell(varargin{i}, 1i* omega);
@@ -94,13 +94,13 @@ for i = 1:length(varargin)
                 end
                 delta = delta/2;
                 omega = 10.^(wmin:delta:wmax);
-
+                
                 % calculate new values of frequency response
                 temp=freqrespCell(varargin{i}, 1j*omega(2:2:length(omega)));
                 
-                % update array of results (insert new values)            
+                % update array of results (insert new values)
                 m=cellfun(@(x,y) [reshape([x(1:length(x)-1);y],1,2*length(x)-2),x(end)],m,temp,'UniformOutput',false);
-            end    
+            end
         end
         
         % output
@@ -108,7 +108,7 @@ for i = 1:length(varargin)
             % determine magnitude and phase from complex frequency response
             mag = cellfun(@abs, m, 'UniformOutput',false);
             phase = cellfun(@(x) unwrap(angle(x))*180/pi,m, 'UniformOutput',false);
-
+            
             % determine H_inf-norm (maximum magnitude)
             [a,b]=cellfun(@max, mag);
             [a,c]=max(a);
@@ -116,20 +116,20 @@ for i = 1:length(varargin)
             H_inf_peakfreq=omega(b(c(d),d));
             varargin{i}.H_inf_norm = max([varargin{i}.H_inf_norm, H_inf_norm]);
             varargin{i}.H_inf_peakfreq = max([varargin{i}.H_inf_peakfreq, H_inf_peakfreq]);
-
+            
             mag=cell2mat(mag);
             phase=cell2mat(phase);
-        end 
+        end
         
         if isempty(varargin{i}.Name)
-             varargin{i}.Name = inputname(i);
+            varargin{i}.Name = inputname(i);
         end
         
         % store system in caller workspace
         if inputname(1)
             assignin('caller', inputname(i), varargin{i});
         end
-
+        
         % create frequency response data model
         nInput=size(varargin{i}.B,2); %inputs
         nOutput=size(varargin{i}.C,1); %outputs
@@ -140,31 +140,31 @@ for i = 1:length(varargin)
                 temp(iO,iI,:) = m{iO,iI};
             end
         end
-       
+        
         varargin{i} = frd(temp,omega,varargin{i}.Ts,...
             'InputName',varargin{i}.InputName,'OutputName',varargin{i}.OutputName,...
-            'Name',varargin{i}.Name);  
-
+            'Name',varargin{i}.Name);
+        
         % clear omega if input consists of more than one system without omega
         if ~nnz(omegaIndex) && nSys>1
-           omega=[];
+            omega=[];
         end
     end
 end
-  
+
 % plot
 if nargout== 1
-   varargout{1} =  varargin{1};
+    varargout{1} =  varargin{1};
 elseif nargout
-    [varargout{1},varargout{2},varargout{3},varargout{4},varargout{5}] = bode(varargin{:});    
+    [varargout{1},varargout{2},varargout{3},varargout{4},varargout{5}] = bode(varargin{:});
 else
     bode(varargin{:});
 end
 end
 
 function m = freqrespCell(varargin)
-            m = freqresp(varargin{1},varargin{2});
-            warning('off', 'MATLAB:mat2cell:TrailingUnityVectorArgRemoved');
-            m = mat2cell(m,ones(size(m,1),1),ones(size(m,2),1),size(m,3));
-            m = cellfun(@(x) x(:,:),m, 'UniformOutput', false);
+m = freqresp(varargin{1},varargin{2});
+warning('off', 'MATLAB:mat2cell:TrailingUnityVectorArgRemoved');
+m = mat2cell(m,ones(size(m,1),1),ones(size(m,2),1),size(m,3));
+m = cellfun(@(x) x(:,:),m, 'UniformOutput', false);
 end
