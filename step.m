@@ -55,6 +55,21 @@ else
     end
     delta = tmax/999;
     t = 0:delta:tmax;
+    
+    % Change the format of res to work with the following code
+    %   original: res = {res1, res2,... resN} where resK = res(p(k)) is the
+    %           (possibly matrix-valued) residual to p(k)
+    %   new     : res = cell(sys.p,sys.m), where res{i,j} is a vector of
+    %           scalar residual: res{i,j} = [res{i,j}1, ..., res{i,j}N]
+    resOld = res; clear res; res = cell(sys.p,sys.m);
+    for iOut = 1:sys.p
+        for jIn = 1:sys.m
+            res{iOut,jIn} = [];
+            for kPole = 1:length(p)
+                res{iOut,jIn} = [res{iOut,jIn}, resOld{kPole}(iOut,jIn)];
+            end
+        end
+    end
 
     % calculate step response
     h=cellfun(@(x,y) sum(diag(x./p)*transpose(exp(t'*p)-1),1)+y,res,num2cell(sys.D),'UniformOutput',false);
@@ -64,9 +79,9 @@ else
     ex=1;
     while 1
         refine=0;
-        for i=1:sys.p
-            for j=1:sys.m
-                m=h{i,j};
+        for iOut=1:sys.p
+            for jIn=1:sys.m
+                m=h{iOut,jIn};
                 for k=2:length(m)-1
                     if abs(abs(m(k)) - abs(m(k+1)))/(abs(m(k)) + abs(m(k+1))) > 0.5
                         delta=delta/2;
@@ -113,22 +128,22 @@ if isempty(options)
 end
 
 axes_handle=zeros(sys.p,sys.m);
-for i=1:sys.p
-    for j=1:sys.m
-        axes_handle(i,j)=subplot(sys.p,sys.m,(j-1)*sys.p+i);
+for iOut=1:sys.p
+    for jIn=1:sys.m
+        axes_handle(iOut,jIn)=subplot(sys.p,sys.m,(jIn-1)*sys.p+iOut);
         hold on;
 
-        if j==1 && sys.p>1
-            y_lab=sprintf('To Out(%i)',ceil(i/2));
+        if jIn==1 && sys.p>1
+            y_lab=sprintf('To Out(%i)',ceil(iOut/2));
             ylabel(y_lab)
         end
-        if i==1 && sys.m>1
-            x_lab=sprintf('From In(%i)',j);
+        if iOut==1 && sys.m>1
+            x_lab=sprintf('From In(%i)',jIn);
             title(x_lab)
         end
 
-        plot(t, h{i,j}, options{:});
-        mx=max(h{i,j}); mn=min(h{i,j});
+        plot(t, h{iOut,jIn}, options{:});
+        mx=max(h{iOut,jIn}); mn=min(h{iOut,jIn});
         set(gca, 'XLim', [0 max(t)], 'YLim', [mn-(mx-mn)/20, mx+(mx-mn)/20]);
         
         ylabel('Step response g(t)') 
@@ -136,20 +151,7 @@ for i=1:sys.p
         
     end
 end
-% set(gcf,'UserData',axes_handle)
-% h1=axes('position',[0,0,1,1],'Visible','off');
-% text(0.4,0.98,'Step Response');
-% text(0.5,0.02,'Time [s]')
-% text(0.01,0.5,'Amplitude','Rotation',90)
-% set(h1,'HandleVisibility','off')
-% hold on
-% for i=1:size(axes_handle,1)
-%     for j=1:size(axes_handle,2)
-%         axes(axes_handle(i,j))
-%     end
-% end
 
-% avoid output
 clear h t
 
 

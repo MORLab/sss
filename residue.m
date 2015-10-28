@@ -1,19 +1,96 @@
-function [r,p,d] = residue(sys)
-% Computes residues, poles and feedthrough of an LTI system
-% ------------------------------------------------------------------
-% [r,p,d] = residue(sys)
-% Inputs:       * sys: an sss-object containing the LTI system
-% Outputs:      * residues r, poles p and feedthrough d, such that
-%                   G(s) = r_i/(p_i+s) + d
-% ------------------------------------------------------------------
-% This file is part of the MORLAB_GUI, a Model Order Reduction and
-% System Analysis Toolbox developed at the
-% Institute of Automatic Control, Technische Universitaet Muenchen
-% For updates and further information please visit www.rt.mw.tum.de
-% ------------------------------------------------------------------
-% Authors:      Heiko Panzer (heiko@mytum.de), Sylvia Cremer
-% Last Change:  19 Out 2015
-% ------------------------------------------------------------------
+function [r,p,d] = residue(sys, Opts)
+% RESIDUE - Computes residues, poles and feedthrough of an LTI system
+% 
+% Syntax:
+%       RESIDUE(sys)
+%       [r,p,d] = RESIDUE(sys)
+%       [r,p,d] = RESIDUE(sys,Opts)
+%
+%
+% Inputs:
+%		-sys: sss-object of the LTI system
+%       -Opts: Option structure
+%
+%
+% Outputs:
+%       -r: cell of residuals (format depends on Otps.rType)
+%       -p: eigenvalues
+%       -d: feedthrough
+%
+%
+% Examples:
+%		To compute the residuals of a SISO or MIMO system such that 
+%//       G(s) = sum_i(r_i/(p_i+s) + d) 
+%       use
+%
+%>		load build; 
+%>		sys = sss(A,B,C);
+%>		[r,p,d] = residue(sys);
+%
+%       To get the residue directions instead of the residues, use the
+%       option Opts.rType = 'dir'
+%
+%>		load build; 
+%>		sys = sss(A,B,C);
+%>      Opts.rType = 'dir';
+%>		[r,p,d] = residue(sys,Opts);
+%
+%
+% Description:
+%       This function computes the pole/residual representation of a
+%       rational transfer function (SISO and MIMO). 
+%
+%       It can either return the residuals themselves, or the residual 
+%       directions (low rank factors), useful especially in the MIMO 
+%       setting.
+%
+%       The computation requires the complete eigendecomposition of the
+%       system, so for large scale problems it might take a while.
+%
+%       The output r is a cell array of residuals or residual directions
+%       depending on the option rType = {'res' (def), 'dir'}
+%       For rType = 'res' r is a cell array of dimension nx1 with the
+%       residual r{k} for each pole p(k)
+%       For rType = 'dir' r is a cell array of dimension 1x2 with the
+%       output residual matrix Chat = r{1} and the input residual matrix 
+%       Bhat = r{2}. The residues can be computed using 
+%       r{k} = Chat(:,k)*Bhat(k,:).
+%
+%
+% See also: 
+%		sss, eig
+%
+%
+% References:
+%		* *[1] Bryson (1994)*, Control of Spacecraft and Aircraft
+%
+%
+%------------------------------------------------------------------
+%   This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
+%   Reduction and System Analysis Toolbox developed at the Chair of 
+%   Automatic Control, Technische Universitaet Muenchen. For updates 
+%   and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+%   For any suggestions, submission and/or bug reports, mail us at
+%                     -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+%   More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
+% Authors:      Heiko Panzer, Sylvia Cremer, Alessandro Castagnotto
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  28 Oct 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
+
+Def.rType = 'res';
+
+if ~exist('Opts','var') || isempty(Opts)
+    Opts = Def;
+else
+    Opts = parseOpts(Opts,Def);
+end   
 
 % are poles and residues already available?
 if ~isempty(sys.poles) && ~isempty(sys.residues)
@@ -45,15 +122,9 @@ C=sys.C*T;
 d=sys.D;
 
 % calculate residues
-if sys.isMimo
-    %mimo
-    r = cell(sys.n, 1);
-    for i=1:sys.n
-        r{i} = C(:,i)*B(i,:);
-    end
-else
-    %siso
-    r = {C .*B.'};
+r = cell(1,sys.n);
+for i=1:sys.n
+    r{i} = C(:,i)*B(i,:);
 end
 
 % store results to caller workspace
@@ -61,5 +132,11 @@ sys.residues=r;
 sys.poles=p;
 if inputname(1)
     assignin('caller', inputname(1), sys);
+end
+
+% return the residual directions instead of the residuals
+if strcmp(Opts.rType,'dir')
+    clear r  
+    r = {C, B};  
 end
 return

@@ -29,7 +29,10 @@ for i=1:sys.p
         % how much does each pole contribute to energy flow?
         h2=zeros(size(p));
         for k=1:length(p)
-            h2(k)=res{i,j}(k)*sum(res{i,j}./(-p(k)-p));
+            %we need the siso residual for all poles into on vector
+            resIJvec = zeros(1,length(p)); 
+            for l = 1:length(p), resIJvec(l) = res{l}(i,j);end
+            h2(k)=res{k}(i,j)*sum(resIJvec./(-p(k)-p));
         end
         
         [h2_sorted, I] = sort(real(h2));
