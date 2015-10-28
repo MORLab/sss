@@ -189,10 +189,6 @@ classdef sss
             end
         end
         
-        function [A,B,C,D,E] = ABCDE(sys) % returns system matrices
-            A=sys.A; B=sys.B; C=sys.C; D=sys.D; E=sys.E;
-        end
-        
         %% Set basic properties
         function sys = set.A(sys, A)
             if size(A,1) ~= size(A,2)
@@ -315,6 +311,10 @@ classdef sss
         
         function isDescriptor = get.isDescriptor(sys)
             isDescriptor = logical(full(any(any(sys.E-speye(size(sys.E))))));
+        end
+        
+        function [A,B,C,D,E] = ABCDE(sys) % returns system matrices
+            A=sys.A; B=sys.B; C=sys.C; D=sys.D; E=sys.E;
         end
         
         function sys = resolveDescriptor(sys)
