@@ -37,10 +37,11 @@ for i = 1:length(varargin)
     if isa(varargin{i},'sss')
         if exist('omega', 'var') && ~isempty(omega)
             % --------- frequency range values given ---------
-            if size(omega,1)>1
-                omega=transpose(omega);
+            if varargin{i}.Ts == 0
+                m = freqresp(varargin{i},1i* omega);
+            else
+                m = freqresp(varargin{i},exp(1i* omega*varargin{i}.Ts));
             end
-            m = freqrespCell(varargin{i}, 1j*abs(omega));
         else
             % --------- frequency range needs to be chosen ---------
             dc = freqrespCell(varargin{i},0);    % G(0)=DCgain
@@ -107,7 +108,6 @@ for i = 1:length(varargin)
         if nSys==1
             % determine magnitude and phase from complex frequency response
             mag = cellfun(@abs, m, 'UniformOutput',false);
-            phase = cellfun(@(x) unwrap(angle(x))*180/pi,m, 'UniformOutput',false);
             
             % determine H_inf-norm (maximum magnitude)
             [a,b]=cellfun(@max, mag);
@@ -116,9 +116,6 @@ for i = 1:length(varargin)
             H_inf_peakfreq=omega(b(c(d),d));
             varargin{i}.H_inf_norm = max([varargin{i}.H_inf_norm, H_inf_norm]);
             varargin{i}.H_inf_peakfreq = max([varargin{i}.H_inf_peakfreq, H_inf_peakfreq]);
-            
-            mag=cell2mat(mag);
-            phase=cell2mat(phase);
         end
         
         if isempty(varargin{i}.Name)
