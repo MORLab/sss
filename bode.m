@@ -1,4 +1,4 @@
-function  [mag, phase, omega] = bode(varargin)
+function  [varargout] = bode(varargin)
 % Plots the bode diagram of an LTI system
 % ------------------------------------------------------------------
 % [mag, phase, omega] = bode(sys, omega, in, out, options)
@@ -153,7 +153,13 @@ for i = 1:length(varargin)
 end
   
 % plot
-bode(varargin{:});
+if nargout== 1
+   varargout{1} =  varargin{1};
+elseif nargout
+    [varargout{1},varargout{2},varargout{3},varargout{4},varargout{5}] = bode(varargin{:});    
+else
+    bode(varargin{:});
+end
 end
 
 function m = freqrespCell(varargin)
