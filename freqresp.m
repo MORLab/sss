@@ -17,19 +17,6 @@ function G = freqresp(sys, s, varargin)
 
 [A,B,C,D,E] = ABCDE(sys);
 m=sys.m; p=sys.p; n=sys.n;
-if nargin >= 4
-    % I/O-pair selected
-    if ~isempty(varargin{1}) && ~isnan(varargin{1})
-        B=B(:,varargin{1});
-        D=D(:,varargin{1});
-        m=size(B,2);
-    end
-    if ~isempty(varargin{2}) && ~isnan(varargin{2})
-        C=C(varargin{2},:);
-        D=D(varargin{2},:);
-        p=size(C,1);
-    end
-end
 
 G=zeros(p,m,length(s));
 if size(A,1) < 5000
