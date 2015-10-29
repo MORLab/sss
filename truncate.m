@@ -21,12 +21,14 @@ idxOut = string2index(sys.OutputName,idxOut);
 idxIn = string2index(sys.InputName,idxIn);
 
 % truncate matrizes
-sys.B = sys.B(:,idxIn);
-sys.C = sys.C(idxOut,:);
-sys.D = sys.D(idxOut,idxIn);
+B = sys.B(:,idxIn);
+C = sys.C(idxOut,:);
+D = sys.D(idxOut,idxIn);
 % truncate IO labels
-% sys.u = sys.u(idxIn);
-% sys.y = sys.y(idxOut);
+u = sys.u(idxIn);
+y = sys.y(idxOut);
+% Assing the values later in order to avoid race condition
+sys.B=B; sys.C=C; sys.D=D; sys.u=u; sys.y=y;
 % truncate the groups:
 InGroups = sys.InputGroup;
 if not(isempty(InGroups))
