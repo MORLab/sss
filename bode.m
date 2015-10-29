@@ -47,20 +47,6 @@ for i = 1:length(varargin)
             [m, omega] = getFreqRange(varargin{i});
         end
         
-        % output
-        if nSys==1
-            % determine magnitude and phase from complex frequency response
-            mag = cellfun(@abs, m, 'UniformOutput',false);
-            
-            % determine H_inf-norm (maximum magnitude)
-            [a,b]=cellfun(@max, mag);
-            [a,c]=max(a);
-            [H_inf_norm,d]=max(a);
-            H_inf_peakfreq=omega(b(c(d),d));
-            varargin{i}.H_inf_norm = max([varargin{i}.H_inf_norm, H_inf_norm]);
-            varargin{i}.H_inf_peakfreq = max([varargin{i}.H_inf_peakfreq, H_inf_peakfreq]);
-        end
-        
         if isempty(varargin{i}.Name)
             varargin{i}.Name = inputname(i);
         end
@@ -167,4 +153,19 @@ while(1)
     % update array of results (insert new values)
     m=cellfun(@(x,y) [reshape([x(1:length(x)-1);y],1,2*length(x)-2),x(end)],m,temp,'UniformOutput',false);
 end
+
+% determine magnitude and phase from complex frequency response
+mag = cellfun(@abs, m, 'UniformOutput',false);
+
+% determine H_inf-norm (maximum magnitude)
+[a,b]=cellfun(@max, mag);
+[a,c]=max(a);
+[H_inf_norm,d]=max(a);
+H_inf_peakfreq=omega(b(c(d),d));
+% Issue: the values get assigned but this does not affect the original
+% sss object as it is called by value not by reference as @sss is not a
+% handle class.
+sys.H_inf_norm = max([sys.H_inf_norm, H_inf_norm]);
+sys.H_inf_peakfreq = max([sys.H_inf_peakfreq, H_inf_peakfreq]);
+
 end
