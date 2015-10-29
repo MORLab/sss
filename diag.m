@@ -1,5 +1,5 @@
 function sysd = diag(sys)
-% DIAG - Transforms an LTI system to (block)diagonal representation
+% DIAG - Transforms an LTI system to (block)-diagonal representation
 %
 % Syntax:
 %       sysd = DIAG(sys)
@@ -7,7 +7,18 @@ function sysd = diag(sys)
 %
 % Description:
 %       sysd = DIAG(sys) transforms the sparse state-space model sys to a 
-%       (block)diagonal representation. TODO
+%       (block)diagonal representation. The resulting diagonal state-space
+%       representation sysd is always of type sss (E = I), both in case
+%       where the original model sys is sss (E = I) or dss (E ~= I, E invertible). 
+%
+%       If sys has real eigenvalues, then the diagonal matrix sysd.A
+%       contains the real eigenvalues in the diagonal. If sys has complex
+%       conjugate eigenvalues with real part delta and imaginary part omega, 
+%       then the diagonal matrix sysd.A has a block-diagonal structure:
+%       sysd.A = [delta1  omega1    0      0
+%                 -omega1 delta1    0      0
+%                    0       0   delta2  omega2
+%                    0       0   -omega2 delta2] 
 %       
 %       During the diagonalization, the C-vector is normalized to contain
 %       ones.
@@ -34,7 +45,7 @@ function sysd = diag(sys)
 %>      subplot(1,2,1); spy(sys.A); title('Sparsity pattern of A');
 %>      subplot(1,2,2); spy(Ad); title('Sparsity pattern of Ad');
 %
-%       DIAG also supports SIMO, MISO and MIMO systems:
+%       DIAG also supports SIMO, MISO and MIMO systems as well as DSS systems:
 % 
 %>      load PEEC_MTLn1600.mat
 %>      sys = sss(A,B,C,zeros(14,14),E)
