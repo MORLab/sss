@@ -48,7 +48,8 @@ function sysd = diag(sys)
 %       DIAG also supports SIMO, MISO and MIMO systems as well as DSS systems:
 % 
 %>      load PEEC_MTLn1600.mat
-%>      sys = sss(A,B,C,zeros(14,14),E)
+%>      p = size(C,1); m = size(B,2);
+%>      sys = sss(A,B,C,zeros(p,m),E)
 %>      sysd = diag(sys)
 %>      [Ad,Bd,Cd,Dd] = ssdata(sysd);
 %
