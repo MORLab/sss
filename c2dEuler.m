@@ -1,4 +1,4 @@
-function sys = c2d_Euler(sys,Ts,method)
+function sys = c2dEuler(sys,Ts,method)
 % Converts a sss object from continues to discrete using forward Euler
 % scheme
 % ------------------------------------------------------------------
