@@ -320,10 +320,10 @@ classdef sss
         end
         
         % Return system matrices
-        function [A,B,C,D,E] = dssdata(sys)
-            A=sys.A; B=sys.B; C=sys.C; D=sys.D; E=sys.E;
+        function [A,B,C,D,E,Ts] = dssdata(sys)
+            A=sys.A; B=sys.B; C=sys.C; D=sys.D; E=sys.E; Ts=sys.Ts;
         end
-        function [A,B,C,D] = ssdata(sys); [A,B,C,D,~] = dssdata(sys); end
+        function [A,B,C,D,Ts] = ssdata(sys); [A,B,C,D,~,Ts]=dssdata(sys); end
         
         %% Overload Brackets sys.([],[]) to select I/O channels
         function [varargout] = subsref(sys, arg)
