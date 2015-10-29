@@ -26,7 +26,7 @@ if ~any(cellfun(@(x) strcmp('',x),sys.u))
 else
     warning('InputName of sys is not specifing. Ignoring InputName definition in iddata')
 end
-[A,B,C,D,E] = ABCDE(sys);
+[A,B,C,D,E] = dssdata(sys);
 
 x = sys.x0;
 u = data.u;

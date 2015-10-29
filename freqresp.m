@@ -15,7 +15,7 @@ function G = freqresp(sys, s, varargin)
 %              Lisa Jeschek
 % ------------------------------------------------------------------
 
-[A,B,C,D,E] = ABCDE(sys);
+[A,B,C,D,E] = dssdata(sys);
 m=sys.m; p=sys.p; n=sys.n;
 
 G=zeros(p,m,length(s));
