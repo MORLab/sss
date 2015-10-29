@@ -1,4 +1,4 @@
-function [A,B,C,D,E,Ts] = sssData(sys)
+function [A,B,C,D,E,Ts] = sssdata(sys)
 % SSSDATA - Returns all system matrices of an sparse state-space model 
 %
 % Syntax:
@@ -10,11 +10,12 @@ function [A,B,C,D,E,Ts] = sssData(sys)
 %
 %
 % Outputs:
-%       -A: system matrix of the sss-object
-%       -B: input matrix of the sss-object
-%       -C: output matrix of the sss-object
-%       -D: feedthrough matrix of the sss-object
-%       -E: descriptor matrix of the sss-object
+%       -A:  system matrix of the sss-object
+%       -B:  input matrix of the sss-object
+%       -C:  output matrix of the sss-object
+%       -D:  feedthrough matrix of the sss-object
+%       -E:  descriptor matrix of the sss-object
+%       -Ts: sample time  
 %
 %
 % Description:
@@ -27,7 +28,7 @@ function [A,B,C,D,E,Ts] = sssData(sys)
 % 
 % 
 % See also:
-%       sss
+%       dssdata, ssdata, sss
 %
 %
 %------------------------------------------------------------------
