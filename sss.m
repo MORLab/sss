@@ -313,15 +313,17 @@ classdef sss
             isDescriptor = logical(full(any(any(sys.E-speye(size(sys.E))))));
         end
         
-        function [A,B,C,D,E] = ABCDE(sys) % returns system matrices
-            A=sys.A; B=sys.B; C=sys.C; D=sys.D; E=sys.E;
-        end
-        
         function sys = resolveDescriptor(sys)
             sys.A = sys.E\sys.A;
             sys.B = sys.E\sys.B;
             sys.E = [];
         end
+        
+        % Return system matrices
+        function [A,B,C,D,E] = dssdata(sys)
+            A=sys.A; B=sys.B; C=sys.C; D=sys.D; E=sys.E;
+        end
+        function [A,B,C,D] = ssdata(sys); [A,B,C,D,~] = dssdata(sys); end
         
         %% Overload Brackets sys.([],[]) to select I/O channels
         function [varargout] = subsref(sys, arg)
