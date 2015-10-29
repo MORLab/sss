@@ -53,5 +53,3 @@ function [A,B,C,D,E,Ts] = sssdata(sys)
 A = sys.a; B = sys.b; C = sys.C; D = sys.D; E = sys.e;
 
 Ts = sys.Ts;
-
-
