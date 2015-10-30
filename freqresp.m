@@ -78,7 +78,7 @@ elseif any(any(cellfun(@abs,dc)<1e-14))   % transfer zero at s=0
     wmin = 0;   %***
     dc = num2cell(ones(size(dc)));
 else
-    wmin=0; t = freqrespCell(sys, 10^wmin);
+    wmin=0; t = freqrespCell(sys, -1i*10^wmin);
     while cellfun(@(x,y) norm(x-y)/norm(y),t,dc) > 1e-2
         wmin=wmin-1; t = freqrespCell(sys, 10^wmin);
     end
@@ -89,7 +89,7 @@ else
 end
 
 %determine maximum frequency
-wmax=0; t = freqrespCell(sys, 10^wmax);
+wmax=0; t = freqrespCell(sys, -1i*10^wmax);
 while cellfun(@(x,y,z) norm(x-y)/norm(z),t,ft,dc) > 1e-6
     wmax=wmax+1; t = freqrespCell(sys, 10^wmax);
 end
