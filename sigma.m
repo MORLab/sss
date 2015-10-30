@@ -53,24 +53,24 @@ if exist('omega', 'var') && ~isempty(omega)
     if size(omega,1)>1
         omega=transpose(omega);
     end
-    m = freqresp(sys, 1j*abs(omega));
+    m = freqrespCell(sys, abs(omega));
 else
     % --------- frequency values need to be chosen ---------
-    dc = freqresp(sys,0);    % G(0)=DCgain
-    ft = freqresp(sys,inf);  % G(inf)=feedthrough
-    mx = {cellfun(@(x,y,z) max([norm(x),norm(y),norm(z),1e-8]), dc, ft, freqresp(sys,1i))};
+    dc = freqrespCell(sys,0);    % G(0)=DCgain
+    ft = freqrespCell(sys,inf);  % G(inf)=feedthrough
+    mx = {cellfun(@(x,y,z) max([norm(x),norm(y),norm(z),1e-8]), dc, ft, freqrespCell(sys,1))};
   
     
     wmax = round(log10(abs(eigs(sys.A,sys.E,1,'LM',struct('tol', 1e-4)))));
     
     %determine maximum frequency
-    t = freqresp(sys, 10^wmax);
+    t = freqrespCell(sys, -1i*10^wmax);
     while cellfun(@(x,y,z) min([norm(x-y) norm(x)])/norm(z),t,ft,mx) > 1e-3
-        wmax=wmax+1; t = freqresp(sys, 1i*10^wmax);
+        wmax=wmax+1; t = freqrespCell(sys, 10^wmax);
         mx = {cellfun(@(x,y) max([norm(x),norm(y)]), t, mx)};
     end
     while cellfun(@(x,y,z) min([norm(x-y) norm(x)])/norm(z),t,ft,mx) < 1e-3
-        wmax=wmax-1; t = freqresp(sys, 1i*10^wmax);
+        wmax=wmax-1; t = freqrespCell(sys, 10^wmax);
         mx = {cellfun(@(x,y) max([norm(x),norm(y)]), t, mx)};
     end
     wmax=wmax+1;
@@ -82,26 +82,26 @@ else
 %         dc = num2cell(ones(size(dc)));
     elseif any(any(cellfun(@abs,dc)<1e-10))   % transfer zero at s=0
         wmin = round(log10(abs(eigs(sys.A,sys.E,1,'SM',struct('tol', 1e-4)))));
-        t = freqresp(sys, 10^wmin);  %***
+        t = freqrespCell(sys, 10^wmin);  %***
         while cellfun(@(x,y,z) min([norm(x-y) norm(x)])/norm(z),t,dc,mx) > 1e-4
-            wmin=wmin-1; t = freqresp(sys, 1i*10^wmin);
+            wmin=wmin-1; t = freqrespCell(sys, 10^wmin);
             mx = {cellfun(@(x,y) max([norm(x),norm(y)]), t, mx)};
         end
         while cellfun(@(x,y,z) min([norm(x-y) norm(x)])/norm(z),t,dc,mx) < 1e-4
-            wmin=wmin+1; t = freqresp(sys, 1i*10^wmin);
+            wmin=wmin+1; t = freqrespCell(sys, 10^wmin);
             mx = {cellfun(@(x,y) max([norm(x),norm(y)]), t, mx)};
         end
 %         wmin=wmin-1;
 %         dc = num2cell(zeros(size(dc)));
     else
         wmin = round(log10(abs(eigs(sys.A,sys.E,1,'SM',struct('tol', 1e-4)))));
-        t = freqresp(sys, 10^wmin);
+        t = freqrespCell(sys, -1i*10^wmin);
         while cellfun(@(x,y,z) min([norm(x-y) norm(x)])/norm(z),t,dc,mx) > 1e-2
-            wmin=wmin-1; t = freqresp(sys, 1i*10^wmin);
+            wmin=wmin-1; t = freqrespCell(sys, 10^wmin);
             mx = {cellfun(@(x,y) max([norm(x),norm(y)]), t, mx)};
         end
         while cellfun(@(x,y,z) min([norm(x-y) norm(x)])/norm(z),t,dc,mx) < 1e-2
-            wmin=wmin+1; t = freqresp(sys, 1i*10^wmin);
+            wmin=wmin+1; t = freqrespCell(sys, 10^wmin);
             mx = {cellfun(@(x,y) max([norm(x),norm(y)]), t, mx)};
         end
         wmin=wmin-1;
@@ -110,7 +110,7 @@ else
 
     delta = (wmax-wmin)/39; % initial resolution (insert odd number only!)
     omega = 10.^(wmin:delta:wmax);
-    m = freqresp(sys, 1i* omega);
+    m = freqrespCell(sys, omega);
     
     idx = 2:(length(omega)-1);
     while(1)
@@ -125,7 +125,7 @@ else
         if isempty(newomega), break, end
 
         % calculate new values of frequency response
-        temp=freqresp(sys, 1i*newomega);
+        temp=freqrespCell(sys, newomega);
         
 %         loglog(abs(omega),abs(m{:}), '.')
 %         hold on
@@ -227,4 +227,11 @@ h= plot_handles;
 if nargout==0
     clear mag phase w
 end
+end
 
+function [m, omega] = freqrespCell(varargin)
+[m, omega] = freqresp(varargin{:});
+warning('off', 'MATLAB:mat2cell:TrailingUnityVectorArgRemoved');
+m = mat2cell(m,ones(size(m,1),1),ones(size(m,2),1),size(m,3));
+m = cellfun(@(x) x(:,:),m, 'UniformOutput', false);
+end
