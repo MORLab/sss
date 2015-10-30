@@ -26,7 +26,7 @@ else
     [~,omega,sys] = getFreqRange(sys);
 end
 
-% iterate over systems in varargin
+% TODO: iterate over systems in varargin
 
 if (sys.Ts==0) % Convert frequency to either laplace or z variable
     s = 1i* omega;

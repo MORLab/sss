@@ -21,6 +21,7 @@ function  [varargout] = bode(varargin)
 
 % --------------- EVALUATE OPTIONS ---------------
 omegaIndex = cellfun(@isfloat,varargin);
+omega = [];
 if ~isempty(omegaIndex) && nnz(omegaIndex)
     omega = varargin{omegaIndex};
     varargin{omegaIndex}=[];
@@ -32,11 +33,9 @@ for i = 1:length(varargin)
     end
 end
 
-% --------------- CALCULATE FREQUENCY RESPONSE ---------------
 for i = 1:length(varargin)
     if isa(varargin{i},'sss')
-        if exist('omega', 'var') && ~isempty(omega)
-            % --------- frequency range values given ---------
+        if ~isempty(omega)
             m = freqresp(varargin{i},omega);
         else
             [m, omega] = freqresp(varargin{i});
