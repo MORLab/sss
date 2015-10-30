@@ -67,6 +67,7 @@ classdef sss
         isDae
         isDescriptor
         u,y
+        isBig
     end
     properties(Hidden)
         poles, residues, invariantZeros
@@ -285,21 +286,12 @@ classdef sss
         function sys = set.e(sys, e); sys.E = e; end
         
         %% Get helper functions
-        function isSiso = get.isSiso(sys)
-            isSiso = (sys.p==1)&&(sys.m==1);
-        end
+        function isSiso = get.isSiso(sys); isSiso=(sys.p==1)&&(sys.m==1); end
+        function isSimo = get.isSimo(sys); isSimo=(sys.p>1)&&(sys.m==1); end
+        function isMiso = get.isMiso(sys); isMiso=(sys.p==1)&&(sys.m>1); end
+        function isMimo = get.isMimo(sys); isMimo=(sys.p>1)||(sys.m>1); end
         
-        function isSimo = get.isSimo(sys)
-            isSimo = (sys.p>1)&&(sys.m==1);
-        end
-        
-        function isMiso = get.isMiso(sys)
-            isMiso = (sys.p==1)&&(sys.m>1);
-        end
-        
-        function isMimo = get.isMimo(sys)
-            isMimo = (sys.p>1)||(sys.m>1);
-        end
+        function isBig = get.isBig(sys); isBig=(sys.n>5000);end
         
         function isDae = get.isDae(sys)
             if condest(sys.E)==Inf
