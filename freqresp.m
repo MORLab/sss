@@ -1,4 +1,4 @@
-function [G, omega, sys] = freqresp(sys, varargin)
+function [G, omega, sys] = freqresp(varargin)
 % Evaluates complex transfer function of LTI systems
 % ------------------------------------------------------------------
 % G = freqresp(sys, s, varargin)
@@ -15,18 +15,15 @@ function [G, omega, sys] = freqresp(sys, varargin)
 %              Lisa Jeschek
 % ------------------------------------------------------------------
 
-[A,B,C,D,E] = dssdata(sys);
-m=sys.m; p=sys.p; n=sys.n;
+sys= varargin{1};
 
 omegaIndex = cellfun(@isfloat,varargin);
 if ~isempty(omegaIndex) && nnz(omegaIndex)
     omega = varargin{omegaIndex};
-    varargin{omegaIndex}=[];
+    varargin(omegaIndex)=[];
 else
     [~,omega,sys] = getFreqRange(sys);
 end
-
-% TODO: iterate over systems in varargin
 
 if (sys.Ts==0) % Convert frequency to either laplace or z variable
     s = 1i* omega;
@@ -34,14 +31,19 @@ else
     s = exp(1i* omega*sys.Ts);
 end
 
-G=zeros(p,m,length(s));
-if not(sys.isBig)
-    for i=1:length(s)
-        G(:,:,i) = freqresp_local(A,B,C,D,E, s(i),n);
-    end
-else
-    parfor i=1:length(s)
-        G(:,:,i) = freqresp_local(A,B,C,D,E, s(i),n);
+for ii=1:length(varargin)
+    sys= varargin{ii};
+    m=sys.m; p=sys.p; n=sys.n;
+    [A,B,C,D,E] = dssdata(sys);
+    G=zeros(p,m,length(s));
+    if not(sys.isBig)
+        for i=1:length(s)
+            G(:,:,i) = freqresp_local(A,B,C,D,E, s(i),n);
+        end
+    else
+        parfor i=1:length(s)
+            G(:,:,i) = freqresp_local(A,B,C,D,E, s(i),n);
+        end
     end
 end
 end
