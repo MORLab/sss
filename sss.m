@@ -1,4 +1,4 @@
-classdef sss 
+classdef sss
     % Sparse state space LTI system (sss) class
     % ------------------------------------------------------------------
     % This file is part of the MORLAB_GUI, a Model Order Reduction and
@@ -42,32 +42,25 @@ classdef sss
     %
     % You should have received a copy of the GNU General Public License
     % along with this program; if not, write to the Free Software
-    % Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
+    % Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
     % MA  02110-1301, USA.
     
     properties
-        A,B,C,D,E,x0;
-        Ts;
-        InputName; StateName; OutputName;
-        InputDelay; InternalDelay; OutputDelay;
-        
-        InputGroup; StateGroup; OutputGroup;
-        UserData;
-        Name;
+        A,B,C,D,E,x0,Ts
+        InputName, StateName, OutputName
+        InputGroup, StateGroup, OutputGroup
+        InputDelay, InternalDelay, OutputDelay
+        UserData
+        Name
     end
     properties(Dependent)
     end
     properties(Dependent, Hidden)
         a,b,c,d,e
         n,p,m
-        isSiso
-        isSimo
-        isMiso
-        isMimo
-        isDae
-        isDescriptor
+        isSiso, isSimo, isMiso, isMimo, isBig
+        isDae, isDescriptor
         u,y
-        isBig
     end
     properties(Hidden)
         poles, residues, invariantZeros
@@ -82,7 +75,6 @@ classdef sss
         ObsGram, ObsGramChol
         
         simulationTime
-        
         decayTime
         
         morInfo
@@ -256,7 +248,7 @@ classdef sss
             end
             sys.poles=[];
         end
-
+        
         function sys = set.x0(sys, x0)
             if (~isempty(x0)) && (any(size(x0) ~= [sys.n,1]))
                 error('A and x0 must have the same number of rows.')
@@ -440,7 +432,7 @@ classdef sss
         sys = connect_sss(sys, K)
     end
     
-    methods(Static)        
+    methods(Static)
         [y,x_,index] = simBackwardEuler(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
         [y,x_,index] = simDiscrete(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
         [y,x_,index] = simForwardEuler(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
