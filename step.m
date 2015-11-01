@@ -13,7 +13,8 @@ function  [h, t] = step(sys, varargin)
 % For updates and further information please visit www.rt.mw.tum.de
 % ------------------------------------------------------------------
 % Authors:      Heiko Panzer (heiko@mytum.de), Sylvia Cremer
-% Last Change:  07 Feb 2011
+%               Jorge Luiz Moreira Silva
+% Last Change:  29 Out 2015
 % ------------------------------------------------------------------
 
 % are poles and residues already available?
@@ -44,10 +45,10 @@ else
     % no, retrieve time values automatically
     
     % is decay_time already available?
-    if ~isempty(sys.decay_time)
-        tmax = sys.decay_time;
+    if ~isempty(sys.decayTime)
+        tmax = sys.decayTime;
     else
-        tmax = decay_time(sys);
+        tmax = decayTime(sys);
         % store system to caller workspace
         if inputname(1)
             assignin('caller', inputname(1), sys);
@@ -55,6 +56,21 @@ else
     end
     delta = tmax/999;
     t = 0:delta:tmax;
+    
+    % Change the format of res to work with the following code
+    %   original: res = {res1, res2,... resN} where resK = res(p(k)) is the
+    %           (possibly matrix-valued) residual to p(k)
+    %   new     : res = cell(sys.p,sys.m), where res{i,j} is a vector of
+    %           scalar residual: res{i,j} = [res{i,j}1, ..., res{i,j}N]
+    resOld = res; clear res; res = cell(sys.p,sys.m);
+    for iOut = 1:sys.p
+        for jIn = 1:sys.m
+            res{iOut,jIn} = [];
+            for kPole = 1:length(p)
+                res{iOut,jIn} = [res{iOut,jIn}, resOld{kPole}(iOut,jIn)];
+            end
+        end
+    end
 
     % calculate step response
     h=cellfun(@(x,y) sum(diag(x./p)*transpose(exp(t'*p)-1),1)+y,res,num2cell(sys.D),'UniformOutput',false);
@@ -64,9 +80,9 @@ else
     ex=1;
     while 1
         refine=0;
-        for i=1:sys.p
-            for j=1:sys.m
-                m=h{i,j};
+        for iOut=1:sys.p
+            for jIn=1:sys.m
+                m=h{iOut,jIn};
                 for k=2:length(m)-1
                     if abs(abs(m(k)) - abs(m(k+1)))/(abs(m(k)) + abs(m(k+1))) > 0.5
                         delta=delta/2;
@@ -113,44 +129,55 @@ if isempty(options)
 end
 
 axes_handle=zeros(sys.p,sys.m);
-for i=1:sys.p
-    for j=1:sys.m
-        axes_handle(i,j)=subplot(sys.p,sys.m,(j-1)*sys.p+i);
+
+maxOutput=max(cellfun(@max,h),[],2);
+minOutput=min(cellfun(@min,h),[],2);
+deltaOutput=0.2*(maxOutput-minOutput);
+orderMagnitude=floor(log10(deltaOutput));
+
+heightAxis=round(deltaOutput.*10.^(-orderMagnitude),1).*10.^orderMagnitude;
+minOutputAxis=minOutput-heightAxis/2;
+maxOutputAxis=maxOutput+heightAxis/2;
+
+minOutputAxis(minOutput>0&minOutputAxis<=0)=0;
+maxOutputAxis(maxOutput<0&maxOutputAxis>=0)=0;
+
+
+for iOut=1:sys.p
+    for jIn=1:sys.m
+        axes_handle(iOut,jIn)=subplot(sys.p,sys.m,(iOut-1)*sys.m+jIn);
         hold on;
 
-        if j==1 && sys.p>1
-            y_lab=sprintf('To Out(%i)',ceil(i/2));
-            ylabel(y_lab)
+        if jIn==1 && sys.p>1
+            y_lab=sprintf('To Out(%i)',ceil(iOut/2));
+            ylabel(y_lab,'FontSize',10,'FontName','Helvetica','Color',[0.31,0.31,0.31],...
+            'FontWeight','normal','FontSmoothing','on','FontAngle','normal');
         end
-        if i==1 && sys.m>1
-            x_lab=sprintf('From In(%i)',j);
-            title(x_lab)
+        if iOut==1 && sys.m>1
+            x_lab=sprintf('From In(%i)',jIn);
+            title(x_lab,'FontSize',10,'FontName','Helvetica','Color',[0.31,0.31,0.31],...
+            'FontWeight','normal','FontSmoothing','on','FontAngle','normal');
+        end
+        if jIn==1 &&(iOut==sys.p)
+            %do nothing
+        elseif iOut==sys.p
+            set(gca,'ytick',[])
+        elseif jIn==1
+            set(gca,'xtick',[])
+        else
+            set(gca,'xtick',[],'ytick',[])
         end
 
-        plot(t, h{i,j}, options{:});
-        mx=max(h{i,j}); mn=min(h{i,j});
-        set(gca, 'XLim', [0 max(t)], 'YLim', [mn-(mx-mn)/20, mx+(mx-mn)/20]);
-        
-        ylabel('Step response g(t)') 
-        xlabel('Time t') 
-        
+        plot(t, h{iOut,jIn}, options{:});
+        hold on
+        plot([0,max(t)],[h{iOut,jIn}(end),h{iOut,jIn}(end)],':','Color',[0.31 0.31 0.31]);
+        axis([0,max(t),minOutputAxis(iOut),maxOutputAxis(iOut)]);
     end
 end
-% set(gcf,'UserData',axes_handle)
-% h1=axes('position',[0,0,1,1],'Visible','off');
-% text(0.4,0.98,'Step Response');
-% text(0.5,0.02,'Time [s]')
-% text(0.01,0.5,'Amplitude','Rotation',90)
-% set(h1,'HandleVisibility','off')
-% hold on
-% for i=1:size(axes_handle,1)
-%     for j=1:size(axes_handle,2)
-%         axes(axes_handle(i,j))
-%     end
-% end
+axes('Position',[0 0 1 1],'Visible','off');
+text(0.5,.99,'Step Response','FontName','Helvetica','FontSize',11,'FontWeight','bold','HorizontalAlignment','center','VerticalAlignment','cap');
+text(0.5,0.01,'Time (seconds)','FontName','Helvetica','FontSize',11,'FontWeight','normal','HorizontalAlignment','center','VerticalAlignment','bottom');
+h=text(0.01,0.5,'Amplitude','FontName','Helvetica','FontSize',11,'FontWeight','normal','rotation',90);
+set(h,'HorizontalAlignment','center','VerticalAlignment','top');
 
-% avoid output
 clear h t
-
-
-    

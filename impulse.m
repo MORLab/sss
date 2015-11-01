@@ -43,9 +43,9 @@ if exist('t', 'var') && ~isempty(t)
 else
     % no, retrieve time values automatically
     
-    % is decay_time already available?
-    if ~isempty(sys.decay_time)
-        tmax = sys.decay_time;
+    % is decayTime already available?
+    if ~isempty(sys.decayTime)
+        tmax = sys.decayTime;
     else
         tmax = decay_time(sys);
         % store system to caller workspace

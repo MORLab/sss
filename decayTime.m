@@ -1,4 +1,4 @@
-function tmax = decay_time(sys)
+function tmax = decayTime(sys)
 % Computes the time period in which a sparse LTI system levels off
 % ------------------------------------------------------------------
 % tmax = decay_time(sys)
@@ -29,7 +29,10 @@ for i=1:sys.p
         % how much does each pole contribute to energy flow?
         h2=zeros(size(p));
         for k=1:length(p)
-            h2(k)=res{i,j}(k)*sum(res{i,j}./(-p(k)-p));
+            %we need the siso residual for all poles into on vector
+            resIJvec = zeros(1,length(p)); 
+            for l = 1:length(p), resIJvec(l) = res{l}(i,j);end
+            h2(k)=res{k}(i,j)*sum(resIJvec./(-p(k)-p));
         end
         
         [h2_sorted, I] = sort(real(h2));
@@ -49,6 +52,6 @@ end
 
 % store system to caller workspace
 if inputname(1)
-    sys.decay_time=tmax;
+    sys.decayTime=tmax;
     assignin('caller', inputname(1), sys);
 end

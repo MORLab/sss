@@ -1,18 +1,73 @@
 function [p, z] = pzmap(sys, varargin)
-% Computes the poles and zeros of an LTI system
+% PZMAP - Pole-zero plot of sparse state-space system
+%
+% Syntax:
+%       PZMAP(sys)
+%       PZMAP(sys, varargin)
+%       [p,z] = PZMAP(sys)
+%
+%
+% Description:
+%       pzmap(sys) creates a pole-zero plot of the continuous- or discrete-time 
+%       dynamic system model sys. For MIMO systems, pzmap plots the system poles
+%       and invariant zeros of each SISO model in an individual subplot. The poles 
+%       are plotted as x's and the invariant zeros are plotted as o's.
+%
+%       [p,z] = pzmap(sys) returns the system poles and invariant zeros in the column 
+%       vectors p and z. No plot is drawn on the screen.
+%
+%
+% Input Arguments:
+%       -sys:      an sss-object containing the LTI system
+%       -varargin: plot options. see <a href="matlab:help plot">PLOT</a>
+%
+%
+% Output Arguments:
+%       -p: vector containing poles 
+%       -z: vector containing invariant zeros
+%
+%
+% Examples:
+%       Create a random descriptor model (DSS, SISO) and compare the output
+%       of ss/pzmap and sss/pzmap:
+%
+%>      A = randn(500,500); B = randn(500,1); C = randn(1,500); D = zeros(1,1);
+%>      E = randn(500,500);
+%>      sys = dss(A,B,C,D,E);
+%>      sysSss = sss(sys);
+%>      figure; pzmap(sys);
+%>      figure; pzmap(sysSss);
+%
+%       Load the benchmark "PEEC_MTLn1600" (DSS,MIMO) and use pzmap:
+%
+%>      load PEEC_MTLn1600.mat
+%>      p = size(C,1); m = size(B,2);
+%>      sys = sss(A,B,C,zeros(p,m),E)
+%>      sysTrunc = sys(1:3,1:2);
+%>      figure; pzmap(sysTrunc);
+%
+%
+% See also:
+%       ss/pzmap
+%
+%
 % ------------------------------------------------------------------
-% [p, z] = pzmap(sys, varargin)
-% Inputs:       * sys: an sss-object containing the LTI system
-%    [optional] * plot options. see <a href="matlab:help plot">PLOT</a>
-% Outputs:      * p, z: vectors containing poles and zeros
+% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
+% Reduction and System Analysis Toolbox developed at the Chair of 
+% Automatic Control, Technische Universitaet Muenchen. For updates 
+% and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
 % ------------------------------------------------------------------
-% This file is part of the MORLAB_GUI, a Model Order Reduction and
-% System Analysis Toolbox developed at the
-% Institute of Automatic Control, Technische Universitaet Muenchen
-% For updates and further information please visit www.rt.mw.tum.de
-% ------------------------------------------------------------------
-% Authors:      Heiko Panzer (heiko@mytum.de), Sylvia Cremer
-% Last Change:  19 Jan 2012
+% Authors:      Heiko Panzer, Sylvia Cremer, Maria Cruz Varona
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  30 Oct 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
 % are poles already available?
@@ -20,7 +75,7 @@ if ~isempty(sys.poles)
     p=sys.poles;
 else
     % no, they are not. solve for eigenvalues of system
-    if sys.is_dae
+    if sys.isDescriptor
         p = 1./eig(full(sys.E), full(sys.A));
     else
         p = eig(full(sys.A));
@@ -38,8 +93,8 @@ else
 end
 
 % are zeros already available?
-if ~isempty(sys.invariant_zeros)
-    z=sys.invariant_zeros;
+if ~isempty(sys.invariantZeros)
+    z=sys.invariantZeros;
 else
     % no, they are not. solve for gen. eigenvalues of Rosenbrock matrix
     z = cell(sys.p,sys.m);
@@ -56,7 +111,7 @@ else
 
     % remove zeros at infinity
     z=cellfun(@(x) x(~isinf(x)), z, 'UniformOutput', false);
-    sys.invariant_zeros=z;
+    sys.invariantZeros=z;
     
     % store system in caller workspace
     if inputname(1)
@@ -71,7 +126,7 @@ end
 % --------------- PLOT ---------------
 
 options=varargin;
-fig_handle=gcf;
+fig_handle=gcf; %generate figure
 axes_handle=zeros(sys.p,sys.m);
 
 % set random color if figure is not empty
@@ -81,11 +136,11 @@ if isempty(options)
         options = {'Color', c};
     end
 end
-
-for i=1:sys.m
-    for j=1:sys.p
-        
-        axes_handle(i,j)=subplot(sys.p,sys.m,i*sys.p+j-1);
+% loop for plotting the pole-zero-maps
+for j=1:sys.p %secondly, go through all outputs
+    for i=1:sys.m %firstly, go through all inputs
+        %rows: outputs, columns: inputs    
+        axes_handle(j,i)=subplot(sys.p,sys.m,j*sys.m+i-sys.m);
         box on
         
         % plot o for zeros
@@ -105,16 +160,29 @@ for i=1:sys.m
             limy = [mni-(mxi-mni)/20 mxi+(mxi-mni)/20];
         elseif mni*mxi>0 
             limy = sort([0 1.05*max(abs([mni mxi]))]*sign(mni));
-        else
-            limy = [-1 1];
         end
+        if sys.Ts ~= 0 %adjust the y-axis so that the unitary circle is visible
+            if limy(1)>-1
+                limy(1) = -1;
+            end
+            if limy(2)<1
+                limy(2) = 1;
+            end
+        end
+        
         mnr=min(real([p;z{j,i}])); mxr=max(real([p;z{j,i}]));
         if mnr*mxr<0 
             limx = [mnr-(mxr-mnr)/20 mxr+(mxr-mnr)/20];
         elseif mnr*mxr>0
             limx = sort([0 1.05*max(abs([mnr mxr]))]*sign(mnr));
-        else
-            limx = [-1 1];
+        end
+        if sys.Ts ~= 0 %adjust the x-axis so that the unitary circle is visible
+            if limx(1)>-1
+                limx(1) = -1;
+            end
+            if limx(2)<1
+                limx(2) = 1;
+            end
         end
         
         % plot dashed axes through origin, remove legend entry
@@ -126,16 +194,22 @@ for i=1:sys.m
         hAnnotation = get(plot_handle,'Annotation');
         hLegendEntry = get(hAnnotation','LegendInformation');
         set(hLegendEntry,'IconDisplayStyle','off')
-        set(axes_handle(i,j), 'XLim', limx, 'YLim', limy);
+        set(axes_handle(j,i), 'XLim', limx, 'YLim', limy);
+        
+        if sys.Ts ~= 0 %plot unitary circle in case of discrete system
+            r=1; %radius
+            circlePoints=0:0.01:2*pi;
+            plot_handle=plot(r*cos(circlePoints),r*sin(circlePoints),':k');
+        end
 
         % label input / output number
-        if j==1 && sys.p>1
-            y_lab=sprintf('To Out(%i)',i);
-            ylabel(y_lab)
-        end
-        if i==1  && sys.m>1
-            x_lab=sprintf('From In(%i)',j);
+        if j==1 && sys.m>1
+            x_lab=sprintf('From In(%i)',i);
             title(x_lab)
+        end
+        if i==1 && sys.p>1
+            y_lab=sprintf('To Out(%i)',j);
+            ylabel(y_lab)
         end
     end
 end
@@ -156,8 +230,7 @@ end
 % end
 % set(fig_handle, 'CurrentAxes', axes_handle(1,1));
 
-
-% % make subplots content of the figure
+% make subplots content of the figure
 set(fig_handle,'UserData',axes_handle)
 
 % avoid output

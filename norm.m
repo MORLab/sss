@@ -1,51 +1,67 @@
 function [nrm, varargout] = norm(sys, varargin)
-
 % NORM - Computes the p-norm of an sss LTI system
+%
+% Syntax:
+%       nrm = NORM(sys)
+%       nrm = NORM (sys,inf)
+%       [nrm, H_inf_peakfreq] = NORM(sys, inf)
+%
+% Description:
+%       This function computes the p-norm of an LTI system given 
+%       as a sparse state-space (sss) object sys. The value of p can be 
+%       passed as a second optional argument to the function and is set to
+%       2 otherwise.
+%
+% Input Arguments:
+%       -sys: sss-object containing the LTI system
+%       [optional] -p: 2 for H_2-norm or inf for H_inf-norm
+%
+% Output Arguments:
+%       -nrm: value of norm
+%       -H_inf_peakfreq: peak frequency of magnitude of H_inf norm
 % ------------------------------------------------------------------
-% [nrm, H_inf_peakfreq] = NORM(sys, p)
-% Inputs:       * sys: an sss-object containing the LTI system
-%    [optional] * p: 2 for H_2-norm or inf for H_inf-norm
-% Outputs:      * nrm: value of norm
-%    [H_inf]    * H_inf_peakfreq: peak frequency of magnitude
-% ------------------------------------------------------------------
-% USAGE:  This function computes the p-norm of an LTI system given
-% as a sparse state-space (sss) object sys. The value of p can be 
-% passed as a second optional argument to the function and is set to
-% 2 otherwise.
 %
 % See also NORM, SSS, LYAPCHOL
 %
 % ------------------------------------------------------------------
 % REFERENCES:
 % [1] Antoulas (2005), Approximation of large-scale Dnymical Systems
-% ------------------------------------------------------------------
-% This file is part of sssMOR, a Sparse State Space, Model Order
-% Reduction and System Analysis Toolbox developed at the Institute 
-% of Automatic Control, Technische Universitaet Muenchen.
-% For updates and further information please visit www.rt.mw.tum.de
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
+% Reduction and System Analysis Toolbox developed at the Chair of 
+% Automatic Control, Technische Universitaet Muenchen. For updates 
+% and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % For any suggestions, submission and/or bug reports, mail us at
-%                      -> sssMOR@tum.de <-
-% ------------------------------------------------------------------
-% Authors:      Heiko Panzer (heiko@mytum.de), Sylvia Cremer, Rudy Eid
-%               Alessandro Castagnotto
-% Last Change:  11 Aug 2015
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
+% Authors:      Heiko Panzer, Sylvia Cremer, Rudy Eid
+%               Alessandro Castagnotto, Maria Cruz Varona
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  31 Oct 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
 p=2;    % default: H_2
 if nargin>1
-    if strcmp(class(varargin{1}), 'double')
+    if isa(varargin{1}, 'double')
         p=varargin{1};
-    end
-    if strcmp(varargin{1},'inf')
+    elseif strcmp(varargin{1},'inf')
         p=inf;
+    else
+        error('Input must be ''double''.');
     end
 end
 
 if isinf(p)
     % H_inf-norm
     if isempty(sys.H_inf_norm)
-        mag = sigma(sys); %#ok<NASGU>
+        mag = sigma(sys);
         if nargout>1
             varargout{1}=sys.H_inf_peakfreq;
         end
@@ -73,11 +89,7 @@ elseif p==2
             if isempty(sys.ConGram)
                 if isempty(sys.ObsGram)
                     % No, it is not. Solve Lyapunov equation.
-                    if sys.isdescriptor
-                        %mit E^-1 durchmultipliziert
-                    %     S = lyapchol(sys.A,sys.B,sys.E);
-                    %     R = lyapchol(transpose(E\A),C');
-                        %Zustandstrafo
+                    if sys.isDescriptor
                         try
                             try
                                 sys.ConGramChol = lyapchol(sys.A,sys.B,sys.E); % P=S'*S3
@@ -85,7 +97,7 @@ elseif p==2
                                 if ~isreal(nrm)
                                     error('Gramian must be positive definite');
                                 end
-                            catch ex3 %#ok<NASGU>
+                            catch ex3
                                 P = lyapchol(sys.A',sys.C',sys.E');
                                 nrm=norm(P*sys.B,'fro');
                             end
@@ -98,7 +110,7 @@ elseif p==2
                                     if ~isreal(nrm)
                                         error('Gramian must be positive definite');
                                     end
-                                catch ex3 %#ok<NASGU>
+                                catch ex3
                                     Y = lyap(sys.A', sys.C'*sys.C, [], sys.E');
                                     nrm=sqrt(trace(sys.B'*Y*sys.B));
                                 end
@@ -108,12 +120,10 @@ elseif p==2
                                 X = lyap(sys.E\sys.A, tmp*tmp');
                                 nrm=sqrt(trace(sys.C*X*sys.C'));
                             end
-                            
-%                             return
                         end
                     else
                         try
-                            sys.ConGramChol = lyapchol(sys.A,sys.B); % P = R'*R
+                            sys.ConGramChol = lyapchol(sys.A,sys.B);
                             nrm=norm(sys.ConGramChol*sys.C','fro');
                         catch ex
                             if strcmp(ex.identifier,'Control:foundation:LyapChol4');
@@ -140,8 +150,6 @@ elseif p==2
     else
         nrm=norm(sys.ConGramChol*sys.C','fro');
     end
-    % L=R'*R;
-    % nrm = sqrt(trace(sys.C*L*transpose(sys.C)));
     
     if imag(nrm)~=0
         nrm=Inf;
