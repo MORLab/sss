@@ -3,20 +3,44 @@ function [r,p,d] = residue(sys, Opts)
 % 
 % Syntax:
 %       RESIDUE(sys)
-%       [r,p,d] = RESIDUE(sys)
+%       [r] = RESIDUE(sys)
+%       [r,p] = RESIDUE (sys)
 %       [r,p,d] = RESIDUE(sys,Opts)
 %
+% Description:
+%       This function computes the pole/residual representation of a
+%       rational transfer function (SISO or MIMO). 
 %
-% Inputs:
+%       It can either return the residuals themselves, or the residual 
+%       directions (low rank factors), useful especially in the MIMO 
+%       setting.
+%
+%       The computation requires the complete eigendecomposition of the
+%       system, so for large scale problems it might take a while.
+%
+%       The output r is a cell array of residuals or residual directions
+%       depending on the option rType = {'res' (def), 'dir'}
+%       For rType = 'res' r is a cell array of dimension nx1 with the
+%       residual r{k} for each pole p(k)
+%       For rType = 'dir' r is a cell array of dimension 1x2 with the
+%       output residual matrix Chat = r{1} and the input residual matrix 
+%       Bhat = r{2}. The residues can be computed using 
+%       r{k} = Chat(:,k)*Bhat(k,:).
+%
+% Input Arguments:
 %		-sys: sss-object of the LTI system
-%       -Opts: Option structure
+%       -[optional] Opts: Options
+%           -rType: define the output format of the residue
+%               -rType='res' (standard): r is a cell array of dimension nx1 with the
+%               residual r{k} for each pole p(k)
+%               -rType='dir': r is a cell array of dimension 1x2 with the
+%               output residual matrix Chat = r{1} and the input residual matrix 
+%               Bhat = r{2}
 %
-%
-% Outputs:
-%       -r: cell of residuals (format depends on Otps.rType)
+% Output Arguments:
+%       -r: cell of residuals (format depends on Opts.rType)
 %       -p: eigenvalues
 %       -d: feedthrough
-%
 %
 % Examples:
 %		To compute the residuals of a SISO or MIMO system such that 
@@ -35,35 +59,11 @@ function [r,p,d] = residue(sys, Opts)
 %>      Opts.rType = 'dir';
 %>		[r,p,d] = residue(sys,Opts);
 %
-%
-% Description:
-%       This function computes the pole/residual representation of a
-%       rational transfer function (SISO and MIMO). 
-%
-%       It can either return the residuals themselves, or the residual 
-%       directions (low rank factors), useful especially in the MIMO 
-%       setting.
-%
-%       The computation requires the complete eigendecomposition of the
-%       system, so for large scale problems it might take a while.
-%
-%       The output r is a cell array of residuals or residual directions
-%       depending on the option rType = {'res' (def), 'dir'}
-%       For rType = 'res' r is a cell array of dimension nx1 with the
-%       residual r{k} for each pole p(k)
-%       For rType = 'dir' r is a cell array of dimension 1x2 with the
-%       output residual matrix Chat = r{1} and the input residual matrix 
-%       Bhat = r{2}. The residues can be computed using 
-%       r{k} = Chat(:,k)*Bhat(k,:).
-%
-%
 % See also: 
 %		sss, eig
 %
-%
 % References:
 %		* *[1] Bryson (1994)*, Control of Spacecraft and Aircraft
-%
 %
 %------------------------------------------------------------------
 %   This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 

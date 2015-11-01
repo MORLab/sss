@@ -1,33 +1,49 @@
 function [nrm, varargout] = norm(sys, varargin)
 % NORM - Computes the p-norm of an sss LTI system
+%
+% Syntax:
+%       nrm = NORM(sys)
+%       nrm = NORM (sys,inf)
+%       [nrm, H_inf_peakfreq] = NORM(sys, inf)
+%
+% Description:
+%       This function computes the p-norm of an LTI system given 
+%       as a sparse state-space (sss) object sys. The value of p can be 
+%       passed as a second optional argument to the function and is set to
+%       2 otherwise.
+%
+% Input Arguments:
+%       -sys: sss-object containing the LTI system
+%       [optional] -p: 2 for H_2-norm or inf for H_inf-norm
+%
+% Output Arguments:
+%       -nrm: value of norm
+%       -H_inf_peakfreq: peak frequency of magnitude of H_inf norm
 % ------------------------------------------------------------------
-% [nrm, H_inf_peakfreq] = NORM(sys, p)
-% Inputs:       * sys: an sss-object containing the LTI system
-%    [optional] * p: 2 for H_2-norm or inf for H_inf-norm
-% Outputs:      * nrm: value of norm
-%    [H_inf]    * H_inf_peakfreq: peak frequency of magnitude
-% ------------------------------------------------------------------
-% USAGE:  This function computes the p-norm of an LTI system given
-% as a sparse state-space (sss) object sys. The value of p can be 
-% passed as a second optional argument to the function and is set to
-% 2 otherwise.
 %
 % See also NORM, SSS, LYAPCHOL
 %
 % ------------------------------------------------------------------
 % REFERENCES:
 % [1] Antoulas (2005), Approximation of large-scale Dnymical Systems
-% ------------------------------------------------------------------
-% This file is part of sssMOR, a Sparse State Space, Model Order
-% Reduction and System Analysis Toolbox developed at the Institute 
-% of Automatic Control, Technische Universitaet Muenchen.
-% For updates and further information please visit www.rt.mw.tum.de
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
+% Reduction and System Analysis Toolbox developed at the Chair of 
+% Automatic Control, Technische Universitaet Muenchen. For updates 
+% and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % For any suggestions, submission and/or bug reports, mail us at
-%                      -> sssMOR@tum.de <-
-% ------------------------------------------------------------------
-% Authors:      Heiko Panzer (heiko@mytum.de), Sylvia Cremer, Rudy Eid
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
+% Authors:      Heiko Panzer, Sylvia Cremer, Rudy Eid
 %               Alessandro Castagnotto, Maria Cruz Varona
-% Last Change:  14 Oct 2015
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  31 Oct 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
