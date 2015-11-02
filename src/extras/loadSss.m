@@ -98,7 +98,6 @@ end
 
 %%  Create sss-object
 sys = sss(LoadData.A,LoadData.B,LoadData.C,LoadData.D,LoadData.E);
-LoadData = rmfield(LoadData,{'A','B','C','D','E'});
 
 %%  Store additional data into the sss object
 % TODO: change sss class to allow such attributes
@@ -110,6 +109,8 @@ LoadData = rmfield(LoadData,{'A','B','C','D','E'});
 % %   - S, R: sparse cholesky factors of the Gramian matrices
 % %   - lambda: all or some of the eigenvalues of the system
 % 
+% LoadData = rmfield(LoadData,{'A','B','C','D','E'});
+%
 % if ~isempty(fieldnames(LoadData))
 %     additionalFields = {'w','mag','ph','hsv','S','R','lambda'};
 %     for iFields = 1:length(additionalFields)

@@ -140,18 +140,6 @@ for i=1:sys.p
         
     end
 end
-% set(gcf,'UserData',axes_handle)
-% h1=axes('position',[0,0,1,1],'Visible','off');
-% text(0.4,0.98,'Impulse Response');
-% text(0.5,0.02,'Time [s]')
-% text(0.01,0.5,'Amplitude','Rotation',90)
-% set(h1,'HandleVisibility','off')
-% hold on
-% for i=1:size(axes_handle,1)
-%     for j=1:size(axes_handle,2)
-%         axes(axes_handle(i,j))
-%     end
-% end
 
 % avoid output
 clear h t

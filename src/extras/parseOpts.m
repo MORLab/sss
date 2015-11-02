@@ -1,6 +1,5 @@
 function Opts = parseOpts(Opts,Def)
-%PARSEOPTS Summary of this function goes here
-%   Detailed explanation goes here
+
 
 fnames = fieldnames(Def); %target field names
 
