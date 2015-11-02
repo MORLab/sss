@@ -37,9 +37,9 @@ function  [varargout] = bode(varargin)
 % References:
 %
 %------------------------------------------------------------------
-% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
-% Reduction and System Analysis Toolbox developed at the Chair of 
-% Automatic Control, Technische Universitaet Muenchen. For updates 
+% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order
+% Reduction and System Analysis Toolbox developed at the Chair of
+% Automatic Control, Technische Universitaet Muenchen. For updates
 % and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % For any suggestions, submission and/or bug reports, mail us at
 %                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
@@ -47,7 +47,7 @@ function  [varargout] = bode(varargin)
 % More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Heiko Panzer, Stefan Jaensch,Sylvia Cremer, 
+% Authors:      Heiko Panzer, Stefan Jaensch,Sylvia Cremer,
 %               Rudy Eid, Alessandro Castagnotto, Lisa Jeschek
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
@@ -56,51 +56,36 @@ function  [varargout] = bode(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
-
-% --------------- EVALUATE OPTIONS ---------------
-omegaIndex = cellfun(@isfloat,varargin);
 omega = [];
+omegaIndex = cellfun(@isfloat,varargin);
 if ~isempty(omegaIndex) && nnz(omegaIndex)
     omega = varargin{omegaIndex};
-    varargin{omegaIndex}=[];
+    varargin(omegaIndex)=[];
 end
 
 for i = 1:length(varargin)
-    if isa(varargin{i},'sss')
-        nSys=i;
-    end
-end
-
-for i = 1:length(varargin)
-    if isa(varargin{i},'sss')
-        if ~isempty(omega)
-            m = freqresp(varargin{i},omega);
-        else
-            [m, omega] = freqresp(varargin{i});
-        end
-        
-        if isempty(varargin{i}.Name)
+    % Set name to input variable name if not specified
+    if isprop(varargin{i},'Name')
+        if isempty(varargin{i}.Name) % Cascaded if is necessary && does not work
             varargin{i}.Name = inputname(i);
         end
-        
-        % store system in caller workspace
-        if inputname(1)
-            assignin('caller', inputname(i), varargin{i});
+    end
+    
+    % Convert sss to frequency response data model
+    if isa(varargin{i},'sss')
+        if isempty(omega)
+            [m, w] = freqresp(varargin{i});
+        else
+            [m, w] = freqresp(varargin{i},omega);
         end
         
-        % create frequency response data model
-        varargin{i} = frd(m,omega,varargin{i}.Ts,...
+        varargin{i} = frd(m,w,varargin{i}.Ts,...
             'InputName',varargin{i}.InputName,'OutputName',varargin{i}.OutputName,...
             'Name',varargin{i}.Name);
-        
-        % clear omega if input consists of more than one system without omega
-        if ~nnz(omegaIndex) && nSys>1
-            omega=[];
-        end
     end
 end
 
-% plot
+% Call ss/bode
 if nargout
     [varargout{1},varargout{2},varargout{3},varargout{4},varargout{5}] = bode(varargin{:});
 else
