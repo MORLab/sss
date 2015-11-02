@@ -79,6 +79,10 @@ for i = 1:length(varargin)
             [m, w] = freqresp(varargin{i},omega);
         end
         
+        %  remove frequencies at infinity to create frd object
+        k = find(isinf(w));
+        w(k) = []; m(:,:,k) = [];
+        
         varargin{i} = frd(m,w,varargin{i}.Ts,...
             'InputName',varargin{i}.InputName,'OutputName',varargin{i}.OutputName,...
             'Name',varargin{i}.Name);
