@@ -64,12 +64,6 @@ if ~isempty(omegaIndex) && nnz(omegaIndex)
     omega = varargin{omegaIndex};
     varargin{omegaIndex}=[];
 end
-if ischar(varargin{end}) && strcmp(varargin{end},'frd')
-    makeFrdData = true;
-    varargin{end} = [];
-else
-    makeFrdData = false;
-end
 
 for i = 1:length(varargin)
     if isa(varargin{i},'sss')
@@ -107,9 +101,7 @@ for i = 1:length(varargin)
 end
 
 % plot
-if nargout== 1 && makeFrdData
-    varargout{1} =  varargin{1};
-elseif nargout
+if nargout
     [varargout{1},varargout{2},varargout{3},varargout{4},varargout{5}] = bode(varargin{:});
 else
     bode(varargin{:});
