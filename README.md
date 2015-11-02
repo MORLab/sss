@@ -7,13 +7,11 @@ Working with large-scale dynamical systems has never been easier. All you need t
 
 and use all your favorite functions such as
 
-``
-bode(sys),
+``bode(sys),
 step(sys),
 norm(sys),
 sys = sys1 - sys2,
-...
-``
+...``
 
 and many more! 
 
@@ -31,6 +29,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 **Programmed and tested with: MATLAB R2015b**
+
 *Some functions require the Dynamic Systems Toolbox*
 
 **ACKNOWLEDGEMENTS**
@@ -42,7 +41,6 @@ The team of [Morembs](http://www.itm.uni-stuttgart.de/research/model_reduction/M
 We hope that you enjoy the the toolbox and would like to contribute by extending its capability. 
 To make sure that the developing does not get out of hand, we prepared a few guidelines that we ask you to follow. 
 
-[TOC]
 
 ### Folder structure
 The folder structure of the toolbox is as follows
@@ -59,3 +57,8 @@ The documentation for the toolbox is automatically generated from the function h
 The functions to publish the documentation are not included in the git repository as they belong to a third party.
 
 ### When should a method be added within the ``sss`` constructor or within the @sss folder?
+
+Following functions/methods shuld be included in the class definition (constructor)
+- set and get 
+- everthing that is small enough to fit in 5 lines (e.g. one if else end section plus assigments)
+
