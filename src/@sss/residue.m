@@ -47,33 +47,33 @@ function [r,p,d] = residue(sys, Opts)
 %//       G(s) = sum_i(r_i/(p_i+s) + d) 
 %       use
 %
-%>		load build; 
-%>		sys = sss(A,B,C);
-%>		[r,p,d] = residue(sys);
+%> load build; 
+%> sys = sss(A,B,C);
+%> [r,p,d] = residue(sys);
 %
 %       To get the residue directions instead of the residues, use the
 %       option Opts.rType = 'dir'
 %
-%>		load build; 
-%>		sys = sss(A,B,C);
-%>      Opts.rType = 'dir';
-%>		[r,p,d] = residue(sys,Opts);
+%> load build; 
+%> sys = sss(A,B,C);
+%> Opts.rType = 'dir';
+%> [r,p,d] = residue(sys,Opts);
 %
-% See also: 
+% See Also: 
 %		sss, eig
 %
 % References:
 %		* *[1] Bryson (1994)*, Control of Spacecraft and Aircraft
 %
 %------------------------------------------------------------------
-%   This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
-%   Reduction and System Analysis Toolbox developed at the Chair of 
-%   Automatic Control, Technische Universitaet Muenchen. For updates 
-%   and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
-%   For any suggestions, submission and/or bug reports, mail us at
-%                     -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
+% Reduction and System Analysis Toolbox developed at the Chair of 
+% Automatic Control, Technische Universitaet Muenchen. For updates 
+% and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
 %
-%   More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
 % Authors:      Heiko Panzer, Sylvia Cremer, Alessandro Castagnotto

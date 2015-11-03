@@ -6,7 +6,6 @@ function [p, z] = pzmap(sys, varargin)
 %       PZMAP(sys, varargin)
 %       [p,z] = PZMAP(sys)
 %
-%
 % Description:
 %       pzmap(sys) creates a pole-zero plot of the continuous- or discrete-time 
 %       dynamic system model sys. For MIMO systems, pzmap plots the system poles
@@ -16,42 +15,37 @@ function [p, z] = pzmap(sys, varargin)
 %       [p,z] = pzmap(sys) returns the system poles and invariant zeros in the column 
 %       vectors p and z. No plot is drawn on the screen.
 %
-%
 % Input Arguments:
 %       -sys:      an sss-object containing the LTI system
 %       -varargin: plot options. see <a href="matlab:help plot">PLOT</a>
-%
 %
 % Output Arguments:
 %       -p: vector containing poles 
 %       -z: vector containing invariant zeros
 %
-%
 % Examples:
 %       Create a random descriptor model (DSS, SISO) and compare the output
 %       of ss/pzmap and sss/pzmap:
 %
-%>      A = randn(500,500); B = randn(500,1); C = randn(1,500); D = zeros(1,1);
-%>      E = randn(500,500);
-%>      sys = dss(A,B,C,D,E);
-%>      sysSss = sss(sys);
-%>      figure; pzmap(sys);
-%>      figure; pzmap(sysSss);
+%> A = randn(500,500); B = randn(500,1); C = randn(1,500); D = zeros(1,1);
+%> E = randn(500,500);
+%> sys = dss(A,B,C,D,E);
+%> sysSss = sss(sys);
+%> figure; pzmap(sys);
+%> figure; pzmap(sysSss);
 %
 %       Load the benchmark "PEEC_MTLn1600" (DSS,MIMO) and use pzmap:
 %
-%>      load PEEC_MTLn1600.mat
-%>      p = size(C,1); m = size(B,2);
-%>      sys = sss(A,B,C,zeros(p,m),E)
-%>      sysTrunc = sys(1:3,1:2);
-%>      figure; pzmap(sysTrunc);
+%> load PEEC_MTLn1600.mat
+%> p = size(C,1); m = size(B,2);
+%> sys = sss(A,B,C,zeros(p,m),E)
+%> sysTrunc = sys(1:3,1:2);
+%> figure; pzmap(sysTrunc);
 %
-%
-% See also:
+% See Also:
 %       ss/pzmap
 %
-%
-% ------------------------------------------------------------------
+%------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
 % Reduction and System Analysis Toolbox developed at the Chair of 
 % Automatic Control, Technische Universitaet Muenchen. For updates 
@@ -61,7 +55,7 @@ function [p, z] = pzmap(sys, varargin)
 %
 % More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
 %
-% ------------------------------------------------------------------
+%------------------------------------------------------------------
 % Authors:      Heiko Panzer, Sylvia Cremer, Maria Cruz Varona
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>

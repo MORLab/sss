@@ -1,49 +1,84 @@
 classdef sss
-    % Sparse state space LTI system (sss) class
-    % ------------------------------------------------------------------
-    % This file is part of the MORLAB_GUI, a Model Order Reduction and
-    % System Analysis Toolbox developed at the
-    % Institute of Automatic Control, Technische Universitaet Muenchen
-    % For updates and further information please visit www.rt.mw.tum.de
-    % ------------------------------------------------------------------
-    % sys = sss(A,B,C,D,E,Ts);
-    % Input:        * A: system matrix
-    %               * B: input matrix
-    %               * C: output matrix
-    %               * D: static gain matrix
-    %               * E: descriptor matrix
-    %               * Ts: sampling time
-    % Output:       * sys: sparse state space (sss)-object
-    %
-    % sys = sss(sys_ss)
-    % Input:        * sys_ss: control system toolbox state space (ss)-object
-    % Output:       * sys: sparse state space (sss)-object
-    %
-    % sys = sss(D)
-    % Input:        * D: static gain matrix
-    % Output:       * sys: sparse state space (sss)-object
-    % ------------------------------------------------------------------
-    % Authors:      Heiko Panzer, Sylvia Cremer, Thomas Emmert (emmert@tfd.mw.tum.de)
-    %               Alessandro Castanotto, Maria Cruz Varona
-    % Last Change:  27 Oct 2015
-    % ------------------------------------------------------------------
-    % Copyright (C) 2015  Chair of Automatic Control
-    % http://www.rt.mw.tum.de/
-    %
-    % This program is free software; you can redistribute it and/or
-    % modify it under the terms of the GNU General Public License
-    % as published by the Free Software Foundation; either version 2
-    % of the License, or (at your option) any later version.
-    %
-    % This program is distributed in the hope that it will be useful,
-    % but WITHOUT ANY WARRANTY; without even the implied warranty of
-    % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    % GNU General Public License for more details.
-    %
-    % You should have received a copy of the GNU General Public License
-    % along with this program; if not, write to the Free Software
-    % Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-    % MA  02110-1301, USA.
+% SSS - Sparse state-space LTI system (sss) class
+%
+% Syntax:
+%       sys = SSS(A,B,C)
+%       sys = SSS(A,B,C,D,E)
+%       sys = SSS(A,B,C,D,E,Ts)
+%       sys = SSS(sys_ss)
+%       sys = SSS(D)
+%
+% Description:
+%       TODO
+%
+% Input Arguments:
+%       -A: system matrix
+%       -B: input matrix
+%       -C: output matrix
+%       -D: static gain matrix
+%       -E: descriptor matrix
+%       -Ts: sampling time
+%       -sys_ss: control system toolbox state-space (ss)-object
+%
+% Output Arguments:
+%       -sys: sparse state-space (sss)-object
+%
+% Examples:
+%       To create a sparse state-space model of the benchmark "build"
+%       (SISO) use:
+%
+%> load build.mat
+%> sys = sss(A,B,C)
+%> sysd = diag(sys)
+%> [Ad,Bd,Cd] = ssdata(sysd);
+%
+%       SSS also supports descriptor and DAE systems. To create a sparse
+%       state-space model of the benchmark "PEEC_MTLn1600" (DSSS, MIMO)
+%       use:
+% 
+%> load PEEC_MTLn1600.mat
+%> sys = sss(A,B,C,zeros(14,14),E)
+%
+% See Also: 
+%        ss, dss
+%
+% References:
+%		* *[1] Documentation of the Control System Toolbox from MATLAB
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
+% Reduction and System Analysis Toolbox developed at the Chair of 
+% Automatic Control, Technische Universitaet Muenchen. For updates 
+% and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
+% Authors:      Heiko Panzer, Sylvia Cremer, Thomas Emmert (emmert@tfd.mw.tum.de)
+%               Alessandro Castagnotto, Maria Cruz Varona
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  03 Nov 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
+%
+% This program is free software; you can redistribute it and/or
+% modify it under the terms of the GNU General Public License
+% as published by the Free Software Foundation; either version 2
+% of the License, or (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+% MA  02110-1301, USA.
     
     properties
         A,B,C,D,E,x0,Ts
@@ -386,7 +421,7 @@ classdef sss
     end
     
     methods(Static)
-        [y,x_,index] = simBackwardEuler(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
+        [y,x_,index] = simBackwardEuler(A,B,C,D,E,u,x,Ts,TsSample)
         [y,x_,index] = simDiscrete(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
         [y,x_,index] = simForwardEuler(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
         [y,x_,index] = simRK4(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
