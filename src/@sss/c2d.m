@@ -1,8 +1,7 @@
-function sys = c2dEuler(sys,Ts,method)
-% Converts a sss object from continues to discrete using forward Euler
-% scheme
+function sys = c2d(sys,Ts,method)
+% Converts a sss object from continues to discrete 
 % ------------------------------------------------------------------
-% [sys] = c2d_Euler(sys, Ts,method)
+% [sys] = c2d(sys, Ts,method)
 % Inputs:       * sys: continuous time sss-object
 %               * Ts: Sampling time
 %               * method: forward = explicit Euler (default)
