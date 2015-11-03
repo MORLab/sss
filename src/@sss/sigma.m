@@ -58,8 +58,9 @@ else
     % --------- frequency values need to be chosen ---------
     dc = freqrespCell(sys,0);    % G(0)=DCgain
     ft = freqrespCell(sys,inf);  % G(inf)=feedthrough
-    mx = {cellfun(@(x,y,z) max([norm(x),norm(y),norm(z),1e-8]), dc, ft, freqrespCell(sys,1))};
-  
+    mx = cellfun(@(x,y,z) max([norm(x),norm(y),norm(z),1e-8]), dc, ft, ...
+        freqrespCell(sys,1), 'UniformOutput',0);
+
     
     wmax = round(log10(abs(eigs(sys.A,sys.E,1,'LM',struct('tol', 1e-4)))));
     
@@ -67,11 +68,11 @@ else
     t = freqrespCell(sys, -1i*10^wmax);
     while cellfun(@(x,y,z) min([norm(x-y) norm(x)])/norm(z),t,ft,mx) > 1e-3
         wmax=wmax+1; t = freqrespCell(sys, 10^wmax);
-        mx = {cellfun(@(x,y) max([norm(x),norm(y)]), t, mx)};
+        mx = cellfun(@(x,y) max([norm(x),norm(y)]), t, mx,'UniformOutput',0);
     end
     while cellfun(@(x,y,z) min([norm(x-y) norm(x)])/norm(z),t,ft,mx) < 1e-3
         wmax=wmax-1; t = freqrespCell(sys, 10^wmax);
-        mx = {cellfun(@(x,y) max([norm(x),norm(y)]), t, mx)};
+        mx = cellfun(@(x,y) max([norm(x),norm(y)]), t, mx,'UniformOutput',0);
     end
     wmax=wmax+1;
     
@@ -85,11 +86,11 @@ else
         t = freqrespCell(sys, 10^wmin);  %***
         while cellfun(@(x,y,z) min([norm(x-y) norm(x)])/norm(z),t,dc,mx) > 1e-4
             wmin=wmin-1; t = freqrespCell(sys, 10^wmin);
-            mx = {cellfun(@(x,y) max([norm(x),norm(y)]), t, mx)};
+            mx = cellfun(@(x,y) max([norm(x),norm(y)]), t, mx,'UniformOutput',0);
         end
         while cellfun(@(x,y,z) min([norm(x-y) norm(x)])/norm(z),t,dc,mx) < 1e-4
             wmin=wmin+1; t = freqrespCell(sys, 10^wmin);
-            mx = {cellfun(@(x,y) max([norm(x),norm(y)]), t, mx)};
+            mx = cellfun(@(x,y) max([norm(x),norm(y)]), t, mx,'UniformOutput',0);
         end
 %         wmin=wmin-1;
 %         dc = num2cell(zeros(size(dc)));
@@ -98,11 +99,11 @@ else
         t = freqrespCell(sys, -1i*10^wmin);
         while cellfun(@(x,y,z) min([norm(x-y) norm(x)])/norm(z),t,dc,mx) > 1e-2
             wmin=wmin-1; t = freqrespCell(sys, 10^wmin);
-            mx = {cellfun(@(x,y) max([norm(x),norm(y)]), t, mx)};
+            mx = cellfun(@(x,y) max([norm(x),norm(y)]), t, mx,'UniformOutput',0);
         end
         while cellfun(@(x,y,z) min([norm(x-y) norm(x)])/norm(z),t,dc,mx) < 1e-2
             wmin=wmin+1; t = freqrespCell(sys, 10^wmin);
-            mx = {cellfun(@(x,y) max([norm(x),norm(y)]), t, mx)};
+            mx = cellfun(@(x,y) max([norm(x),norm(y)]), t, mx,'UniformOutput',0);
         end
         wmin=wmin-1;
     end
@@ -230,8 +231,8 @@ end
 end
 
 function [m, omega] = freqrespCell(varargin)
-[m, omega] = freqresp(varargin{:});
-warning('off', 'MATLAB:mat2cell:TrailingUnityVectorArgRemoved');
-m = mat2cell(m,ones(size(m,1),1),ones(size(m,2),1),size(m,3));
-m = cellfun(@(x) x(:,:),m, 'UniformOutput', false);
+    [m, omega] = freqresp(varargin{:});
+    warning('off', 'MATLAB:mat2cell:TrailingUnityVectorArgRemoved');
+    m = mat2cell(m,ones(size(m,1),1),ones(size(m,2),1),size(m,3));
+    m = cellfun(@(x) x(:,:),m, 'UniformOutput', false);
 end
