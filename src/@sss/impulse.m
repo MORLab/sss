@@ -55,6 +55,21 @@ else
     end
     delta = tmax/999;
     t = 0:delta:tmax;
+    
+    % Change the format of res to work with the following code
+    %   original: res = {res1, res2,... resN} where resK = res(p(k)) is the
+    %           (possibly matrix-valued) residual to p(k)
+    %   new     : res = cell(sys.p,sys.m), where res{i,j} is a vector of
+    %           scalar residual: res{i,j} = [res{i,j}1, ..., res{i,j}N]
+    resOld = res; clear res; res = cell(sys.p,sys.m);
+    for iOut = 1:sys.p
+        for jIn = 1:sys.m
+            res{iOut,jIn} = [];
+            for kPole = 1:length(p)
+                res{iOut,jIn} = [res{iOut,jIn}, resOld{kPole}(iOut,jIn)];
+            end
+        end
+    end
 
     % calculate impulse response
 %     cellfun(@(x) sum((diag(x)*conj(exp(t'*p))'),1),res,'UniformOutput',false);
@@ -65,9 +80,9 @@ else
     ex=1;
     while 1
         refine=0;
-        for i=1:sys.p
-            for j=1:sys.m
-                m=h{i,j};
+        for iOut=1:sys.p
+            for jIn=1:sys.m
+                m=h{iOut,jIn};
                 for k=2:length(m)-1
                     if abs(abs(m(k)) - abs(m(k+1)))/(abs(m(k)) + abs(m(k+1))) > 0.5
                         delta=delta/2;
@@ -114,32 +129,40 @@ if isempty(options)
 end
 
 axes_handle=zeros(sys.p,sys.m);
-for i=1:sys.p
-    for j=1:sys.m
-        axes_handle(i,j)=subplot(sys.p,sys.m,(j-1)*sys.p+i);
+for iOut=1:sys.p
+    for jIn=1:sys.m
+        axes_handle(iOut,jIn)=subplot(sys.p,sys.m,(jIn-1)*sys.p+iOut);
         hold on;
         
-        if j==1 && sys.p>1
-            y_lab=sprintf('To Out(%i)',ceil(i/2));
-            ylabel(y_lab)
+        if jIn==1 && sys.p>1
+            y_lab=sprintf('To Out(%i)',ceil(iOut/2));
+            ylabel(y_lab,'FontSize',10,'FontName','Helvetica','Color',[0.31,0.31,0.31],...
+            'FontWeight','normal','FontSmoothing','on','FontAngle','normal');
         end
-        if i==1 && sys.m>1
-            x_lab=sprintf('From In(%i)',j);
-            title(x_lab)
+        if iOut==1 && sys.m>1
+            x_lab=sprintf('From In(%i)',jIn);
+            title(x_lab,'FontSize',10,'FontName','Helvetica','Color',[0.31,0.31,0.31],...
+            'FontWeight','normal','FontSmoothing','on','FontAngle','normal');
         end
         
-        plot(t, h{i,j}, options{:});
-        mx=max(h{i,j}); mn=min(h{i,j});
+        plot(t, h{iOut,jIn}, options{:});
+        mx=max(h{iOut,jIn}); mn=min(h{iOut,jIn});
         if mx==0 && mn==0
             mx=1; mn=-1;
         end
         set(gca, 'XLim', [0 max(t)], 'YLim', [mn-(mx-mn)/20, mx+(mx-mn)/20]);
 
-        ylabel('Impulse response g(t)') 
-        xlabel('Time t') 
+%         ylabel('Amplitude') 
+%         xlabel('Time (seconds)') 
         
     end
 end
+
+axes('Position',[0 0 1 1],'Visible','off');
+text(0.5,.99,'Impulse Response','FontName','Helvetica','FontSize',11,'FontWeight','bold','HorizontalAlignment','center','VerticalAlignment','cap');
+text(0.5,0.01,'Time (seconds)','FontName','Helvetica','FontSize',11,'FontWeight','normal','HorizontalAlignment','center','VerticalAlignment','bottom');
+h=text(0.01,0.5,'Amplitude','FontName','Helvetica','FontSize',11,'FontWeight','normal','rotation',90);
+set(h,'HorizontalAlignment','center','VerticalAlignment','top');
 
 % avoid output
 clear h t
