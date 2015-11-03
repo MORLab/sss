@@ -18,7 +18,7 @@ function tmax = decayTime(sys)
 
 % is system stable?
 if any(real(p)>0)
-    % no -> tmax=NaN
+    % yes -> tmax=NaN
     tmax=NaN;
     return
 end
