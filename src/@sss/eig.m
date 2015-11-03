@@ -8,7 +8,6 @@ function varargout = eig(sys, varargin)
 %       [V,D,W] = EIG(sys)
 %       [V,D,W] = EIG(sys,varargin)
 %
-%
 % Description:
 %       e = eig(sys) returns a column vector e containing the eigenvalues of 
 %       the sparse state-space system sys. If sys is descriptor (sys.E ~= I, 
@@ -28,7 +27,6 @@ function varargout = eig(sys, varargin)
 % Input Arguments:
 %       -sys: an sss-object containing the LTI system
 %
-%
 % Output Arguments:
 %       -e: eigenvalues returned as column vector
 %       -V: right eigenvectors (square matrix)
@@ -38,23 +36,21 @@ function varargout = eig(sys, varargin)
 % Examples:
 %       Load the benchmark "build" (SSS,SISO) and compute the eigenvalues.
 %
-%>      load build.mat
-%>      sys = sss(A,B,C)
-%>      e = eig(sys);
+%> load build.mat
+%> sys = sss(A,B,C)
+%> e = eig(sys);
 %
 %       Load the benchmark "PEEC_MTLn1600" (DSS,MIMO) and compute the
 %       generalized eigenvalues as well as the right and left eigenvectors
 %       of the pair (sys.A,sys.E).
 %
-%>      load PEEC_MTLn1600.mat
-%>      p = size(C,1); m = size(B,2);
-%>      sys = sss(A,B,C,zeros(p,m),E)
-%>      [V,D,W] = eig(sys);
+%> load PEEC_MTLn1600.mat
+%> p = size(C,1); m = size(B,2);
+%> sys = sss(A,B,C,zeros(p,m),E)
+%> [V,D,W] = eig(sys);
 %
-%
-% See also:
+% See Also:
 %       ss/eig, eigs
-%
 %
 % ------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
@@ -67,7 +63,7 @@ function varargout = eig(sys, varargin)
 % More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
 %
 % ------------------------------------------------------------------
-% Authors:      Heiko K.F. Panzer, Thomas Emmert (emmert@tfd.mw.tum.de),
+% Authors:      Heiko Panzer, Thomas Emmert (emmert@tfd.mw.tum.de),
 %               Maria Cruz Varona
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
