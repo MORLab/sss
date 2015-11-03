@@ -51,7 +51,7 @@ p=2;    % default: H_2
 if nargin>1
     if isa(varargin{1}, 'double')
         p=varargin{1};
-    elseif strcmp(varargin{1},'inf')
+    elseif strcmpi(varargin{1},'inf')
         p=inf;
     else
         error('Input must be ''double''.');
