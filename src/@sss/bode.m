@@ -73,19 +73,7 @@ for i = 1:length(varargin)
     
     % Convert sss to frequency response data model
     if isa(varargin{i},'sss')
-        if isempty(omega)
-            [m, w] = freqresp(varargin{i});
-        else
-            [m, w] = freqresp(varargin{i},omega);
-        end
-        
-        %  remove frequencies at infinity to create frd object
-        k = find(isinf(w));
-        w(k) = []; m(:,:,k) = [];
-        
-        varargin{i} = frd(m,w,varargin{i}.Ts,...
-            'InputName',varargin{i}.InputName,'OutputName',varargin{i}.OutputName,...
-            'Name',varargin{i}.Name);
+        varargin{i} = getfrd(varargin{i}, omega);
     end
 end
 
@@ -95,4 +83,21 @@ if nargout
 else
     bode(varargin{:});
 end
+end
+
+function resp = getfrd(sys, omega)
+
+if not(exist('omega','var')) || isempty(omega)
+    [m, w] = freqresp(sys);
+else
+    [m, w] = freqresp(sys,omega);
+end
+
+%  remove frequencies at infinity to create frd object
+k = find(isinf(w));
+w(k) = []; m(:,:,k) = [];
+
+resp = frd(m,w,sys.Ts,...
+    'InputName',sys.InputName,'OutputName',sys.OutputName,...
+    'Name',sys.Name);
 end

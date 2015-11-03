@@ -76,7 +76,7 @@ function varargout = eig(sys, varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
-if sys.n>10000
+if sys.isBig
     warning(['System order is very large: ',num2str(sys.n),'. You may want to try eigs(sys) instead.'])
 end
 

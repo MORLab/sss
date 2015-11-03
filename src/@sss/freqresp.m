@@ -66,7 +66,7 @@ G = -C*x + D;
 end
 
 
-function [m,omega,sys] = getFreqRange(sys) %TODO: fix for Ts~=0
+function [m,omega,sys] = getFreqRange(sys)
 
 % --------- frequency range needs to be chosen ---------
 dc = freqrespCell(sys,0);    % G(0)=DCgain
@@ -114,7 +114,7 @@ while(1)
     if k==length(omega)-1
         break
     end
-    % do not refine above 2000 points
+    % do not refine above 1000 points
     if length(omega)>1000
         break
     end
