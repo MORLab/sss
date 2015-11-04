@@ -1,25 +1,67 @@
 function tmax = decayTime(sys)
-% Computes the time period in which a sparse LTI system levels off
-% ------------------------------------------------------------------
-% tmax = decay_time(sys)
-% Input:        * sys: an sss-object containing the LTI system
-% Output:       * tmax: time after which system has settled down
-% ------------------------------------------------------------------
-% This file is part of the MORLAB_GUI, a Model Order Reduction and
-% System Analysis Toolbox developed at the
-% Institute of Automatic Control, Technische Universitaet Muenchen
-% For updates and further information please visit www.rt.mw.tum.de
-% ------------------------------------------------------------------
-% Authors:      Heiko Panzer (heiko@mytum.de), Sylvia Cremer
-% Last Change:  28 Oct 2011
-% ------------------------------------------------------------------
+% DECAYTIME - Computes the time period in which a sparse LTI system levels off
+%
+% Syntax:
+%       DECAYTIME(sys)
+%       tmax = DECAYTIME(sys)
+%
+% Description:
+%       tmax = DECAYTIME(sys) computes the time tmax in which the sparse LTI
+%       system sys levels off. This is done by taking the slowest pole among
+%       the dominant ones and then by computing the time in which the
+%       slowest pole decays to 1% of its maximum amplitude.
+%
+%       If sys is not stable (i.e. there exists at least one pole whose
+%       real part is >0), then the decay time is set to tmax=NaN and a 
+%       warning is displayed.
+%
+% Input Arguments:
+%       -sys: an sss-object containing the LTI system
+%
+% Output Arguments:
+%       -tmax: time after which the system has settled down
+%
+% Examples:
+%       This code computes the decay time of the benchmark "build":
+%
+%> load build; 
+%> sys = sss(A,B,C);
+%> tmax = decayTime(sys);
+%
+%       For an unstable system one gets tmax=NaN:
+%
+%> sys = sss(1,1,1);
+%> tmax = decayTime(sys);
+%
+% See Also:
+%       sss/residue, sss/step, sss/impulse
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
+% Authors:      Heiko Panzer, Sylvia Cremer, Maria Cruz Varona
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  04 Nov 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
 
 [res,p]=residue(sys);
 
 % is system stable?
 if any(real(p)>0)
-    % yes -> tmax=NaN
+    % no -> tmax=NaN
     tmax=NaN;
+    warning('The system is not stable. The decay time is set to tmax=NaN.');
     return
 end
 
