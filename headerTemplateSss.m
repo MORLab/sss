@@ -105,10 +105,10 @@ function [output1,output2] = headerTemplateSss(input1,input2,varargin)
 %		* *[3] Giraud (2005)*, The loss of orthogonality in the Gram-Schmidt...
 %
 %------------------------------------------------------------------
-% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space
-% and System Analysis Toolbox developed at the Chair of Automatic Control in collaboration
-% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. For updates 
-% and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % For any suggestions, submission and/or bug reports, mail us at
 %                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
 %
