@@ -31,28 +31,37 @@ function  [varargout] = bode(varargin)
 %       - omega:     frequencies corresponding to the data
 %       - frdData:   a frd object with the frequency response data
 %
-% See also:
+% Examples:
+%		This code loads a benchmark model included in the toolbox
+%		and plots its bode diagram using the sparse state-space class:
+%
+%> load build; 
+%> sys = sss(A,B,C);
+%> bode(sys);
+%
+% See Also:
 %   freqresp
 %
 % References:
+%       ??
 %
 %------------------------------------------------------------------
-% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order
-% Reduction and System Analysis Toolbox developed at the Chair of
-% Automatic Control, Technische Universitaet Muenchen. For updates
-% and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % For any suggestions, submission and/or bug reports, mail us at
 %                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
 %
 % More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Heiko Panzer, Stefan Jaensch,Sylvia Cremer,
+% Authors:      Heiko Panzer, Stefan Jaensch, Sylvia Cremer,
 %               Rudy Eid, Alessandro Castagnotto, Lisa Jeschek
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  01 Nov 2015
+% Last Change:  04 Nov 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
