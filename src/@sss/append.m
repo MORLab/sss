@@ -1,20 +1,45 @@
 function sys = append(varargin)
-% Appends a set of sparse LTI system (sss) 
-% ------------------------------------------------------------------
-% This file is part of the MORLAB_GUI, a Model Order Reduction and
-% System Analysis Toolbox developed at the
-% Institute of Automatic Control, Technische Universitaet Muenchen
-% For updates and further information please visit www.rt.mw.tum.de
-% ------------------------------------------------------------------
-% sys = append(varargin)
-% Input:        * varargin: sparse state space (sss)-objects
-% Output:       * sys_S: appended (open loop) sparse state space 
-%                        (sss)-object
-% ------------------------------------------------------------------
+% APPEND - Appends a set of sparse LTI system (sss)
+%
+% Syntax:
+%       sys = APPEND(varargin)
+%
+% Description:
+%       TODO
+%
+% Input Arguments:
+%       -varargin: sparse state space (sss)-objects
+%
+% Output Arguments:
+%       -sys_S: appended (open loop) sparse state-space (sss)-object
+%
+% Examples:
+%       TODO
+%
+% See Also:
+%       sss/connect
+%
+% References:
+%       ??
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
 % Authors:      Thomas Emmert (emmert@tfd.mw.tum.de)
-% Last Change:  20 Feb 2015
-% ------------------------------------------------------------------
-% see also sss/connect
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  04 Nov 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
 
 sys = varargin{1};
 
