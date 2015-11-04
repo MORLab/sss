@@ -1,27 +1,50 @@
 function sys_S = connect(varargin)
-% Connects a set of sparse LTI system (sss) by evaluating the names
+% CONNECT - Connects a set of sparse LTI system (sss) by evaluating the names
 % of in- and outputs
-% ------------------------------------------------------------------
-% This file is part of the MORLAB_GUI, a Model Order Reduction and
-% System Analysis Toolbox developed at the
-% Institute of Automatic Control, Technische Universitaet Muenchen
-% For updates and further information please visit www.rt.mw.tum.de
-% ------------------------------------------------------------------
-% sys_S = connect(varargin);
-% Input:        * varargin: sparse state space (sss)-objects
-%               * varargin{end}: cell array of output names of the 
-%                                closed loop system
-%               * varargin{end-1}: cell array of input names of the 
-%                                  closed loop system
-% Output:       * sys_S: closed loop sparse state space (sss)-object
-% ------------------------------------------------------------------
+%
+% Syntax:
+%       sys_S = CONNECT(varargin)
+%
+% Description:
+%       sys_S = CONNECT(varargin) connects a set of sparse LTI system (sss) 
+%       by evaluating the names of in- and outputs. TODO
+%
+% Input Arguments:
+%       -varargin: sparse state space (sss)-objects
+%       -varargin{end}: cell array of output names of the closed loop system
+%       -varargin{end-1}: cell array of input names of the closed loop system
+%
+% Output Arguments:
+%       -sys_S: closed loop sparse state space (sss)-object
+%
+% Examples:
+%       TODO
+%
+% See Also:
+%       sss/connect_sss, sss/append
+%
+% References:
+%       [1] Edwards, J.W. (1976), A FORTRAN program for the analysis of linear continuous and sample-data systems.
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
 % Authors:      Thomas Emmert (emmert@tfd.mw.tum.de)
-% Last Change:  18 Feb 2015
-% ------------------------------------------------------------------
-% Inspiration: Edwards, J.W., 1976. A FORTRAN program for the analysis of linear continuous and sample-data systems.
-% see also: sss/connect_sss sss/append
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  04 Nov 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
 
-% Append system to get open loop system
 if isa(varargin{end},'cell')
     sys_ap = append(varargin{1:end-2});
     inputname = varargin{end-1};
