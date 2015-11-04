@@ -1,16 +1,48 @@
 function sys = c2d(sys,Ts,method)
-% Converts a sss object from continues to discrete 
-% ------------------------------------------------------------------
-% [sys] = c2d(sys, Ts,method)
-% Inputs:       * sys: continuous time sss-object
-%               * Ts: Sampling time
-%               * method: forward = explicit Euler (default)
-%                         backward = implicit Euler (default)
-% Outputs:      * sys: discrete time sss-object
-% ------------------------------------------------------------------
-% Authors:      Stefan Jaensch
+% C2D - Converts a sss object from continues to discrete
 %
-% see also: freqresp
+% Syntax:
+%       sys = C2D(sys,Ts,method)
+%
+% Description:
+%       TODO
+%
+% Input Arguments:
+%       -sys: continuous time sss-object
+%       -Ts:  sampling time
+%       -method: string containing the selected discretization method.
+%       Possible options are 'forward' (explicit Euler) or 'backward'
+%       (implicit Euler)
+%
+% Output Arguments:
+%       -sys: discrete time sss-object
+%
+% Examples:
+%       TODO
+%
+% See Also:
+%       freqresp
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
+% Authors:      Stefan Jaensch (jaensch@tfd.mw.tum.de)
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  04 Nov 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
+
+
 if sys.Ts ~= 0
     error('Only continues models can be transformed')
 end 
