@@ -36,14 +36,8 @@ for ii=1:length(varargin)
     m=sys.m; p=sys.p; n=sys.n;
     [A,B,C,D,E] = dssdata(sys);
     G=zeros(p,m,length(s));
-    if not(sys.isBig)
-        for i=1:length(s)
-            G(:,:,i) = freqresp_local(A,B,C,D,E, s(i),n);
-        end
-    else
-        for i=1:length(s)
-            G(:,:,i) = freqresp_local(A,B,C,D,E, s(i),n);
-        end
+    for i=1:length(s)
+        G(:,:,i) = freqresp_local(A,B,C,D,E, s(i),n);
     end
 end
 end
