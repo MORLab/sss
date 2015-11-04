@@ -1,25 +1,47 @@
-function sys = connect_sss(sys, K)
-% Connects an appended sparse state space  LTI system (sss) with
-% feedback Matrix K
-% ------------------------------------------------------------------
-% This file is part of the MORLAB_GUI, a Model Order Reduction and
-% System Analysis Toolbox developed at the
-% Institute of Automatic Control, Technische Universitaet Muenchen
-% For updates and further information please visit www.rt.mw.tum.de
-% ------------------------------------------------------------------
-% sys = connect_sss(sys, K);
-% Input:        * sys: appended open loop sparse state space
-%                      LTI system (sss)
-%               * K: Interconnection (feedback) matrix between
-%                    out- and inputs
-% Output:       * sys: closed loop sparse state space LTI system (sss)
-% ------------------------------------------------------------------
+function sys = connectSss(sys, K)
+% CONNECTSSS - Connects an appended sparse state space  LTI system (sss) with
+% feedback matrix K
+%
+% Syntax:
+%       sys = CONNECTSSS(sys,K)
+%
+% Description:
+%       TODO
+%   
+% Input Arguments:
+%       -sys: appended open loop sparse state-space LTI system (sss)
+%       -K: Interconnection (feedback) matrix between out- and inputs
+%
+% Output Arguments:
+%       -sys: closed loop sparse state-space LTI system (sss)
+%
+% Examples:
+%       TODO
+%
+% See Also:
+%       sss/connect, sss/append
+%
+% References:
+%       [1] Edwards, J.W. (1976), A FORTRAN program for the analysis of linear continuous and sample-data systems.
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
 % Authors:      Thomas Emmert (emmert@tfd.mw.tum.de)
-% Last Change:  18 Feb 2015
-% ------------------------------------------------------------------
-% Inspired by:
-% Edwards, J.W., 1976. A FORTRAN program for the analysis of linear continuous and sample-data systems.
-% see also: sss/connect sss/append
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  04 Nov 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
 
 
 % Open loop: Feedback definition: c... control law

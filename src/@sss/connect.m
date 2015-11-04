@@ -21,7 +21,7 @@ function sys_S = connect(varargin)
 %       TODO
 %
 % See Also:
-%       sss/connect_sss, sss/append
+%       sss/connectSss, sss/append
 %
 % References:
 %       [1] Edwards, J.W. (1976), A FORTRAN program for the analysis of linear continuous and sample-data systems.
