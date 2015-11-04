@@ -1,5 +1,5 @@
 function [output1,output2] = headerTemplateSss(input1,input2,varargin)
-% HEADERTEMPLATE - sssMOR toolbox header template
+% HEADERTEMPLATE - sss toolbox header template
 % 
 % Syntax:
 %       HEADERTEMPLATESSS
@@ -9,7 +9,7 @@ function [output1,output2] = headerTemplateSss(input1,input2,varargin)
 % 
 % Description:
 %       This header file is to be copied and pasted at the beginning
-%       of every script and function within the MORLab toolbox for reference.
+%       of every script and function within the sss toolbox for reference.
 % 
 %       The description should be kept as short as possible but as long as
 %       required to give a good impression of what the function/script is 
@@ -68,7 +68,7 @@ function [output1,output2] = headerTemplateSss(input1,input2,varargin)
 %       <<https://www.rt.mw.tum.de/fileadmin/w00bhf/www/_migrated_pics/Logo_blau_Homepage_01.gif>>
 %
 % Input Arguments:
-%		*Neccesary Input Arguments:*
+%		*Required Input Arguments:*
 %		-input1: 		Description of in1
 %		-input2: 		Description of in2
 %
