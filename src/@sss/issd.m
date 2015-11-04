@@ -1,5 +1,5 @@
 function [issd, numericalAbscissa] = issd(sys)
-%ISSD  check strict dissipativity of LTI sss system
+% ISSD - Check strict dissipativity of LTI sss system
 %
 % Syntax:
 %   ISSD(sys)
@@ -13,13 +13,13 @@ function [issd, numericalAbscissa] = issd(sys)
 %   possible, a warning is issued.
 %
 %   If no output is defined, then the result is printed on the screen.
-%   Depending on the number of ouputs defined the function can return
+%   Depending on the number of ouputs defined, the function can return.
 %
-%   NaN is returned either, when the computation was not possible, or 
+%   NaN is returned either when the computation was not possible, or 
 %   when the numerical abscissa is zero. In the latter case, the system
 %   might be stable (in the sense of Lyapunov) or unstable if the
 %   multiplicity of the eigenvalues at the origin is greater than one.
-
+%
 % Input Arguments:
 %       -sys: sss-object containing the LTI system
 %
@@ -27,8 +27,9 @@ function [issd, numericalAbscissa] = issd(sys)
 %   - issd: a boolean value (1=true, 0=false, NaN= dissipative but not
 %   strictly).
 %   - numericalAbscissa: the 20 largest eigenvalues of sys.
-% See also:
-%   ISPD, EIGS, CHOL, SPARSE,
+%
+% See Also:
+%       ispd, eigs, chol, sparse
 %
 % References:
 %   [1] Panzer 2014 Model order reduction by Krylov subspace methods
@@ -45,8 +46,7 @@ function [issd, numericalAbscissa] = issd(sys)
 % More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Heiko Panzer, Alessandro Castagnotto,
-%               Maria Cruz Varona 
+% Authors:      Heiko Panzer, Alessandro Castagnotto, Maria Cruz Varona 
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
@@ -79,7 +79,7 @@ if nargout==2 % computation of the numerical abscissa required
     tol  = 1e-10;	% convergence tolerance
     opts = struct('issym',true, 'p',p, 'tol',tol, 'v0',sum(sys.e,2));
     try
-        numericalAbscissa  = eigs((sys.a+sys.a')/2, sys.e, 1, 'la', opts);
+        numericalAbscissa = eigs((sys.a+sys.a')/2, sys.e, 1, 'la', opts);
     catch err
         warning('Computation of the numerical abscissa failed with message:%s',err.message);
         numericalAbscissa = NaN;
