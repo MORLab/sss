@@ -1,5 +1,53 @@
 function varargout = disp(sys)
-%% Display functions
+% DISP - Displays information about a sparse state-space model
+%
+% Syntax:
+%       DISP(sys)
+%       varargout = DISP(sys)
+%
+% Description:
+%       DISP(sys) transforms the sparse state-space model sys to a 
+%       
+%       During the diagonalization, the C-vector is normalized to contain
+%       ones.
+%
+% Input Arguments:
+%       -sys: an sss-object containing the LTI system
+%
+% Output Arguments:
+%       -varargout: character (char) containing the information about the
+%       sss-object
+%
+% Examples:
+%       To compute the diagonal state-space realization of the benchmark
+%       "build" (SISO) use
+%
+%> load build.mat
+%> sys = sss(A,B,C)
+%> disp(sys)
+%
+% See Also: 
+%        
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
+% Authors:      Heiko Panzer, Maria Cruz Varona
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  04 Nov 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
+
 mc = metaclass(sys);
 str = [];
 if ~isempty(mc.Name) && ~isempty(sys.Name)
