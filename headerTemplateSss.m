@@ -1,5 +1,5 @@
 function [output1,output2] = headerTemplateSss(input1,input2,varargin)
-% HEADERTEMPLATE - sss toolbox header template
+% HEADERTEMPLATESSS - sss toolbox header template
 % 
 % Syntax:
 %       HEADERTEMPLATESSS
