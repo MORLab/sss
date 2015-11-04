@@ -41,7 +41,7 @@ for ii=1:length(varargin)
             G(:,:,i) = freqresp_local(A,B,C,D,E, s(i),n);
         end
     else
-        parfor i=1:length(s)
+        for i=1:length(s)
             G(:,:,i) = freqresp_local(A,B,C,D,E, s(i),n);
         end
     end
