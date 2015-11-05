@@ -3,16 +3,19 @@ function sys_S = connect(varargin)
 % of in- and outputs
 %
 % Syntax:
-%       sys_S = CONNECT(varargin)
+%       sys_S = CONNECT(sys1,sys2,...)
+%       sys_S = CONNECT(sys1,sys2,...,inputNames,outputNames)
 %
 % Description:
-%       sys_S = CONNECT(varargin) connects a set of sparse LTI system (sss) 
+%       Connects a set of sparse LTI system (sss) 
 %       by evaluating the names of in- and outputs. TODO
 %
 % Input Arguments:
-%       -varargin: sparse state space (sss)-objects
-%       -varargin{end}: cell array of output names of the closed loop system
-%       -varargin{end-1}: cell array of input names of the closed loop system
+%       *Required Input Arguments:*
+%       -sys1,sys2,...: sparse state space (sss)-objects
+%       *Optional Input Arguments:*
+%       -inputNames:    cell array of input names of the closed loop system
+%       -outputNames:   cell array of output names of the closed loop system
 %
 % Output Arguments:
 %       -sys_S: closed loop sparse state space (sss)-object
@@ -41,7 +44,7 @@ function sys_S = connect(varargin)
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  04 Nov 2015
+% Last Change:  05 Nov 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 

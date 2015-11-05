@@ -1,19 +1,47 @@
 function [G, omega, sys] = freqresp(varargin)
-% Evaluates complex transfer function of LTI systems
-% ------------------------------------------------------------------
-% G = freqresp(sys, s, varargin)
-% Inputs:       * sys: an sss-object containing the LTI system
-%               * s: vector of complex frequencies
-% Outputs:      * G: vector of complex frequency response values
-% ------------------------------------------------------------------
-% This file is part of the MORLAB_GUI, a Model Order Reduction and
-% System Analysis Toolbox developed at the
-% Institute of Automatic Control, Technische Universitaet Muenchen
-% For updates and further information please visit www.rt.mw.tum.de
-% ------------------------------------------------------------------
-% Authors:     Stefan Jaensch, Heiko Panzer (heiko@mytum.de), Sylvia Cremer, Rudy Eid
-%              Lisa Jeschek
-% ------------------------------------------------------------------
+% freqresp - Evaluates complex transfer function of LTI systems
+% 
+% Description:
+%       Evaluates complex transfer function of LTI systems
+%
+% Syntax:
+%       G = freqresp(sys, s, opts)
+%
+% Inputs:
+%       *Required Input Arguments:*
+%       -sys: an sss-object containing the LTI system
+%       -s: vector of complex frequencies
+%       *Optional Input Arguments:*
+%       -opts: Computation options, see <a href="matlab:help freqresp">freqresp</a>
+%       
+% Outputs:      
+%       -G: vector of complex frequency response values
+%
+% Examples:
+%
+% See Also:
+%
+% References:
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
+% Authors:      Stefan Jaensch, Heiko Panzer, Sylvia Cremer, Rudy Eid
+%               Lisa Jeschek
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  02 Nov 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
 
 sys= varargin{1};
 

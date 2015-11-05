@@ -2,13 +2,14 @@ function sys = append(varargin)
 % APPEND - Appends a set of sparse LTI system (sss)
 %
 % Syntax:
-%       sys = APPEND(varargin)
+%       sys = APPEND(sys1,sys2,...)
 %
 % Description:
+%       Appends a set of sparse LTI system (sss)
 %       TODO
 %
 % Input Arguments:
-%       -varargin: sparse state space (sss)-objects
+%       -sys1,sys2,...: sparse state space (sss)-objects
 %
 % Output Arguments:
 %       -sys_S: appended (open loop) sparse state-space (sss)-object

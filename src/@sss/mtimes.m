@@ -15,7 +15,14 @@ function prod = mtimes(sys1, sys2)
 % 
 % Outputs Arguments:
 %       prod: sss-object representing sys1*sys2
-% ------------------------------------------------------------------
+%
+% See Also: 
+%
+% Examples:
+%
+% References:
+%
+%------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
 % Reduction and System Analysis Toolbox developed at the Chair of 
 % Automatic Control, Technische Universitaet Muenchen. For updates 
@@ -24,13 +31,13 @@ function prod = mtimes(sys1, sys2)
 %                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
 %
 % More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
-% ------------------------------------------------------------------
+%------------------------------------------------------------------
 % Authors:      Heiko Panzer
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
-% Last Change:  15 Oct 2015
+% Last Change:  05 Nov 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
-% ------------------------------------------------------------------
+%------------------------------------------------------------------
 
 if (sys1.n==0 && isempty(sys1.D)) || (sys2.n==0 && isempty(sys2.D))
     prod = sss([], [], []);

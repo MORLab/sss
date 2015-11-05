@@ -2,32 +2,34 @@ function [issd, numericalAbscissa] = issd(sys)
 % ISSD - Check strict dissipativity of LTI sss system
 %
 % Syntax:
-%   ISSD(sys)
-%   issd = ISSD(sys)
-%   [issd,numericalAbscissa] = ISSD(sys)
+%       ISSD(sys)
+%       issd = ISSD(sys)
+%       [issd,numericalAbscissa] = ISSD(sys)
 %
 % Description:
-%   This function determines whether the LTI, sss system "sys" is 
-%   given in a strictly dissipative realization. The computations are meant 
-%   to avoid operations on full matrices. However, whenever this is not 
-%   possible, a warning is issued.
+%       This function determines whether the LTI, sss system "sys" is 
+%       given in a strictly dissipative realization. The computations are meant 
+%       to avoid operations on full matrices. However, whenever this is not 
+%       possible, a warning is issued.
 %
-%   If no output is defined, then the result is printed on the screen.
-%   Depending on the number of ouputs defined, the function can return.
+%       If no output is defined, then the result is printed on the screen.
+%       Depending on the number of ouputs defined, the function can return.
 %
-%   NaN is returned either when the computation was not possible, or 
-%   when the numerical abscissa is zero. In the latter case, the system
-%   might be stable (in the sense of Lyapunov) or unstable if the
-%   multiplicity of the eigenvalues at the origin is greater than one.
+%       NaN is returned either when the computation was not possible, or 
+%       when the numerical abscissa is zero. In the latter case, the system
+%       might be stable (in the sense of Lyapunov) or unstable if the
+%       multiplicity of the eigenvalues at the origin is greater than one.
 %
 % Input Arguments:
 %       -sys: sss-object containing the LTI system
 %
 % Output Arguments:
-%   - issd: a boolean value (1=true, 0=false, NaN= dissipative but not
-%   strictly).
-%   - numericalAbscissa: the 20 largest eigenvalues of sys.
+%       -issd: a boolean value (1=true, 0=false, NaN= dissipative but not
+%       strictly).
+%       -numericalAbscissa: the 20 largest eigenvalues of sys.
 %
+% Examples:
+%	
 % See Also:
 %       ispd, eigs, chol, sparse
 %

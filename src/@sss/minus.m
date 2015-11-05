@@ -1,19 +1,43 @@
 function diff = minus(sys1, sys2)
-% Computes difference of two LTI systems: u-->(sys1-sys2)-->y
-% ------------------------------------------------------------------
-% diff = sys1-sys2; diff = minus(sys1, sys2);
-% Inputs:       * sys1: minuend sss-object
-%               * sys2: subtrahend sss-object
-% Outputs:      * sss-object representing sys1-sys2
-% ------------------------------------------------------------------
-% This file is part of the MORLAB_GUI, a Model Order Reduction and
-% System Analysis Toolbox developed at the
-% Institute of Automatic Control, Technische Universitaet Muenchen
-% For updates and further information please visit www.rt.mw.tum.de
-% ------------------------------------------------------------------
-% Authors:      Heiko Panzer (heiko@mytum.de)
-% Last Change:  02 Mar 2011
-% ------------------------------------------------------------------
+% diff - Computes difference of two LTI systems: u-->(sys1-sys2)-->y
+% 
+% Syntax:
+%       diff = sys1-sys2; diff = minus(sys1, sys2)
+%
+% Description:
+%       Computes difference of two LTI systems: u-->(sys1-sys2)-->y
+%
+% Input Arguments:       
+%       -sys1: minuend sss-object
+%       -sys2: subtrahend sss-object
+%
+% Output Arguments:      
+%       -sss-object representing sys1-sys2
+%
+% Examples:
+%
+% See Also:
+%
+% References:
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
+% Authors:      Heiko Panzer
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  05 Nov 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
 
 if sys1.n == 0
     diff = sss(sys2.A, sys2.B, -sys2.C, sys2.D, sys2.E);

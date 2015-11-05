@@ -3,8 +3,8 @@ function [nrm, varargout] = norm(sys, varargin)
 %
 % Syntax:
 %       nrm = NORM(sys)
-%       nrm = NORM (sys,inf)
-%       [nrm, H_inf_peakfreq] = NORM(sys, inf)
+%       nrm = NORM (sys,p)
+%       [nrm, H_inf_peakfreq] = NORM(sys, p)
 %
 % Description:
 %       This function computes the p-norm of an LTI system given 
@@ -13,19 +13,22 @@ function [nrm, varargout] = norm(sys, varargin)
 %       2 otherwise.
 %
 % Input Arguments:
+%       *Required Input Arguments:*
 %       -sys: sss-object containing the LTI system
-%       [optional] -p: 2 for H_2-norm or inf for H_inf-norm
+%       *Optional Input Arguments:* 
+%       -p: 2 for H_2-norm or inf for H_inf-norm
 %
 % Output Arguments:
-%       -nrm: value of norm
-%       -H_inf_peakfreq: peak frequency of magnitude of H_inf norm
-% ------------------------------------------------------------------
+%       -nrm:               value of norm
+%       -H_inf_peakfreq:    peak frequency of magnitude of H_inf norm
 %
-% See also NORM, SSS, LYAPCHOL
+% Examples:
 %
-% ------------------------------------------------------------------
-% REFERENCES:
-% [1] Antoulas (2005), Approximation of large-scale Dnymical Systems
+% See also:
+%       NORM, SSS, LYAPCHOL
+%
+% References:
+%       * *[1] Antoulas (2005), Approximation of large-scale Dnymical Systems
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
@@ -43,7 +46,7 @@ function [nrm, varargout] = norm(sys, varargin)
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  31 Oct 2015
+% Last Change:  05 Nov 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
