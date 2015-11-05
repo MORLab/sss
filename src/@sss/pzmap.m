@@ -62,7 +62,7 @@ function [p, z] = pzmap(sys, varargin)
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  30 Oct 2015
+% Last Change:  05 Nov 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
@@ -167,6 +167,7 @@ for j=1:sys.p %secondly, go through all outputs
         end
         
         mnr=min(real([p;z{j,i}])); mxr=max(real([p;z{j,i}]));
+        limx=[mnr*1.05,mxr*1.05];
         if mnr*mxr<0 
             limx = [mnr-(mxr-mnr)/20 mxr+(mxr-mnr)/20];
         elseif mnr*mxr>0
@@ -180,7 +181,6 @@ for j=1:sys.p %secondly, go through all outputs
                 limx(2) = 1;
             end
         end
-        
         % plot dashed axes through origin, remove legend entry
         plot_handle=plot([0 0],limy,':k');
         hAnnotation = get(plot_handle,'Annotation');

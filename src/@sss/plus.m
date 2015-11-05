@@ -1,12 +1,12 @@
 function sum = plus(sys1, sys2)
-% plus - Computes sum of two LTI systems: u-->(sys1-sys2)-->y
+% plus - Computes sum of two LTI systems: u-->(sys1+sys2)-->y
 % 
 % Syntax:
 %       sum = plus(sys1, sys2)
 %       sum = sys1+sys2
 % 
 % Description:
-%       Computes sum of two LTI systems: u-->(sys1-sys2)-->y 
+%       Computes sum of two LTI systems: u-->(sys1+sys2)-->y 
 %
 % Input Arguments:
 %       -sys1, sys2: summand sss-object
