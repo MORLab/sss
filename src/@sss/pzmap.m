@@ -93,20 +93,25 @@ if ~isempty(sys.invariantZeros)
     z=sys.invariantZeros;
 else
     % no, they are not. solve for gen. eigenvalues of Rosenbrock matrix
-    z = cell(sys.p,sys.m);
-    for i=1:sys.m
-        for j=1:sys.p
-            z{j,i}=eig(full([sys.A,sys.B(:,i);sys.C(j,:),sys.D(j,i)]), ...
-                       [full(sys.E),zeros(sys.n,1);zeros(1,sys.n),0]);
-            % ensure column vector
-            if size(z{j,i},1)<size(z{j,i},2)
-                z{j,i}=transpose(z{j,i});
-            end
-        end
+    %z = cell(sys.p,sys.m);
+    %for i=1:sys.m
+    %    for j=1:sys.p
+    if sys.m==sys.p
+            z=eig(full([sys.A,sys.B;sys.C,sys.D]), ...
+                       [full(sys.E),zeros(sys.n,sys.m);zeros(sys.p,sys.n),zeros(sys.p,sys.m)]);
+    else
+        z=zeros(0,1);
     end
+            % ensure column vector
+     %       if size(z{j,i},1)<size(z{j,i},2)
+     %           z{j,i}z=transpose(z{j,i});
+     %       end
+     %   end
+    %end
 
     % remove zeros at infinity
-    z=cellfun(@(x) x(~isinf(x)), z, 'UniformOutput', false);
+    %z=cellfun(@(x) x(~isinf(x)), z, 'UniformOutput', false);
+    z=z(~isinf(z));
     sys.invariantZeros=z;
     
     % store system in caller workspace
@@ -123,7 +128,7 @@ end
 
 options=varargin;
 fig_handle=gcf; %generate figure
-axes_handle=zeros(sys.p,sys.m);
+%axes_handle=zeros(sys.p,sys.m);
 
 % set random color if figure is not empty
 if isempty(options)
@@ -133,14 +138,16 @@ if isempty(options)
     end
 end
 % loop for plotting the pole-zero-maps
-for j=1:sys.p %secondly, go through all outputs
-    for i=1:sys.m %firstly, go through all inputs
+%for j=1:sys.p %secondly, go through all outputs
+%    for i=1:sys.m %firstly, go through all inputs
         %rows: outputs, columns: inputs    
-        axes_handle(j,i)=subplot(sys.p,sys.m,j*sys.m+i-sys.m);
+        %axes_handle(j,i)=subplot(sys.p,sys.m,j*sys.m+i-sys.m);
+        axes_handle=subplot(1,1,1);
         box on
         
         % plot o for zeros
-        plot_handle=plot(real(z{j,i}), imag(z{j,i}), options{:});
+        %plot_handle=plot(real(z{j,i}), imag(z{j,i}), options{:});
+        plot_handle=plot(real(z), imag(z), options{:}); 
         set(plot_handle, 'Marker', 'o', 'LineStyle', 'none');
         hold on
         % plot x for poles, remove legend entry
@@ -151,7 +158,8 @@ for j=1:sys.p %secondly, go through all outputs
         set(hLegendEntry,'IconDisplayStyle','off')
 
         % determine x and y boundary
-        mni=min(imag([p;z{j,i}])); mxi=max(imag([p;z{j,i}]));
+      %  mni=min(imag([p;z{j,i}])); mxi=max(imag([p;z{j,i}]));
+       mni=min(imag([p;z])); mxi=max(imag([p;z]));
         if mni*mxi<0 
             limy = [mni-(mxi-mni)/20 mxi+(mxi-mni)/20];
         elseif mni*mxi>0 
@@ -166,7 +174,8 @@ for j=1:sys.p %secondly, go through all outputs
             end
         end
         
-        mnr=min(real([p;z{j,i}])); mxr=max(real([p;z{j,i}]));
+        %mnr=min(real([p;z{j,i}])); mxr=max(real([p;z{j,i}]));
+        mnr=min(real([p;z])); mxr=max(real([p;z]));
         limx=[mnr*1.05,mxr*1.05];
         if mnr*mxr<0 
             limx = [mnr-(mxr-mnr)/20 mxr+(mxr-mnr)/20];
@@ -190,7 +199,7 @@ for j=1:sys.p %secondly, go through all outputs
         hAnnotation = get(plot_handle,'Annotation');
         hLegendEntry = get(hAnnotation','LegendInformation');
         set(hLegendEntry,'IconDisplayStyle','off')
-        set(axes_handle(j,i), 'XLim', limx, 'YLim', limy);
+        set(axes_handle(1,1), 'XLim', limx, 'YLim', limy);
         
         if sys.Ts ~= 0 %plot unitary circle in case of discrete system
             r=1; %radius
@@ -199,16 +208,16 @@ for j=1:sys.p %secondly, go through all outputs
         end
 
         % label input / output number
-        if j==1 && sys.m>1
-            x_lab=sprintf('From In(%i)',i);
-            title(x_lab)
-        end
-        if i==1 && sys.p>1
-            y_lab=sprintf('To Out(%i)',j);
-            ylabel(y_lab)
-        end
-    end
-end
+%         if j==1 && sys.m>1
+%             x_lab=sprintf('From In(%i)',i);
+%             title(x_lab)
+%         end
+%         if i==1 && sys.p>1
+%             y_lab=sprintf('To Out(%i)',j);
+%             ylabel(y_lab)
+%         end
+%    end
+%end
 
 % create invisible background plot for labelling
 % h=axes('position',[0,0,1,1],'Visible','off');
