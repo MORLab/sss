@@ -28,14 +28,16 @@ function [r,p,d] = residue(sys, Opts)
 %       r{k} = Chat(:,k)*Bhat(k,:).
 %
 % Input Arguments:
+%       *Required Input Arguments:*
 %		-sys: sss-object of the LTI system
-%       -[optional] Opts: Options
-%           -rType: define the output format of the residue
-%               -rType='res' (standard): r is a cell array of dimension nx1 with the
-%               residual r{k} for each pole p(k)
-%               -rType='dir': r is a cell array of dimension 1x2 with the
-%               output residual matrix Chat = r{1} and the input residual matrix 
-%               Bhat = r{2}
+%       *Optional Input Arguments:*
+%       -Opts: Structure containing computation options
+%           -.rType: define the output format of the residue
+%           -.rType='res' (standard): r is a cell array of dimension nx1 with the
+%                                     residual r{k} for each pole p(k)
+%           -.rType='dir': r is a cell array of dimension 1x2 with the
+%                          output residual matrix Chat = r{1} and the input residual matrix 
+%                          Bhat = r{2}
 %
 % Output Arguments:
 %       -r: cell of residuals (format depends on Opts.rType)

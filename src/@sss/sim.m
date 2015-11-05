@@ -1,25 +1,53 @@
 function [data,X,tx] = sim(sys,data,method,Ts_sample)
-% Simulates a sss system using iddata input time series
-% ------------------------------------------------------------------
-% [data,x] = sim(sys,data)
-% Inputs:       * sys: an sss-object containing the LTI system
-%               * data: iddata object containing input time series
-%               * method: time ingetration method (available are:
-%               'forwardEuler', 'backwardEuler', 'RK4', and 'discrete'
-%                default: continues 'RK4', discrete 'discrete'
-%               * Ts_sample: sampling rate of the state-vector
-% Outputs:      * data: iddata object containing output time series
-%               * X: matrix of state vectors
-%               * tx: time vector for X
-% ------------------------------------------------------------------
-% This file is part of the MORLAB_GUI, a Model Order Reduction and
-% System Analysis Toolbox developed at the
-% Institute of Automatic Control, Technische Universitaet Muenchen
-% For updates and further information please visit www.rt.mw.tum.de
-% ------------------------------------------------------------------
-% Authors:      Stefan Jaensch (jaensch@tfd.mw.tum.de)
-% Last Change:
-% ------------------------------------------------------------------
+% sim - Simulates a sss system using iddata input time series
+%
+% Syntax:
+%       [data,x,tx] = sim(sys,data)
+%       [data,x,tx] = sim(sys,data,method)
+%       [data,x,tx] = sim(sys,data,method,Ts_sample)
+%
+% Description:
+%       Simulates a sss system using iddata input time series
+%
+% Input Arguments:       
+%       *Required Input Arguments:*
+%       -sys:   an sss-object containing the LTI system
+%       -data:  iddata object containing input time series
+%       *Optional Input Arguments:*
+%       -method:    time ingetration method (available are:
+%                   'forwardEuler', 'backwardEuler', 'RK4', and 'discrete'
+%                   default: continues 'RK4', discrete 'discrete'
+%       -Ts_sample: sampling rate of the state-vector
+%
+% Output Arguments:      
+%       -data: iddata object containing output time series
+%       -X: matrix of state vectors
+%       -tx: time vector for X
+%
+% Examples:
+%
+% See Also:
+%
+% References:
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
+% Authors:      Stefan Jaensch
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  05 Nov 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
 
 if ~any(cellfun(@(x) strcmp('',x),sys.u))
     sys = sys.truncate(':',data.InputName);

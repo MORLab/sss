@@ -1,21 +1,48 @@
 function  [h, t] = step(sys, varargin)
-% Computes and/or plots the step response of a sparse LTI system
-% ------------------------------------------------------------------
-% [h, t] = step(sys, varargin)
-% Inputs:       * sys: an sss-object containing the LTI system
-%    [optional] * vector of time values to plot at
-%               * plot options. see <a href="matlab:help plot">PLOT</a>
-% Outputs:      * h, t: vectors containing step response and time vector
-% ------------------------------------------------------------------
-% This file is part of the MORLAB_GUI, a Model Order Reduction and
-% System Analysis Toolbox developed at the
-% Institute of Automatic Control, Technische Universitaet Muenchen
-% For updates and further information please visit www.rt.mw.tum.de
-% ------------------------------------------------------------------
-% Authors:      Heiko Panzer (heiko@mytum.de), Sylvia Cremer
-%               Jorge Luiz Moreira Silva
-% Last Change:  29 Out 2015
-% ------------------------------------------------------------------
+% step - Computes and/or plots the step response of a sparse LTI system
+% 
+% Syntax:
+%       [h, t] = step(sys)
+%       [h, t] = step(sys, t)
+%       [h, t] = step(sys, t, opts)
+%
+% Description:
+%       Computes and/or plots the step response of a sparse LTI system
+% 
+% Input Arguments:       
+%       *Required Input Arguments:*
+%       -sys: an sss-object containing the LTI system
+%       *Optional Input Arguments:* 
+%       -t:     vector of time values to plot at
+%       -opts:  plot options, see <a href="matlab:help plot">PLOT</a>
+%
+% Output Arguments:      
+%       -h, t: vectors containing step response and time vector
+%
+% Examples:
+%
+% See Also:
+%
+% References:
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
+% Authors:      Heiko Panzer, Sylvia Cremer, Jorge Luiz Moreira Silva
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  05 Nov 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
 
 % are poles and residues already available?
 if ~isempty(sys.poles) && ~isempty(sys.residues)

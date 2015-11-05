@@ -1,27 +1,52 @@
 function [y,x_,index] = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
-% Integrates sss model using forward Euler
-% ------------------------------------------------------------------
-% [y,x_,index] = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
-% Inputs:       * A,B,C,D,E: state space matrices
-%               * u: input vector in [Nsample,Ninput]
-%               * x: start vector for time integration
-%               * Ts: Sampling time
-%               * Ts_sample: Sampling time for matrix of state-vectors
-%               * isDescriptor: is descriptor
-% Outputs:      * y: output vector
-%               * X: matrix of state vectors [Optional]
-%               * index: time index for X  [Optional]
-% ------------------------------------------------------------------
-% This file is part of the MORLAB_GUI, a Model Order Reduction and
-% System Analysis Toolbox developed at the
-% Institute of Automatic Control, Technische Universitaet Muenchen
-% For updates and further information please visit www.rt.mw.tum.de
-% ------------------------------------------------------------------
-% Authors:      Stefan Jaensch (jaensch@tfd.mw.tum.de)
-% Last Change:
-% ------------------------------------------------------------------
+% simForwardEuler - Integrates sss model using forward Euler
+% 
+% Syntax:
+%       y = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
+%       [y,x_] = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
+%       [y,x_,index] = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 %
-% see also: sss/sim, RK4, backwardEuler
+% Description:
+%       Integrates sss model using forward Euler
+% 
+% Input Arguments:       
+%       -A,B,C,D,E:     state space matrices
+%       -u:             input vector in [Nsample,Ninput]
+%       -x:             start vector for time integration
+%       -Ts:            Sampling time
+%       -Ts_sample:     Sampling time for matrix of state-vectors
+%       -isDescriptor:  is descriptor
+%
+% Output Arguments:      
+%       -y: output vector
+%       -x_: matrix of state vectors
+%       -index: time index for x_
+%
+% Examples:
+%
+% See Also: 
+%       sss/sim, backwardEuler, RK4
+%
+% References:
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
+% Authors:      Stefan Jaensch 
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  05 Nov 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
 
 y = zeros(size(C,1),size(u,1));
 if nargout == 1

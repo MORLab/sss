@@ -1,21 +1,48 @@
 function  [mag, omega] = sigma(sys, varargin)
-% Plots the amplitude of the frequency response of an LTI system
-% ------------------------------------------------------------------
-% [mag, omega] = sigma(sys, omega, options)
-% Inputs:       * sys: an sss-object containing the LTI system
-%    [optional] * vector of imaginary frequencies to plot at
-%               * plot options. see <a href="matlab:help plot">PLOT</a>
-% Outputs:      * mag: vector of complex frequency response values
-%               * omega: vector of complex frequencies
-% ------------------------------------------------------------------
-% This file is part of the MORLAB_GUI, a Model Order Reduction and
-% System Analysis Toolbox developed at the
-% Institute of Automatic Control, Technische Universitaet Muenchen
-% For updates and further information please visit www.rt.mw.tum.de
-% ------------------------------------------------------------------
-% Authors:      Heiko Panzer (heiko@mytum.de), Sylvia Cremer, Rudy Eid
-% Last Change:  14 May 2013
-% ------------------------------------------------------------------
+% sigma - Plots the amplitude of the frequency response of an LTI system
+% 
+% Syntax: 
+%       [mag, omega] = sigma(sys, omega)
+%       [mag, omega] = sigma(sys, omega, options)
+%
+% Description:
+%       Plots the amplitude of the frequency response of an LTI system
+%
+% Input Arguments:       
+%       *Required Input Arguments*
+%       -sys: an sss-object containing the LTI system
+%       *Optional Input Arguments*
+%       -omega:     vector of imaginary frequencies to plot at
+%       -options:   plot options. see <a href="matlab:help plot">PLOT</a>
+%
+% Output Arguments:      
+%       -mag:   vector of complex frequency response values
+%       -omega: vector of complex frequencies
+%
+% Examples:
+%
+% See Also:
+%
+% References:
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
+% Authors:      Heiko Panzer, Sylvia Cremer, Rudy Eid
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  05 Nov 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
 
 options = {};
 % in=[]; out=[];

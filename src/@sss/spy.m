@@ -9,16 +9,13 @@ function spy(sys,name)
 %       This function plots the sparsity pattern of the E and A matrices of
 %       the sparse state space system sys. 
 %
-%       If a name is passed as second optional argument, then the 
+%       It is possible to pass a name via a second optional argument.
 %
 % Input Arguments:
-%		-input1: Description
-%       -input2: Description
-%       -input3: Description
-%
+%		-sys:  sparse state space (sss)-object
+%       -name: Plot title
+%       
 % Output Arguments:
-%       -output1: Description 
-%       -output2: Description
 %
 % Examples:
 %		
@@ -29,6 +26,8 @@ function spy(sys,name)
 %
 % See Also: 
 %		spy
+%
+% References:
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 

@@ -3,7 +3,7 @@ function [p, z] = pzmap(sys, varargin)
 %
 % Syntax:
 %       PZMAP(sys)
-%       PZMAP(sys, varargin)
+%       PZMAP(sys, opts)
 %       [p,z] = PZMAP(sys)
 %
 % Description:
@@ -17,7 +17,7 @@ function [p, z] = pzmap(sys, varargin)
 %
 % Input Arguments:
 %       -sys:      an sss-object containing the LTI system
-%       -varargin: plot options. see <a href="matlab:help plot">PLOT</a>
+%       -opts:     plot options. see <a href="matlab:help plot">PLOT</a>
 %
 % Output Arguments:
 %       -p: vector containing poles 
@@ -44,6 +44,8 @@ function [p, z] = pzmap(sys, varargin)
 %
 % See Also:
 %       ss/pzmap
+%
+% References:
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 

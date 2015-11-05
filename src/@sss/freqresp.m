@@ -5,6 +5,7 @@ function [G, omega, sys] = freqresp(varargin)
 %       Evaluates complex transfer function of LTI systems
 %
 % Syntax:
+%       G = freqresp(sys, s)
 %       G = freqresp(sys, s, opts)
 %
 % Inputs:

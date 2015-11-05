@@ -1,19 +1,42 @@
 function sys_ss = ss(sys_sss)
-% Converts sparse LTI system (sss) to Matlab\control\ss
-% ------------------------------------------------------------------
-% This file is part of the MORLAB_GUI, a Model Order Reduction and
-% System Analysis Toolbox developed at the
-% Institute of Automatic Control, Technische Universitaet Muenchen
-% For updates and further information please visit www.rt.mw.tum.de
-% ------------------------------------------------------------------
-% sys_ss = ss(sys_sss);
-% Input:        * sys_sss: sparse state space (sss)-object
-% Output:       * sys_ss:  ss- or dss-object, respectively
-% ------------------------------------------------------------------
-% Authors:      Heiko Panzer (heiko@mytum.de), Sylvia Cremer,
-%               Thomas Emmert (emmert@tfd.mw.tum.de)
-% Last Change:  17 Feb 2015
-% ------------------------------------------------------------------
+% ss - Converts sparse LTI system (sss) to Matlab\control\ss
+%
+% Syntax:
+%       sys_ss = ss(sys_sss)
+%
+% Description:
+%       Converts sparse LTI system (sss) to Matlab\control\ss
+%
+% Input Arguments:
+%       -sys_sss: sparse state space (sss)-object
+%
+% Output Arguments:       
+%       -sys_ss:  ss- or dss-object, respectively
+%
+% Examples:
+%
+% See Also:
+%
+% References:
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
+% Authors:      Heiko Panzer, Sylvia Cremer, Thomas Emmert
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  05 Nov 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
 
 if sys_sss.isDescriptor
     sys_ss=dss(full(sys_sss.A),full(sys_sss.B),full(sys_sss.C),full(sys_sss.D),full(sys_sss.E));
