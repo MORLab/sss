@@ -71,7 +71,7 @@ vals = ones(size(rows));
 K= sparse(rows,cols,vals,sys_ap.m,sys_ap.p);
 
 % Connect internal open loop feedbacks to obtain closed loop model
-sys_S = connect_sss(sys_ap, K);
+sys_S = connectSss(sys_ap, K);
 
 % Truncate internally absorbed and rearrange order of inputs
 idx = zeros(length(inputname),1);
