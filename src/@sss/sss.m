@@ -384,6 +384,8 @@ classdef sss
         function sys = set.OutputName(sys, name)
             if (length(name)==sys.p)
                 sys.OutputName = name;
+            elseif isempty(name)
+                sys.OutputName = cell(repmat({''}, sys.p, 1));
             else
                 error('Output label vector too long.')
             end
@@ -396,6 +398,8 @@ classdef sss
         function sys = set.StateName(sys, name)
             if (length(name)==sys.n)
                 sys.StateName = name;
+            elseif isempty(name)
+                sys.StateName = cell(repmat({''}, sys.n, 1));
             else
                 error('State label vector too long.')
             end
@@ -410,6 +414,8 @@ classdef sss
         function sys = set.InputName(sys, name)
             if (length(name)==sys.m)
                 sys.InputName = name;
+            elseif isempty(name)
+                sys.InputName = cell(repmat({''}, sys.m, 1));
             else
                 error('Input label vector too long.')
             end
