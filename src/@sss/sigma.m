@@ -138,9 +138,17 @@ else
 
     delta = (wmax-wmin)/39; % initial resolution (insert odd number only!)
     omega = 10.^(wmin:delta:wmax);
+	addZero=0;
+	if min(omega)>0
+        omega=[0,omega];
+		addZero=1;
+    end
+    if max(omega)<inf
+        omega=[omega,inf];
+    end
     m = freqrespCell(sys, omega);
     
-    idx = 2:(length(omega)-1);
+    idx = (2+addZero):(length(omega)-2);
     while(1)
         % increase plot density until vertical change per step is below 1%
         newomega = [];
@@ -181,8 +189,8 @@ mag = cellfun(@abs, m, 'UniformOutput',false);
 
 % determine H_inf-norm (maximum magnitude)
 [a,b]=cellfun(@max, mag);
-[a,c]=max(a);
-[H_inf_norm,d]=max(a);
+[a,c]=max(a,'',1);
+[H_inf_norm,d]=max(a,'',2);
 H_inf_peakfreq=omega(b(c(d),d));
 if any(H_inf_norm > sys.H_inf_norm) || isempty(sys.H_inf_norm)
     sys.H_inf_norm = H_inf_norm;
