@@ -160,9 +160,9 @@ axes_handle=zeros(sys.p,sys.m);
 maxOutput=max(cellfun(@max,h),[],2);
 minOutput=min(cellfun(@min,h),[],2);
 deltaOutput=0.2*(maxOutput-minOutput);
-orderMagnitude=floor(log10(deltaOutput));
+orderMagnitude=floor(log10(deltaOutput))-1;
 
-heightAxis=round(deltaOutput.*10.^(-orderMagnitude),1).*10.^orderMagnitude;
+heightAxis=round(deltaOutput.*10.^(-orderMagnitude)).*10.^orderMagnitude;
 minOutputAxis=minOutput-heightAxis/2;
 maxOutputAxis=maxOutput+heightAxis/2;
 
@@ -201,10 +201,12 @@ for iOut=1:sys.p
         axis([0,max(t),minOutputAxis(iOut),maxOutputAxis(iOut)]);
     end
 end
-axes('Position',[0 0 1 1],'Visible','off');
+labelsAxes=axes('Position',[0 0 1 1],'Visible','off');
 text(0.5,.99,'Step Response','FontName','Helvetica','FontSize',11,'FontWeight','bold','HorizontalAlignment','center','VerticalAlignment','cap');
 text(0.5,0.01,'Time (seconds)','FontName','Helvetica','FontSize',11,'FontWeight','normal','HorizontalAlignment','center','VerticalAlignment','bottom');
 h=text(0.01,0.5,'Amplitude','FontName','Helvetica','FontSize',11,'FontWeight','normal','rotation',90);
 set(h,'HorizontalAlignment','center','VerticalAlignment','top');
-
+uistack(labelsAxes,'bottom');
+z=zoom;
+setAllowAxesZoom(z,labelsAxes,false);
 clear h t
