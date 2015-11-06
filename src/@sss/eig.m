@@ -95,7 +95,7 @@ else
 end
 
 for i = 1:nargout
-    varargout{i} = sparse(varargout{i});
+    varargout{i} = varargout{i};
 end
 % Store poles for future computations
 if nargout>1
