@@ -34,19 +34,18 @@ function [p, z] = pzmap(sys, varargin)
 %> figure; pzmap(sys);
 %> figure; pzmap(sysSss);
 %
-%       Load the benchmark "PEEC_MTLn1600" (DSS,MIMO) and use pzmap:
+%       Load the benchmark "PEEC_MTLn1600" (DSS, MIMO) and use pzmap:
 %
 %> load PEEC_MTLn1600.mat
 %> p = size(C,1); m = size(B,2);
 %> sys = sss(A,B,C,zeros(p,m),E)
-%> sysTrunc = sys(1:3,1:2);
-%> figure; pzmap(sysTrunc);
+%> figure; pzmap(sys);
 %
 % See Also:
 %       ss/pzmap
 %
 % References:
-%
+%       TODO
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
 % Reduction and System Analysis Toolbox developed at the Chair of 
