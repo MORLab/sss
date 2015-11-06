@@ -2,9 +2,10 @@ function  [h, t] = step(sys, varargin)
 % step - Computes and/or plots the step response of a sparse LTI system
 % 
 % Syntax:
-%       [h, t] = step(sys)
-%       [h, t] = step(sys, t)
-%       [h, t] = step(sys, t, opts)
+%       STEP(sys)
+%       [h, t] = STEP(sys)
+%       [h, t] = STEP(sys, t)
+%       [h, t] = STEP(sys, t, opts)
 %
 % Description:
 %       Computes and/or plots the step response of a sparse LTI system
@@ -80,6 +81,9 @@ else
         if inputname(1)
             assignin('caller', inputname(1), sys);
         end        
+    end
+    if isnan(tmax)
+        tmax=100;
     end
     delta = tmax/999;
     t = 0:delta:tmax;
