@@ -54,8 +54,16 @@ function tmax = decayTime(sys)
 % Last Change:  04 Nov 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
-
-[res,p]=residue(sys);
+if ~isempty(sys.poles) && ~isempty(sys.residues)
+    p=sys.poles;
+    res=sys.residues;
+else
+    [res,p]=residue(sys);
+    % store system to caller workspace
+    if inputname(1)
+        assignin('caller', inputname(1), sys);
+    end
+end
 
 % is system stable?
 if any(real(p)>0)
@@ -65,15 +73,14 @@ if any(real(p)>0)
     return
 end
 
-tmax=0;
+tmax=0; temp = cat(3,res{:}); 
 for i=1:sys.p
     for j=1:sys.m
         % how much does each pole contribute to energy flow?
         h2=zeros(size(p));
         for k=1:length(p)
-            %we need the siso residual for all poles into on vector
-            resIJvec = zeros(1,length(p)); 
-            for l = 1:length(p), resIJvec(l) = res{l}(i,j);end
+            %we need the siso residual for all poles into on vectors
+            resIJvec = squeeze(temp(i,j,:)).';
             h2(k)=res{k}(i,j)*sum(resIJvec./(-p(k)-p));
         end
         
