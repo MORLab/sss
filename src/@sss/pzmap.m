@@ -71,21 +71,18 @@ if ~isempty(sys.poles)
     p=sys.poles;
 else
     % no, they are not. solve for eigenvalues of system
-    if sys.isDescriptor
-        p = 1./eig(full(sys.E), full(sys.A));
-    else
-        p = eig(full(sys.A));
-    end
-    % ensure column vector
-    if size(p,1)<size(p,2)
-        p=transpose(p);
-    end
+    p = eig(sys);
+    
     sys.poles=p;
     
     % store system in caller workspace
     if inputname(1)
         assignin('caller', inputname(1), sys);
     end
+end
+% ensure column vector
+if size(p,1)<size(p,2)
+    p=transpose(p);
 end
 
 % are zeros already available?
@@ -159,7 +156,7 @@ end
 
         % determine x and y boundary
       %  mni=min(imag([p;z{j,i}])); mxi=max(imag([p;z{j,i}]));
-       mni=min(imag([p;z])); mxi=max(imag([p;z]));
+        mni=min(imag([p;z])); mxi=max(imag([p;z]));
         if mni*mxi<0 
             limy = [mni-(mxi-mni)/20 mxi+(mxi-mni)/20];
         elseif mni*mxi>0 
