@@ -1,6 +1,5 @@
 function sys_S = connect(varargin)
-% CONNECT - Connects a set of sparse LTI system (sss) by evaluating the names
-% of in- and outputs
+% CONNECT - Connects a set of sparse LTI system (sss) by evaluating the names of in- and outputs
 %
 % Syntax:
 %       sys_S = CONNECT(sys1,sys2,...)

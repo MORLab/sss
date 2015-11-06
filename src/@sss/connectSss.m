@@ -1,6 +1,5 @@
 function sys = connectSss(sys, K)
-% CONNECTSSS - Connects an appended sparse state space  LTI system (sss) with
-% feedback matrix K
+% CONNECTSSS - Connects an appended sparse state space  LTI system (sss) with feedback matrix K
 %
 % Syntax:
 %       sys = CONNECTSSS(sys,K)

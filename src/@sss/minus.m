@@ -1,5 +1,5 @@
 function diff = minus(sys1, sys2)
-% diff - Computes difference of two LTI systems: u-->(sys1-sys2)-->y
+% MINUS - Computes difference of two LTI systems: u-->(sys1-sys2)-->y
 % 
 % Syntax:
 %       diff = minus(sys1, sys2)

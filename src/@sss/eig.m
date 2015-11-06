@@ -52,8 +52,8 @@ function varargout = eig(sys, varargin)
 % See Also:
 %       ss/eig, eigs
 %
-% ------------------------------------------------------------------
-% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State-Space, Model Order 
 % Reduction and System Analysis Toolbox developed at the Chair of 
 % Automatic Control, Technische Universitaet Muenchen. For updates 
 % and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
@@ -62,15 +62,14 @@ function varargout = eig(sys, varargin)
 %
 % More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
 %
-% ------------------------------------------------------------------
-% Authors:      Heiko Panzer, Thomas Emmert (emmert@tfd.mw.tum.de),
-%               Maria Cruz Varona
+%------------------------------------------------------------------
+% Authors:      Heiko Panzer, Thomas Emmert (emmert@tfd.mw.tum.de), Maria Cruz Varona
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
 % Last Change:  29 Oct 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
-% ------------------------------------------------------------------
+%------------------------------------------------------------------
 
 if sys.isBig
     warning(['System order is very large: ',num2str(sys.n),'. You may want to try eigs(sys) instead.'])
