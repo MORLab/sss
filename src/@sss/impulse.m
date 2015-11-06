@@ -164,12 +164,12 @@ for iOut=1:sys.p
         if jIn==1 && sys.p>1
             y_lab=sprintf('To Out(%i)',ceil(iOut/2));
             ylabel(y_lab,'FontSize',10,'FontName','Helvetica','Color',[0.31,0.31,0.31],...
-            'FontWeight','normal','FontSmoothing','on','FontAngle','normal');
+            'FontWeight','normal','FontAngle','normal'); %'FontSmoothing','on',
         end
         if iOut==1 && sys.m>1
             x_lab=sprintf('From In(%i)',jIn);
             title(x_lab,'FontSize',10,'FontName','Helvetica','Color',[0.31,0.31,0.31],...
-            'FontWeight','normal','FontSmoothing','on','FontAngle','normal');
+            'FontWeight','normal','FontAngle','normal'); %'FontSmoothing','on',
         end
         
         plot(t, h{iOut,jIn}, options{:});
