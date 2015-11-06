@@ -126,7 +126,7 @@ d=sys.D;
 % calculate residues
 r = cell(1,sys.n);
 for i=1:sys.n
-    r{i} = C(:,i)*B(i,:);
+    r{i} = full(C(:,i)*B(i,:));
 end
 
 % store results to caller workspace
