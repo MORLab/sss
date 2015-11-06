@@ -104,7 +104,8 @@ else
     end
 
     % calculate step response
-    h=cellfun(@(x,y) sum(diag(x./p)*transpose(exp(t'*p)-1),1)+y,res,num2cell(sys.D),'UniformOutput',false);
+    diagCell = cellfun(@(x) diag(x./p),res,'UniformOutput',false);
+    h=cellfun(@(x,y) sum(x*transpose(exp(t'*p)-1),1)+y,diagCell,num2cell(sys.D),'UniformOutput',false);
     h=cellfun(@real,h,'UniformOutput',false);
 
     % increase resolution ias long as rel. step size is too large
@@ -114,18 +115,19 @@ else
         for iOut=1:sys.p
             for jIn=1:sys.m
                 m=h{iOut,jIn};
-                for k=2:length(m)-1
-                    if abs(abs(m(k)) - abs(m(k+1)))/(abs(m(k)) + abs(m(k+1))) > 0.5
+%                 for k=2:length(m)-1
+%                     if abs(abs(m(k)) - abs(m(k+1)))/(abs(m(k)) + abs(m(k+1))) > 0.5
+                    if any(abs(diff(abs(m)))./((abs(m(1:end-1)))) > 0.5)
                         delta=delta/2;
                         t=0:delta:tmax;
                         t_temp=t(2:2:end);
-                        temp=cellfun(@(x,y) sum(diag(x./p)*transpose(exp(t_temp'*p)-1),1)+y,res,num2cell(sys.D),'UniformOutput',false);
+                        temp=cellfun(@(x,y) sum(x*transpose(exp(t_temp'*p)-1),1)+y,diagCell,num2cell(sys.D),'UniformOutput',false);
                         temp=cellfun(@real,temp,'UniformOutput',false);
                         h=cellfun(@(x,y) [reshape([x(1:length(x)-1); y],1,2*length(x)-2),x(end)],h,temp,'UniformOutput',false);
                         refine=1;
                         break
                     end
-                end
+%                 end
                 if refine
                     break
                 end
@@ -182,12 +184,12 @@ for iOut=1:sys.p
         if jIn==1 && sys.p>1
             y_lab=sprintf('To Out(%i)',ceil(iOut/2));
             ylabel(y_lab,'FontSize',10,'FontName','Helvetica','Color',[0.31,0.31,0.31],...
-            'FontWeight','normal','FontSmoothing','on','FontAngle','normal');
+            'FontWeight','normal','FontAngle','normal'); %'FontSmoothing','on'
         end
         if iOut==1 && sys.m>1
             x_lab=sprintf('From In(%i)',jIn);
             title(x_lab,'FontSize',10,'FontName','Helvetica','Color',[0.31,0.31,0.31],...
-            'FontWeight','normal','FontSmoothing','on','FontAngle','normal');
+            'FontWeight','normal','FontAngle','normal'); %'FontSmoothing','on',
         end
         if jIn==1 &&(iOut==sys.p)
             %do nothing
