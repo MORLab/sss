@@ -1,5 +1,5 @@
 function varargout = eigs(sys, varargin)
-% EIGS - compute eigenvalues of the sparse state space system using sparse matrices.
+% EIGS - Compute eigenvalues of the sparse state space system using sparse matrices.
 %
 % Syntax:
 %       D = eigs(sys)

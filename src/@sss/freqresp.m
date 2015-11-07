@@ -22,9 +22,10 @@ function [G, omega, sys] = freqresp(varargin)
 %       -G: vector of complex frequency response values
 %
 % Examples:
+%       TODO
 %
 % See Also:
-%
+%       
 % References:
 %
 %------------------------------------------------------------------
