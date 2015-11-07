@@ -1,5 +1,5 @@
 function [y,x_,index] = simRK4(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
-% simRK4 - Integrates sss model using Runge-Kutta 4
+% SIMRK4 - Integrates sss model using Runge-Kutta 4
 % 
 % Syntax:
 %       y = simRK4(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
@@ -23,11 +23,13 @@ function [y,x_,index] = simRK4(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 %       -index: time index for x_
 %
 % Examples:
+%       TODO
 %
 % See Also: 
-%       sss/sim, forwardEuler, backwardEuler
+%       sss/sim, simForwardEuler, simBackwardEuler
 %
 % References:
+%       TODO
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

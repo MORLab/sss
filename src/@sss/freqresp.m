@@ -1,5 +1,5 @@
 function [G, omega, sys] = freqresp(varargin)
-% freqresp - Evaluates complex transfer function of LTI systems
+% FREQRESP - Evaluates complex transfer function of LTI systems
 % 
 % Description:
 %       Evaluates complex transfer function of LTI systems. If the vector

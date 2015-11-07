@@ -23,11 +23,13 @@ function [y,x_,index] = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample)
 %       -index: time index for x_
 %
 % Examples:
+%       TODO
 %
 % See Also: 
-%       sss/sim, forwardEuler, RK4
+%       sss/sim, simForwardEuler, simRK4
 %
 % References:
+%       TODO
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
@@ -40,7 +42,7 @@ function [y,x_,index] = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample)
 % More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Stefan Jaensch 
+% Authors:      Stefan Jaensch, Maria Cruz Varona 
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen

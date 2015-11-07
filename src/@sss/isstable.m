@@ -1,5 +1,5 @@
 function [isstable,spectralAbscissa] = isstable(sys)
-%ISSTABLE  check stability of LTI sss system
+% ISSTABLE - Check stability of LTI sss system
 %
 % Syntax:
 %       ISSTABLE(sys)

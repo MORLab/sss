@@ -1,5 +1,5 @@
 function  [h, t] = step(sys, varargin)
-% step - Computes and/or plots the step response of a sparse LTI system
+% STEP - Computes and/or plots the step response of a sparse LTI system
 % 
 % Syntax:
 %       STEP(sys)

@@ -1,5 +1,5 @@
 function sys1 = mtimes(sys1, sys2)
-% MTIMES - mtimes computes the product of two LTI systems: u-->sys2-->sys1-->y
+% MTIMES - Computes the product of two LTI systems: u-->sys2-->sys1-->y
 %
 % Syntax:
 %       prod = MTIMES(sys1, sys2)
@@ -16,11 +16,14 @@ function sys1 = mtimes(sys1, sys2)
 % Outputs Arguments:
 %       prod: sss-object representing sys1*sys2
 %
-% See Also: 
+% See Also:
+%       TODO
 %
 % Examples:
+%       TODO
 %
 % References:
+%       TODO
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 

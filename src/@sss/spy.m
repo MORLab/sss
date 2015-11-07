@@ -1,5 +1,5 @@
 function spy(sys,name)
-% SPY - plot sparsity pattern of sss system
+% SPY - Plot sparsity pattern of sss system
 % 
 % Syntax:
 %       SPY(sys)
@@ -28,6 +28,7 @@ function spy(sys,name)
 %		spy
 %
 % References:
+%       TODO
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
