@@ -14,10 +14,11 @@ function sysd = diag(sys)
 %       contains the real eigenvalues in the diagonal. If sys has complex
 %       conjugate eigenvalues with real part delta and imaginary part omega, 
 %       then the diagonal matrix sysd.A has a block-diagonal structure:
-%       sysd.A = [delta1  omega1    0      0
-%                 -omega1 delta1    0      0
-%                    0       0   delta2  omega2
-%                    0       0   -omega2 delta2] 
+%
+%       sysd.A = [delta1  omega1    0      0;
+%                 -omega1 delta1    0      0;
+%                    0       0   delta2  omega2;
+%                    0       0   -omega2 delta2]. 
 %       
 %       During the diagonalization, the C-vector is normalized to contain
 %       ones.
@@ -30,21 +31,24 @@ function sysd = diag(sys)
 %
 % Examples:
 %       To compute the diagonal state-space realization of the benchmark
-%       "build" (SISO) use
+%       "build" (SSS, SISO) use
 %
 %> load build.mat
 %> sys = sss(A,B,C)
 %> sysd = diag(sys)
 %> [Ad,Bd,Cd] = ssdata(sysd);
 %
+%       You can compare the sparsity patterns of A and Ad:
+%
 %> figure;
 %> subplot(1,2,1); spy(sys.A); title('Sparsity pattern of A');
 %> subplot(1,2,2); spy(Ad); title('Sparsity pattern of Ad');
 %
-%       DIAG also supports SIMO, MISO and MIMO systems:
+%       DIAG also supports SIMO, MISO and MIMO as well as DSSS systems:
 % 
-%> load PEEC_MTLn1600.mat
-%> sys = sss(A,B,C,zeros(14,14),E)
+%> load rail_1357.mat
+%> p = size(C,1); m = size(B,2);
+%> sys = sss(A,B,C,zeros(p,m),E)
 %> sysd = diag(sys)
 %> [Ad,Bd,Cd,Dd] = ssdata(sysd);
 %

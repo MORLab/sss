@@ -6,28 +6,24 @@ function varargout = disp(sys)
 %       varargout = DISP(sys)
 %
 % Description:
-%       DISP(sys) transforms the sparse state-space model sys to a 
-%       
-%       During the diagonalization, the C-vector is normalized to contain
-%       ones.
+%       DISP(sys) displays information about a sparse state-space model
 %
 % Input Arguments:
 %       -sys: an sss-object containing the LTI system
 %
 % Output Arguments:
-%       -varargout: character (char) containing the information about the
-%       sss-object
+%       -varargout: character (char) containing the information about the sss-object
 %
 % Examples:
-%       To compute the diagonal state-space realization of the benchmark
-%       "build" (SISO) use
+%       To display some information about the benchmark "build" (SSS, SISO)
+%       use:
 %
 %> load build.mat
-%> sys = sss(A,B,C)
+%> sys = sss(A,B,C);
 %> disp(sys)
 %
 % See Also: 
-%        
+%        display
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

@@ -21,7 +21,7 @@ function sys = connectSss(sys, K)
 %       sss/connect, sss/append
 %
 % References:
-%       [1] Edwards, J.W. (1976), A FORTRAN program for the analysis of linear continuous and sample-data systems.
+%       * *[1] Edwards, J.W. (1976)*, A FORTRAN program for the analysis of linear continuous and sample-data systems.
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

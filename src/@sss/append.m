@@ -1,12 +1,11 @@
 function sys = append(varargin)
-% APPEND - Appends a set of sparse LTI system (sss)
+% APPEND - Appends a set of sparse LTI systems (sss)
 %
 % Syntax:
 %       sys = APPEND(sys1,sys2,...)
 %
 % Description:
 %       Appends a set of sparse LTI system (sss)
-%       TODO
 %
 % Input Arguments:
 %       -sys1,sys2,...: sparse state space (sss)-objects
@@ -21,7 +20,7 @@ function sys = append(varargin)
 %       sss/connect
 %
 % References:
-%       ??
+%       TODO
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

@@ -40,10 +40,10 @@ function  [varargout] = bode(varargin)
 %> bode(sys);
 %
 % See Also:
-%   freqresp
+%   sss/freqresp, sss/sigma
 %
 % References:
-%       ??
+%       TODO
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
