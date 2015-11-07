@@ -14,6 +14,9 @@ function sys = clear(sys)
 % Output Arguments:
 %       -sys: the same system with cleared system matrices and labels
 %
+% Examples:
+%       TODO
+%
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
 % Toolbox developed at the Chair of Automatic Control in collaboration

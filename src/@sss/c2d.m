@@ -18,10 +18,14 @@ function sys = c2d(sys,Ts,method)
 %       -sys: discrete time sss-object
 %
 % Examples:
-%       TODO
+%       The benchmark "build" is loaded and converted to a discrete model:
+%
+%> load build.mat
+%> sysC = sss(A,B,C)
+%> sysD = c2d(sysC,0.001,'forward')
 %
 % See Also:
-%       freqresp
+%       ss/c2d
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
@@ -42,19 +46,18 @@ function sys = c2d(sys,Ts,method)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-
 if sys.Ts ~= 0
     error('Only continues models can be transformed')
 end 
    
 if nargin==2
-    method = 'forward';
+    method = 'forward'; %default method: 'forward'
 end
 switch method
-    case 'forward'
+    case 'forward' % s = (z-1)/Ts
         sys.A = sys.E + Ts * sys.A;
         sys.B =  Ts * sys.B;        
-    case 'backward'
+    case 'backward' % s = (z-1)/(Ts*z)
         A = sys.A; E = sys.E;
         sys.E = E - Ts * A;
         sys.A = E;

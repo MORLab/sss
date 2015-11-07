@@ -2,7 +2,7 @@ function varargout = eigs(sys, varargin)
 % EIGS - compute eigenvalues of the sparse state space system using sparse matrices.
 %
 % Syntax:
-%        D = eigs(sys)
+%       D = eigs(sys)
 %       [V, D, flag] = eigs(sys)
 %       eigs(sys,k)
 %       eigs(sys,k,sigma)
@@ -25,11 +25,29 @@ function varargout = eigs(sys, varargin)
 %       -flag:  Convergence flag
 %
 % Examples:
+%       The following code returns the 6 (default) eigenvalues with the
+%       largest magnitude ('lm', default) of the benchmark
+%       "SpiralInductorPeec":
+%
+%> load SpiralInductorPeec
+%> p = size(C,1); m = size(B,2);
+%> sys = sss(A,B,C,zeros(p,m),E);
+%> D = eigs(sys)
+%
+%       You can use optional input arguments in order to define how many
+%       eigenvalues should be computed (k) and in order to specify sigma.
+%
+%       The following code returs the 5 eigenvalues with the smallest
+%       magnitude ('sm'):
+%
+%> D = eigs(sys,5,'sm')
 %
 % See Also: 
 %        eigs
 %
 % References:
+%       * *[1] Lehoucq, R.B. and D.C. Sorensen (1996)*, Deflation Techniques for an Implicitly Re-Started Arnoldi Iteration.
+%       * *[2] Sorensen, D.C. (1992)*, Implicit Application of Polynomial Filters in a k-Step Arnoldi Method.
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
