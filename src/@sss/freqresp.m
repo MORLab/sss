@@ -2,11 +2,14 @@ function [G, omega, sys] = freqresp(varargin)
 % freqresp - Evaluates complex transfer function of LTI systems
 % 
 % Description:
-%       Evaluates complex transfer function of LTI systems
+%       Evaluates complex transfer function of LTI systems. If the vector
+%       of complex frequencies is not passed, then a range of imaginary
+%       frequencies is automatically selected.
 %
 % Syntax:
 %       G = freqresp(sys, s)
 %       G = freqresp(sys, s, opts)
+%       [G, omega] = freqresp(sys)
 %
 % Inputs:
 %       *Required Input Arguments:*
@@ -36,38 +39,42 @@ function [G, omega, sys] = freqresp(varargin)
 %
 %------------------------------------------------------------------
 % Authors:      Stefan Jaensch, Heiko Panzer, Sylvia Cremer, Rudy Eid
-%               Lisa Jeschek
+%               Lisa Jeschek, Alessandro Castagnotto
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  02 Nov 2015
+% Last Change:  07 Nov 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
+%% input parsing
 sys= varargin{1};
 
 omegaIndex = cellfun(@isfloat,varargin);
 if ~isempty(omegaIndex) && nnz(omegaIndex)
+    %frequency vector was specified
     omega = varargin{omegaIndex};
     varargin(omegaIndex)=[];
 else
+    %frequency vector will be identified
     [G,omega,sys] = getFreqRange(sys);
     return
 end
 
+%%  Compute the value of the transfer function at selected freq.
 if (sys.Ts==0) % Convert frequency to either laplace or z variable
     s = 1i* omega;
 else
     s = exp(1i* omega*sys.Ts);
 end
 
-for ii=1:length(varargin)
-    sys= varargin{ii};
+for iSys=1:length(varargin)
+    sys= varargin{iSys};
     m=sys.m; p=sys.p; n=sys.n;
     [A,B,C,D,E] = dssdata(sys);
     G=zeros(p,m,length(s));
-    for i=1:length(s)
-        G(:,:,i) = freqresp_local(A,B,C,D,E, s(i),n);
+    for iShift=1:length(s)
+        G(:,:,iShift) = freqresp_local(A,B,C,D,E, s(iShift),n);
     end
 end
 end
@@ -91,23 +98,21 @@ end
 
 function [m,omega,sys] = getFreqRange(sys)
 
-% --------- frequency range needs to be chosen ---------
+% frequency range needs to be chosen
 dc = freqresp(sys,0);    % G(0)=DCgain
 ft = freqresp(sys,inf);  % G(inf)=feedthrough
 
 %determine minimum frequency
 if any(any(isinf(dc))) || any(any(isnan(dc))) % pole at s=0
-    wmin = 0;   %***
-    dc = ones(size(dc));
+    wmin = 0;  dc = ones(size(dc));
 elseif any(any(abs(dc<1e-14)))   % transfer zero at s=0
-    wmin = 0;   %***
-    dc = ones(size(dc));
+    wmin = 0;  dc = ones(size(dc));
 else
     wmin=0; t = freqresp(sys, -1i*10^wmin);
-    while cellfun(@(x,y) norm(x-y)/norm(y),t,dc) > 1e-2
+    while norm(t-dc)/norm(dc) > 1e-2, 
         wmin=wmin-1; t = freqresp(sys, 10^wmin);
     end
-    while cellfun(@(x,y) norm(x-y)/norm(y),t,dc) < 1e-2
+    while norm(t-dc)/norm(dc) < 1e-2
         wmin=wmin+1; t = freqresp(sys, 10^wmin);
     end
     wmin=wmin-1;

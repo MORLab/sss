@@ -36,11 +36,12 @@ function  [mag, omega] = sigma(sys, varargin)
 % More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Heiko Panzer, Sylvia Cremer, Rudy Eid
+% Authors:      Heiko Panzer, Sylvia Cremer, Rudy Eid, 
+%               Alessandro Castagnotto
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  05 Nov 2015
+% Last Change:  07 Nov 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
@@ -60,7 +61,6 @@ else
     % frequency values need to be chosen
     [m, omega] = freqresp(sys);
 end
-
 mag = abs(m);
 
 if nargout>0 %no plot
@@ -90,7 +90,7 @@ for i=1:m %for each input
         end
       
         % amplitude
-        y_plot=squeeze(mag(i,j,:));
+        y_plot=squeeze(mag(j,i,:));
         plot(omega,y_plot,options{:})
         set(gca, 'XScale', 'log');
         set(gca, 'XLim', [min(omega) max(omega)]);
