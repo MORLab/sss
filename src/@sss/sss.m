@@ -361,6 +361,14 @@ classdef sss
             end
         end
         
+        %% Overload transpose() and ctranspose() for dual system
+        function sysDual = ctranspose(sys)
+            sysDual = sss(sys.A',sys.C',sys.B',sys.D',sys.E');
+        end
+        function sysDual = transpose(sys)
+            sysDual = sss(sys.A.',sys.C.',sys.B.',sys.D.',sys.E.');
+        end
+        
         %% Delay set and get functions
         function sys = set.InputDelay(sys, del); sys.InputDelay = del; end
         function sys = set.OutputDelay(sys, del); sys.OutputDelay = del; end
