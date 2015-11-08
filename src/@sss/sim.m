@@ -25,10 +25,13 @@ function [data,X,tx] = sim(sys,data,method,Ts_sample)
 %       -tx: time vector for X
 %
 % Examples:
+%       TODO
 %
 % See Also:
+%       iddata/sim, DynamicSystem/lsim
 %
 % References:
+%       TODO
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

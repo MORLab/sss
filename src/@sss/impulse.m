@@ -1,5 +1,5 @@
 function  [h, t] = impulse(sys, varargin)
-% impulse - Computes and/or plots the impulse response of a sparse LTI system
+% IMPULSE - Computes and/or plots the impulse response of a sparse LTI system
 %
 % Syntax:
 %       [h, t] = impulse(sys,t)

@@ -34,13 +34,13 @@ function varargout = eig(sys, varargin)
 %       -W: left eigenvectors (square matrix)
 %
 % Examples:
-%       Load the benchmark "build" (SSS,SISO) and compute the eigenvalues.
+%       Load the benchmark "build" (SSS, SISO) and compute the eigenvalues.
 %
 %> load build.mat
 %> sys = sss(A,B,C)
 %> e = eig(sys);
 %
-%       Load the benchmark "PEEC_MTLn1600" (DSS,MIMO) and compute the
+%       Load the benchmark "PEEC_MTLn1600" (DSS, MIMO) and compute the
 %       generalized eigenvalues as well as the right and left eigenvectors
 %       of the pair (sys.A,sys.E).
 %
@@ -50,7 +50,7 @@ function varargout = eig(sys, varargin)
 %> [V,D,W] = eig(sys);
 %
 % See Also:
-%       ss/eig, eigs
+%       ss/eig, sss/eigs
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State-Space, Model Order 

@@ -23,11 +23,13 @@ function [y,x_,index] = simDiscrete(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 %       -index: time index for x_
 %
 % Examples:
+%       TODO
 %
 % See Also: 
-%       sss/sim, RK4, backwardEuler
+%       sss/sim, simRK4, simBackwardEuler
 %
 % References:
+%       TODO
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

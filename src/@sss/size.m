@@ -1,8 +1,8 @@
 function [varargout]  = size(varargin)
-% size - Computes the size of a sparse LTI system (sss)
+% SIZE - Computes the size of a sparse LTI system (sss)
 %
 % Syntax:
-%       [p, m]  = size(sys);
+%       [p, m] = size(sys);
 % 
 % Description:
 %       Computes the size of a sparse LTI system (sss)
@@ -15,10 +15,13 @@ function [varargout]  = size(varargin)
 %       -m:  input dimension
 %
 % Examples:
+%       TODO
 %
 % See Also:
+%       TODO
 %
 % References:
+%       TODO
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

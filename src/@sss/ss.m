@@ -1,5 +1,5 @@
 function sys_ss = ss(sys_sss)
-% ss - Converts sparse LTI system (sss) to Matlab\control\ss
+% SS - Converts sparse LTI system (sss) to Matlab\control\ss
 %
 % Syntax:
 %       sys_ss = ss(sys_sss)
@@ -14,10 +14,13 @@ function sys_ss = ss(sys_sss)
 %       -sys_ss:  ss- or dss-object, respectively
 %
 % Examples:
+%       TODO
 %
 % See Also:
+%       TODO
 %
 % References:
+%       TODO
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

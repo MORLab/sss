@@ -1,5 +1,5 @@
 function sys = truncate(sys, idxOut, idxIn)
-% truncate - truncates a sparse LTI system (sss)
+% TRUNCATE - Truncates a sparse LTI system (sss)
 % 
 % Syntax:
 %       sys = truncate(sys, idxOut, idxIn)
