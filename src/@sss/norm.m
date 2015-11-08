@@ -23,6 +23,7 @@ function [nrm, varargout] = norm(sys, varargin)
 %       -hInfPeakfreq:    peak frequency of magnitude of H_inf norm
 %
 % Examples:
+%       TODO
 %
 % See also:
 %       NORM, SSS, LYAPCHOL

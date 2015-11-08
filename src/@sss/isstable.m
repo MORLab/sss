@@ -29,11 +29,13 @@ function [isstable,spectralAbscissa] = isstable(sys)
 %       -spectralAbscissa: i.e. the largest real part of the eigenvalues.
 %
 % Examples:
+%       TODO
 %	
 % See also:
 %       SSS\ISSD, EIGS, CHOL, SSS\PZMAP
 %
 % References:
+%       TODO
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

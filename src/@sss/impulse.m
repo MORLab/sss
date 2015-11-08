@@ -1,4 +1,4 @@
-function  [h, t] = impulse(sys, varargin)
+function  [varargout] = impulse(sys, varargin)
 % IMPULSE - Computes and/or plots the impulse response of a sparse LTI system
 %
 % Syntax:
@@ -19,10 +19,13 @@ function  [h, t] = impulse(sys, varargin)
 %       -h, t: vectors containing impulse response and time vector
 %
 % Examples:
+%       TODO
 %
 % See Also:
+%       TODO
 %
 % References:
+%       TODO
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
@@ -63,6 +66,23 @@ end
 
 % is time vector given?
 if exist('t', 'var') && ~isempty(t)
+    % Change the format of res to work with the following code
+    resOld = res; clear res; res = cell(sys.p,sys.m);
+    for iOut = 1:sys.p
+        for jIn = 1:sys.m
+            res{iOut,jIn} = [];
+            for kPole = 1:length(p)
+                res{iOut,jIn} = [res{iOut,jIn}, resOld{kPole}(iOut,jIn)];
+            end
+        end
+    end
+    
+    if size(t,1)>1 && size(t,2)==1
+        t=t';
+    elseif size(t,1)>1 && size(t,2)>1
+        error('t must be a vector.');
+    end
+    
     % calculate impulse response
     h=cellfun(@(x) sum((diag(x)*conj(exp(t'*p))'),1),res,'UniformOutput',false);
     h=cellfun(@real,h,'UniformOutput',false);
@@ -141,6 +161,14 @@ else
 end
 
 if nargout>0
+    temp=zeros(length(t),sys.p,sys.m);
+    for i=1:sys.p
+        for j=1:sys.m
+            temp(:,i,j)=h{i,1}';
+        end
+    end
+    varargout{1}=temp;    
+    varargout{2}=t;
     return
 end
 
