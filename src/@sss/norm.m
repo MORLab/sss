@@ -4,7 +4,7 @@ function [nrm, varargout] = norm(sys, varargin)
 % Syntax:
 %       nrm = NORM(sys)
 %       nrm = NORM (sys,p)
-%       [nrm, H_inf_peakfreq] = NORM(sys, p)
+%       [nrm, hInfPeakfreq] = NORM(sys, inf)
 %
 % Description:
 %       This function computes the p-norm of an LTI system given 
@@ -20,7 +20,7 @@ function [nrm, varargout] = norm(sys, varargin)
 %
 % Output Arguments:
 %       -nrm:               value of norm
-%       -H_inf_peakfreq:    peak frequency of magnitude of H_inf norm
+%       -hInfPeakfreq:    peak frequency of magnitude of H_inf norm
 %
 % Examples:
 %
@@ -63,27 +63,27 @@ end
 
 if isinf(p)
     % H_inf-norm
-    if isempty(sys.H_inf_norm)
+    if isempty(sys.hInfNorm)
         warning('calling MATLAB''s built-in norm');
-        [sys.H_inf_norm, sys.H_inf_peakfreq] = norm(ss(sys),inf);
+        [sys.hInfNorm, sys.hInfPeakfreq] = norm(ss(sys),inf);
         if nargout>1
-            varargout{1}=sys.H_inf_peakfreq;
+            varargout{1}=sys.hInfPeakfreq;
         end
         if inputname(1)
             assignin('caller', inputname(1), sys);
         end
     end
-    nrm=sys.H_inf_norm; 
+    nrm=sys.hInfNorm; 
 elseif p==2
     % H_2-norm
-    if ~isempty(sys.H_2_norm)
-        nrm=sys.H_2_norm;
+    if ~isempty(sys.h2Norm)
+        nrm=sys.h2Norm;
         return
     end
     % wenn D ~=0 ist H2 norm unendlich groﬂ
     if any(any(sys.D))
         nrm=inf;
-        sys.H_2_norm=inf;
+        sys.h2Norm=inf;
         return
     end
 
@@ -159,7 +159,7 @@ elseif p==2
         nrm=Inf;
     end
     
-    sys.H_2_norm=nrm;
+    sys.h2Norm=nrm;
     if inputname(1)
         assignin('caller', inputname(1), sys);
     end

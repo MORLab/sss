@@ -100,20 +100,17 @@ classdef sss
     properties(Hidden)
         poles, residues, invariantZeros
         
-        H_inf_norm = []
-        H_inf_peakfreq = []
-        H_2_norm = []
+        hInfNorm = []
+        hInfPeakfreq = []
+        h2Norm = []
         
         HankelSingularValues
-        T_bal, T_bal_inv
+        TBal, TBalInv
         ConGram, ConGramChol
         ObsGram, ObsGramChol
         
         simulationTime
         decayTime
-        
-        morInfo
-        % morInfo must be a struct containing the fields 'time', 'method', 'orgsys'
     end
     
     methods
