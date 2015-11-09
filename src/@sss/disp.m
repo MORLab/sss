@@ -47,7 +47,7 @@ function varargout = disp(sys)
 mc = metaclass(sys);
 str = [];
 if ~isempty(mc.Name) && ~isempty(sys.Name)
-    str = [mc.Name ' Model ' sys.Name];
+    str = [mc.Name ' Model ' sys.Name, ' '];
 end
 
 if sys.isDae;            str = [str '(DAE)'];
