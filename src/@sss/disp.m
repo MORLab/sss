@@ -71,10 +71,6 @@ else
     str = [str  char(10) 'Discrete-time state-space model.'];
 end
 
-if ~isempty(sys.morInfo)
-    str = [str char(10) sys.dispMorInfo];
-end
-
 if nargout>0
     varargout = {str};
 else
