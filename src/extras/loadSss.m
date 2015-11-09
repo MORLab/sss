@@ -70,6 +70,7 @@ if isfield(LoadData,'A') %1st order form
     if ~isfield(LoadData,'E'), LoadData.E = speye(size(LoadData.A)); end
     
 elseif isfield(LoadData,'M') %2nd order form
+%     msgID = 'sssMOR:loadSss:2ndOrder';
     warning('The system is in 2nd order form and will be converted to 1st order.')
     if ~isfield(LoadData,'D'), LoadData.D = zeros(size(LoadData.K)); end
     switch Opts.transf2nd %create the matrix E1 multiplying velocities
@@ -98,6 +99,7 @@ end
 
 %%  Create sss-object
 sys = sss(LoadData.A,LoadData.B,LoadData.C,LoadData.D,LoadData.E);
+sys.Name = fname;
 
 %%  Store additional data into the sss object
 % TODO: change sss class to allow such attributes
