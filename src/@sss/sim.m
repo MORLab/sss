@@ -14,9 +14,9 @@ function [data,X,tx] = sim(sys,data,method,Ts_sample)
 %       -sys:   an sss-object containing the LTI system
 %       -data:  iddata object containing input time series
 %       *Optional Input Arguments:*
-%       -method:    time ingetration method (available are:
-%                   'forwardEuler', 'backwardEuler', 'RK4', and 'discrete'
-%                   default: continues 'RK4', discrete 'discrete'
+%       -method:    time ingetration method 
+%                   ('forwardEuler' | 'backwardEuler' | 
+%                   'RK4' (def, continuous) | 'discrete' (def, descrete))
 %       -Ts_sample: sampling rate of the state-vector
 %
 % Output Arguments:      
