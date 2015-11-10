@@ -71,7 +71,6 @@ end
 
 % Store input and output names of the resulting system
 u = sys2.u;
-y = sys1.y;
 
 A = [sys1.A sys1.B*sys2.C; sparse(sys2.n,sys1.n) sys2.A];
 B = [sys1.B*sys2.D; sys2.B];
@@ -82,6 +81,5 @@ E = [sys1.E sparse(sys1.n,sys2.n); sparse(sys2.n,sys1.n) sys2.E];
 sys1.A=A; sys1.B=B; sys1.C=C; sys1.D=D; sys1.E=E;
 
 sys1.u = u;
-sys1.y = y;
 
 end

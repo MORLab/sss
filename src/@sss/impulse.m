@@ -8,14 +8,14 @@ function  [varargout] = impulse(sys, varargin)
 % Description:
 %       Computes and/or plots the impulse response of a sparse LTI system
 %
-% Input Arguments:      
+% Input Arguments:
 %       *Required Input Arguments:*
 %       -sys: an sss-object containing the LTI system
-%       *Optional Input Arguments:* 
+%       *Optional Input Arguments:*
 %       -t:     vector of time values to plot at
 %       -opts:  plot options. see <a href="matlab:help plot">PLOT</a>
 %
-% Outputs:      
+% Outputs:
 %       -h, t: vectors containing impulse response and time vector
 %
 % Examples:
@@ -28,9 +28,9 @@ function  [varargout] = impulse(sys, varargin)
 %       TODO
 %
 %------------------------------------------------------------------
-% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis
 % Toolbox developed at the Chair of Automatic Control in collaboration
-% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen.
 % For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % For any suggestions, submission and/or bug reports, mail us at
 %                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
@@ -38,11 +38,11 @@ function  [varargout] = impulse(sys, varargin)
 % More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Heiko Panzer, Sylvia Cremer
+% Authors:      Heiko Panzer, Sylvia Cremer, Jorge Luiz Moreira Silva
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  02 Nov 2015
+% Last Change:  10 Nov 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
@@ -98,7 +98,7 @@ else
         % store system to caller workspace
         if inputname(1)
             assignin('caller', inputname(1), sys);
-        end        
+        end
     end
     delta = tmax/999;
     t = 0:delta:tmax;
@@ -117,12 +117,12 @@ else
             end
         end
     end
-
+    
     % calculate impulse response
-%     cellfun(@(x) sum((diag(x)*conj(exp(t'*p))'),1),res,'UniformOutput',false);
+    %     cellfun(@(x) sum((diag(x)*conj(exp(t'*p))'),1),res,'UniformOutput',false);
     h=cellfun(@(x)   sum(diag(x)*transpose(exp(t'*p)),1),res,'UniformOutput',false);
     h=cellfun(@real,h,'UniformOutput',false);
-
+    
     % increase resolution as long as rel. step size is too large
     ex=1;
     while 1
@@ -154,7 +154,7 @@ else
             break
         end
         ex=ex+1;
-        if ex==5 
+        if ex==5
             break
         end
     end
@@ -167,60 +167,49 @@ if nargout>0
             temp(:,i,j)=h{i,1}';
         end
     end
-    varargout{1}=temp;    
+    varargout{1}=temp;
     varargout{2}=t;
     return
 end
 
 % --------------- PLOT ---------------
+%Defining axis limits
+maxOutput=max(cellfun(@max,h),[],2);
+minOutput=min(cellfun(@min,h),[],2);
+deltaOutput=0.1*(maxOutput-minOutput);
+orderMagnitude=floor(log10(deltaOutput))-1;
 
-% set random color if figure is not empty
+heightAxis=round(deltaOutput.*10.^(-orderMagnitude)).*10.^orderMagnitude;
+minOutputAxis=minOutput-heightAxis/2;
+maxOutputAxis=maxOutput+heightAxis/2;
+
+minOutputAxis(minOutput>0&minOutputAxis<=0)=0;
+maxOutputAxis(maxOutput<0&maxOutputAxis>=0)=0;
+%Generating figure to plot
+graphic=stepplot(ss(zeros(1,1),zeros(1,sys.m),zeros(sys.p,1),zeros(sys.p,sys.m)),[-2,-1]);
+opt=getoptions(graphic);
+opt.Title.String='Impulse Response';
+setoptions(graphic,opt);
+
 fig_handle=gcf;
+% set random color if figure is not empty
 if isempty(options)
-    if ~isempty(get(fig_handle, 'Children'))
-        c=rand(3,1); c=c/norm(c);
-        options = {'Color', c};
-    end
+    %  if ~isempty(get(fig_handle, 'Children'))
+    %      c=rand(3,1); c=c/norm(c);
+    %      options = {'Color', c};
+    %  end
 end
 
-axes_handle=zeros(sys.p,sys.m);
-for iOut=1:sys.p
-    for jIn=1:sys.m
-        axes_handle(iOut,jIn)=subplot(sys.p,sys.m,(jIn-1)*sys.p+iOut);
-        hold on;
+for jIn=1:sys.m
+    for iOut=1:sys.p
+        ax=fig_handle.Children(sys.p*sys.m+1-(jIn-1)*sys.p-(iOut-1));
+        ax.NextPlot='add';
         
-        if jIn==1 && sys.p>1
-            y_lab=sprintf('To Out(%i)',ceil(iOut/2));
-            ylabel(y_lab,'FontSize',10,'FontName','Helvetica','Color',[0.31,0.31,0.31],...
-            'FontWeight','normal','FontAngle','normal'); %'FontSmoothing','on',
-        end
-        if iOut==1 && sys.m>1
-            x_lab=sprintf('From In(%i)',jIn);
-            title(x_lab,'FontSize',10,'FontName','Helvetica','Color',[0.31,0.31,0.31],...
-            'FontWeight','normal','FontAngle','normal'); %'FontSmoothing','on',
-        end
-        
-        plot(t, h{iOut,jIn}, options{:});
-        mx=max(h{iOut,jIn}); mn=min(h{iOut,jIn});
-        if mx==0 && mn==0
-            mx=1; mn=-1;
-        end
-        set(gca, 'XLim', [0 max(t)], 'YLim', [mn-(mx-mn)/20, mx+(mx-mn)/20]);
-
-%         ylabel('Amplitude') 
-%         xlabel('Time (seconds)') 
-        
+        plot(ax,t, h{iOut,jIn}, options{:});
+        set(ax, 'XLim', [0 max(t)], 'YLim', [minOutputAxis(iOut),maxOutputAxis(iOut)]);
     end
 end
-
-axes('Position',[0 0 1 1],'Visible','off');
-text(0.5,.99,'Impulse Response','FontName','Helvetica','FontSize',11,'FontWeight','bold','HorizontalAlignment','center','VerticalAlignment','cap');
-text(0.5,0.01,'Time (seconds)','FontName','Helvetica','FontSize',11,'FontWeight','normal','HorizontalAlignment','center','VerticalAlignment','bottom');
-h=text(0.01,0.5,'Amplitude','FontName','Helvetica','FontSize',11,'FontWeight','normal','rotation',90);
-set(h,'HorizontalAlignment','center','VerticalAlignment','top');
-
 % avoid output
 clear h t
 
 
-    
