@@ -61,7 +61,7 @@ function [p, z] = pzmap(sys, varargin)
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  05 Nov 2015
+% Last Change:  10 Nov 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
@@ -196,6 +196,9 @@ end
         hLegendEntry = get(hAnnotation','LegendInformation');
         set(hLegendEntry,'IconDisplayStyle','off')
         set(axes_handle(1,1), 'XLim', limx, 'YLim', limy);
+        xlabel('Real Axis (seconds^{-1})');
+        ylabel('Imaginary Axis (seconds^{-1}');
+        title('Pole-Zero Map');
         
         if sys.Ts ~= 0 %plot unitary circle in case of discrete system
             r=1; %radius

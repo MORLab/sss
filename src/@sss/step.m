@@ -44,7 +44,7 @@ function  [h, t] = step(sys, varargin)
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  05 Nov 2015
+% Last Change:  10 Nov 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
@@ -168,7 +168,7 @@ axes_handle=zeros(sys.p,sys.m);
 
 maxOutput=max(cellfun(@max,h),[],2);
 minOutput=min(cellfun(@min,h),[],2);
-deltaOutput=0.2*(maxOutput-minOutput);
+deltaOutput=0.1*(maxOutput-minOutput);
 orderMagnitude=floor(log10(deltaOutput))-1;
 
 heightAxis=round(deltaOutput.*10.^(-orderMagnitude)).*10.^orderMagnitude;
