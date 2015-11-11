@@ -20,16 +20,19 @@ function [G, omega, sys] = freqresp(varargin)
 %       
 % Outputs:      
 %       -G: vector of complex frequency response values
-%       -omega: vector with the frequencies whcih the response was
-%       computed
+%       -omega: vector with the frequencies at which the response was computed
 %
 % Examples:
-%       load build.mat
-%       sys=sss(A,B,C);
-%       [G,omega]=freqresp(sys);
+%       The following code computes the frequency response of the benchmark
+%       'build' and returns also the vector of frequencies at which the
+%       response was computed |omega|:
+%
+%> load build.mat
+%> sys=sss(A,B,C);
+%> [G,omega]=freqresp(sys);
 %
 % See Also:
-%       sss/bode, sss/sigma       
+%       bode, sigma     
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
