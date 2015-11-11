@@ -6,7 +6,7 @@ function sys1 = mtimes(sys1, sys2)
 %       prod = sys1*sys2
 %
 % Description:
-%       mtimes computes the product of two LTI systems: u-->sys2-->sys1-->y
+%       mtimes computes the product of two LTI systems: prod = sys1*sys2,
 %       i.e., the output of sys2 is connected directly to the input
 %       of sys1.
 %
@@ -17,7 +17,7 @@ function sys1 = mtimes(sys1, sys2)
 %       prod: sss-object representing sys1*sys2
 %
 % See Also:
-%       sss/plus, sss/minus
+%       plus, minus
 %
 % Examples:
 %       TODO

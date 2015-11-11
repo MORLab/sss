@@ -3,7 +3,7 @@ function [nrm, varargout] = norm(sys, varargin)
 %
 % Syntax:
 %       nrm = NORM(sys)
-%       nrm = NORM (sys,p)
+%       nrm = NORM(sys,p)
 %       [nrm, hInfPeakfreq] = NORM(sys, inf)
 %
 % Description:
@@ -19,14 +19,14 @@ function [nrm, varargout] = norm(sys, varargin)
 %       -p: 2 for H_2-norm or inf for H_inf-norm
 %
 % Output Arguments:
-%       -nrm:               value of norm
+%       -nrm:             value of norm
 %       -hInfPeakfreq:    peak frequency of magnitude of H_inf norm
 %
 % Examples:
 %       TODO
 %
 % See also:
-%       NORM, SSS, LYAPCHOL
+%       norm, sss, lyapchol
 %
 % References:
 %       * *[1] Antoulas (2005), Approximation of large-scale Dnymical Systems
