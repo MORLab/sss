@@ -5,7 +5,7 @@ function sys = clear(sys)
 %       sys = CLEAR(sys)
 %
 % Description:
-%       sys = clear(sys) deletes the system matrices and lables of the
+%       sys = clear(sys) deletes the system matrices and labels of the
 %       sparse state-space (sss)-object sys.
 %
 % Input Arguments:
@@ -15,12 +15,14 @@ function sys = clear(sys)
 %       -sys: the same system with cleared system matrices and labels
 %
 % Examples:
-%       load build.mat;
-%       sys=sss(A,B,C);
-%       whos('sys'); %shows the size of sys
-%       sys=clear(sys);
-%       whos('sys') % shows the size of sys with cleared matrices and
-%       labels.
+%> load build.mat;
+%> sys=sss(A,B,C);
+%> whos('sys'); %shows the size of sys
+%> sys=clear(sys);
+%> whos('sys') % shows the size of sys with cleared matrices and labels
+%
+% See Also:
+%       clc
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
