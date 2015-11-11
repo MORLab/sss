@@ -15,7 +15,12 @@ function sys = clear(sys)
 %       -sys: the same system with cleared system matrices and labels
 %
 % Examples:
-%       TODO
+%       load build.mat;
+%       sys=sss(A,B,C);
+%       whos('sys'); %shows the size of sys
+%       sys=clear(sys);
+%       whos('sys') % shows the size of sys with cleared matrices and
+%       labels.
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

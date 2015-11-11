@@ -5,7 +5,9 @@ function sys = c2d(sys,Ts,method)
 %       sys = C2D(sys,Ts,method)
 %
 % Description:
-%       TODO
+%       C2D coverts a continuous sparse state system sys in a discrete sparse
+%       state system. It is required for the conversion the samping Time Ts
+%       and the chosen method, that can be explicit Euler or implicit Euler.
 %
 % Input Arguments:
 %       -sys: continuous time sss-object

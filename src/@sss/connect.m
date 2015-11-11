@@ -20,7 +20,19 @@ function sys_S = connect(varargin)
 %       -sys_S: closed loop sparse state space (sss)-object
 %
 % Examples:
-%       TODO
+%       load build.mat
+%       sys=sss(A,B,C);
+%       Controller=sss(tf(pid(10^3,0,0)));
+%       sys.y={'y'};
+%       sys.u={'u'};
+%       Controller.u={'e'};
+%       Controller.y={'u'};
+%       Subtract=sss(zeros(1,1),zeros(1,2),zeros(1,1),[1 -1]);
+%       Subtract.u={'desired';'y'};
+%       Subtract.y={'e'};
+%       connectedSys=connect(sys,Controller,Subtract,{'desired'},{'y'});
+%       step(connectedSys);
+%            
 %
 % See Also:
 %       sss/connectSss, sss/append

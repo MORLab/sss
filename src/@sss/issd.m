@@ -29,7 +29,9 @@ function [issd, numericalAbscissa] = issd(sys)
 %       -numericalAbscissa: the 20 largest eigenvalues of sys.
 %
 % Examples:
-%       TODO
+%       load cdplayer.mat
+%       sys=sss(A,B,C);
+%       [issd, numericalAbscissa]=issd(sys);
 %	
 % See Also:
 %       ispd, eigs, chol, sparse

@@ -17,7 +17,7 @@ function sys1 = mtimes(sys1, sys2)
 %       prod: sss-object representing sys1*sys2
 %
 % See Also:
-%       TODO
+%       sss/plus, sss/minus
 %
 % Examples:
 %       TODO

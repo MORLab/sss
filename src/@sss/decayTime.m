@@ -92,7 +92,7 @@ for i=1:sys.p
             I_dom = 1:length(p);
         end
         % use slowest among dominant poles
-        [h2_dom, I2] = sort(abs(real(p(I_dom)))); %#ok<ASGLU>
+        [h2_dom, I2] = sort(abs(real(p(I_dom))));
 
         % when has slowest pole decayed to 1% of its maximum amplitude?
         tmax=max([tmax, log(100)/abs(real(p(I_dom(I2(1)))))]);

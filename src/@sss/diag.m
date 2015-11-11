@@ -84,7 +84,9 @@ if sys.isDescriptor
 else
     [T,A] = eig(full(sys.A));
 end
-
+if rcond(T)<100*eps
+    warning('Autovector matrix is nearly singular or badly scaled: results might be innacurate.');
+end
 % transform system to diagonal form
 B = (sys.E*T)\sys.B;
 C = sys.C*T;

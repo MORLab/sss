@@ -16,13 +16,17 @@ function diff = minus(sys1, sys2)
 %       -sss-object representing sys1-sys2
 %
 % Examples:
-%       TODO
+%       In this example a model will be reduced and its behaviour will be
+%       compared with the original model.
+%       load build.mat
+%       sys=sss(A,B,C);
+%       sysReduced=tbr(sys,12);
+%       sysError=minus(sysReduced,sys);
+%       H2_Norm=norm(sysError,2);
+%       H2_Infty=norm(sysError,inf);
 %
 % See Also:
-%       TODO
-%
-% References:
-%       TODO
+%       sss/plus, sss/mtimes
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

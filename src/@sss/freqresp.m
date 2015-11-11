@@ -20,15 +20,16 @@ function [G, omega, sys] = freqresp(varargin)
 %       
 % Outputs:      
 %       -G: vector of complex frequency response values
+%       -omega: vector with the frequencies whcih the response was
+%       computed
 %
 % Examples:
-%       TODO
+%       load build.mat
+%       sys=sss(A,B,C);
+%       [G,omega]=freqresp(sys);
 %
 % See Also:
-%       TODO
-%       
-% References:
-%       TODO
+%       sss/bode, sss/sigma       
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

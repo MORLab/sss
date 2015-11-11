@@ -14,8 +14,12 @@ function sys = append(varargin)
 %       -sys_S: appended (open loop) sparse state-space (sss)-object
 %
 % Examples:
-%       TODO
-%
+%       load build.mat
+%       sysBuild=sss(A,B,C);
+%       load cdplayer.mat
+%       sysCdplayer=sss(A,B,C);
+%       appendedSys=append(sysBuild,sysCdplayer);
+%       spy(appendedSys);
 % See Also:
 %       sss/connect
 %
