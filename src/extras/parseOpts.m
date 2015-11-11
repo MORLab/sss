@@ -1,5 +1,43 @@
 function Opts = parseOpts(Opts,Def)
-
+% PARSEOPTS - Createa an sss object from .mat file data
+%
+% Syntax:
+%       Opts = PARSEOPTS(Opts,Def)
+%
+% Description:
+%       TODO
+%
+% Input Arguments:
+%       -Opts: struct containing optional input arguments
+%       -Def: default values for the fieldnames defined in the struct Opts
+%
+% Output Arguments:
+%       -Opts: struct containing the optional arguments after the parsing
+%
+% Examples:
+%       TODO
+%
+% See Also:
+%       TODO
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
+% Authors:      Alessandro Castagnotto
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  11 Nov 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
 
 fnames = fieldnames(Def); %target field names
 

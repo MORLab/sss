@@ -1,52 +1,79 @@
 function sys = loadSss(fname,Opts)
-%LOADSSS - create sss object from .mat file data
-% ------------------------------------------------------------------
-% ssys = loadSss(fname,Opts)
-% Inputs:       * fname : string containing either the name of a
-%                         benchmark distributed with the sss class or
-%                         the full path to the mat file containing 
-%                         the matrices
-%               * Opts: a structure containing following options
-%                   -transf2nd: Type of transfromation from 2nd to
-%                       1st order form {'I', 'K', '-K', 'alpha'}
-% TODO: add Opts
-% Outputs:      * sys: sss object of the benchmark system
-% ------------------------------------------------------------------
-% USAGE:  loadSss lets you define the path to a .mat file in which 
-% the system matrices are stored, either in the form (A,B,C,D,E) - 1st
-% order - or (M,Da,K,B,C) - 2nd order.
+% LOADSSS - Creates an sss object from .mat file data
 %
-% If not all of the matrices are found in the .mat file, following
-% assumptions will be applied:
-%   - C = B'
-%   - D = zeros(size(C,1),size(B,2))
-%   - E = speye(size(A))
+% Syntax:
+%       ssy = LOADSSS(fname,Opts)
 %
-% The conversion from 2nd order to 1st order gives some additional 
-% design freedom that can be parially selected by passing the 
-% appropriate options in the Opts structure.
+% Description:
+%       loadSss lets you define the path to a .mat file in which 
+%       the system matrices are stored, either in the form (A,B,C,D,E) - 1st
+%       order - or (M,Da,K,B,C) - 2nd order.
 %
-% The output is an sss-object containing the 1st order system matrices
-% as well as other information about the system that might be stored
-% in the .mat file.
+%       If not all of the matrices are found in the .mat file, following
+%       assumptions will be applied:
+% 
+%       * C = B'
+%       * D = zeros(size(C,1),size(B,2))
+%       * E = speye(size(A))
+% 
+%       The conversion from 2nd order to 1st order gives some additional 
+%       design freedom that can be parially selected by passing the 
+%       appropriate options in the Opts structure.
 %
-% See also SSS
+%       The output is an sss-object containing the 1st order system matrices
+%       as well as other information about the system that might be stored
+%       in the .mat file.
 %
-% ------------------------------------------------------------------
-% REFERENCES:
-% TODO: add references to the technical report or paper describing sssMOR
-% ------------------------------------------------------------------
-% This file is part of sssMOR, a Sparse State Space, Model Order
-% Reduction and System Analysis Toolbox developed at the Institute 
-% of Automatic Control, Technische Universitaet Muenchen.
-% For updates and further information please visit www.rt.mw.tum.de
+% Input Arguments:
+%       -fname: string containing either the name of a benchmark
+%       distributed with the sss class or the full path to the .mat file
+%       containing the matrices
+%       -Opts: a structure containing the following options
+%           -transf2nd: Type of transformation from 2nd to
+%                       1st order form: [{'I'}, 'K', '-K', 'alpha']
+%
+% Output Arguments:
+%       -sys: sss object of the benchmark system
+%
+% Examples:
+%       The following code generates an sss-object from the .mat file data
+%       'rail_1357':
+%
+%> load rail_1357.mat
+%> sys = sss(A,B,C,[],E);
+%> sysLoadSss = loadSss('rail_1357')
+%> sys.D==sysLoadSss.D;
+%
+%       Another example, this time using the 2nd order model 'gyro' which
+%       is converted into 1st order using the default matrix 'I' as 
+%       submatrix E1:
+%
+%> sys = loadSss('gyro')
+%
+% See Also:
+%       sss
+%
+% References:
+%       TODO: add references to the technical report or paper describing sssMOR
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % For any suggestions, submission and/or bug reports, mail us at
-%                      -> sssMOR@rt.mw.tum.de <-
-% ------------------------------------------------------------------
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
 % Authors:      Alessandro Castagnotto
-% Last Change:  11 Aug 2015
-% Copyright 2015 Chair of Automatic Control, TU Muenchen
-% ------------------------------------------------------------------
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  11 Nov 2015
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
 
 %%  Parse input and define default options
 if nargin == 0, error('No benchmark system defined'),
