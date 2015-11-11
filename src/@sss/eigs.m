@@ -9,11 +9,11 @@ function varargout = eigs(sys, varargin)
 %       eigs(sys,k,sigma,opts)
 %
 % Description:
-%       Compute eigenvalues of the sparse state space system using sparse
+%       Compute eigenvalues of the sparse state-space system using sparse
 %       matrices.
 % 
 % Input Arguments:
-%       *required Input Arguments:*
+%       *Required Input Arguments:*
 %       -sys:   An sss-object containing the LTI system
 %       *Optional Input Arguments:*
 %       -k,sigma,opts:  Output and computation options,
@@ -27,7 +27,7 @@ function varargout = eigs(sys, varargin)
 % Examples:
 %       The following code returns the 6 (default) eigenvalues with the
 %       largest magnitude ('lm', default) of the benchmark
-%       "SpiralInductorPeec":
+%       'SpiralInductorPeec':
 %
 %> load SpiralInductorPeec
 %> p = size(C,1); m = size(B,2);
@@ -35,7 +35,7 @@ function varargout = eigs(sys, varargin)
 %> D = eigs(sys)
 %
 %       You can use optional input arguments in order to define how many
-%       eigenvalues should be computed (k) and in order to specify sigma.
+%       eigenvalues should be computed (|k|) and in order to specify |sigma|.
 %
 %       The following code returs the 5 eigenvalues with the smallest
 %       magnitude ('sm'):
