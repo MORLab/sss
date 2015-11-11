@@ -11,22 +11,21 @@ function sys = append(varargin)
 %       -sys1,sys2,...: sparse state space (sss)-objects
 %
 % Output Arguments:
-%       -sysS: appended (open loop) sparse state-space (sss)-object
+%       -sys: appended (open loop) sparse state-space (sss)-object
 %
 % Examples:
 %		This code loads two benchmark models included in the toolbox
-%		and plots its bode diagram using the sparse state space class:
+%		and groups the models by |append|ing their inputs and outputs:
 %
 %> load build; 
 %> sysBuild = sss(A,B,C);
-%> bode(sys);
 %> load CDplayer
 %> sysCdplayer = sss(A,B,C);
-%> spy(append(sysBuild,sysCdplayer))
+%> sysAppended = append(sysBuild,sysCdplayer);
+%> spy(sysAppended)
 %
 % See Also:
-%       sss/connect, append
-%
+%       connect, ss/append, ss/blkdiag
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
