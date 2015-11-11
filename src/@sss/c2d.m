@@ -2,6 +2,7 @@ function sys = c2d(sys,Ts,method)
 % C2D - Converts a sss object from continues to discrete
 %
 % Syntax:
+%       sys = C2D(sys,Ts)
 %       sys = C2D(sys,Ts,method)
 %
 % Description:
@@ -20,8 +21,9 @@ function sys = c2d(sys,Ts,method)
 %       -method: string containing the selected discretization method. 
 %                Possible options are: [{'forward'} / 'backward' / 'tustin' / 'zoh']
 %
-%//Note: This function currently works only for the method 'forward', but
-%the other methods will be implemented in one of the next releases.
+%// Note: This function currently works only for the discretization method 'forward',
+%       but the other discretization methods will be implemented in one of the next
+%       releases.
 %
 % Output Arguments:
 %       -sys: discrete time sss-object
@@ -50,7 +52,7 @@ function sys = c2d(sys,Ts,method)
 % More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Stefan Jaensch (jaensch@tfd.mw.tum.de)
+% Authors:      Stefan Jaensch (jaensch@tfd.mw.tum.de), Maria Cruz Varona
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
