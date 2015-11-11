@@ -7,7 +7,7 @@ function [isstable,spectralAbscissa] = isstable(sys)
 %       [isstable,spectralAbscissa] = ISSTABLE(sys)
 %
 % Description:
-%       This function determines wether the LTI, sss system "sys" is 
+%       This function determines whether the LTI, sss system "sys" is 
 %       asymptotically stable. The computations are meant to avoid 
 %       operations on full matrices. However, whenever this is not possible,
 %       a warning is issued.
@@ -29,13 +29,26 @@ function [isstable,spectralAbscissa] = isstable(sys)
 %       -spectralAbscissa: i.e. the largest real part of the eigenvalues.
 %
 % Examples:
-%       load cdplayer.mat
-%       sys=sss(A,B,C);
-%       [issd, numericalAbscissa]=issstable(sys);
-%	
-% See also:
-%       SSS\ISSD, EIGS, CHOL, SSS\PZMAP
+%       The following code checks if the benchmark 'CDplayer' is
+%       asymptotically stable:
 %
+%> load CDplayer.mat
+%> sys=sss(A,B,C);
+%> [issd, numericalAbscissa]=issstable(sys);
+%
+%       Another example, this time using the benchmark 'rail_5177' (DSSS,
+%       MIMO):
+%
+%> load rail_5177.mat
+%> sys=sss(A,B,C,[],E);
+%> isstable(sys)
+%
+% See Also:
+%       issd, eigs, chol, pzmap
+%
+% References:
+%       * *[1] Panzer (2014)*, Model order reduction by Krylov subspace methods
+%       with Global Error Bounds and Automatic Choice of Parameters
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
@@ -87,5 +100,5 @@ if  spectralAbscissa < 0
         isstable = NaN;
     else
         if nargout<1, warning('The system is unstable.'); else isstable=0;end
-    end
+end
 end
