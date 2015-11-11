@@ -22,7 +22,7 @@ function tmax = decayTime(sys)
 %       -tmax: time after which the system has settled down
 %
 % Examples:
-%       This code computes the decay time of the benchmark "build":
+%       This code computes the decay time of the benchmark 'build':
 %
 %> load build; 
 %> sys = sss(A,B,C);
@@ -34,7 +34,7 @@ function tmax = decayTime(sys)
 %> tmax = decayTime(sys);
 %
 % See Also:
-%       sss/residue, sss/step, sss/impulse
+%       residue, step, impulse
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
