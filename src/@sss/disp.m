@@ -6,8 +6,13 @@ function varargout = disp(sys)
 %       varargout = DISP(sys)
 %
 % Description:
-%       DISP(sys) displays information about a sparse state-space model
-%
+%       DISP(sys) displays information about a sparse state-space model:
+%        
+%       # SSS, DSSS or DAE
+%       # SISO, SIMO, MISO, MIMO
+%       # Number of state, input and output variables
+%       # Continous or discrete-time state-space model
+% 
 % Input Arguments:
 %       -sys: an sss-object containing the LTI system
 %
@@ -15,10 +20,10 @@ function varargout = disp(sys)
 %       -varargout: character (char) containing the information about the sss-object
 %
 % Examples:
-%       To display some information about the benchmark "build" (SSS, SISO)
+%       To display some information about the benchmark "iss" (SSS, MIMO)
 %       use:
 %
-%> load build.mat
+%> load iss.mat
 %> sys = sss(A,B,C);
 %> disp(sys)
 %
