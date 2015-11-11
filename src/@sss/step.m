@@ -92,9 +92,9 @@ if builtinMATLAB
         end
     else
         if nargout>0
-            [temp,t]=step(ss(sys),t);
+            [temp,t]=step(ss(sys));
         else
-            step(ss(sys),t);
+            step(ss(sys));
         end
     end
         
