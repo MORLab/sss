@@ -12,7 +12,7 @@ function varargout = eig(sys, varargin)
 %       e = eig(sys) returns a column vector e containing the eigenvalues of 
 %       the sparse state-space system sys. If sys is descriptor (sys.E ~= I, 
 %       sys.E invertible), then the column vector e contains the generalized
-%       eigenvalues of the pencil (sys.A,sys.E).
+%       eigenvalues of the pencil (sys.A, sys.E).
 %
 %       [V,D] = eig(sys) returns diagonal matrix D of eigenvalues and matrix V 
 %       whose columns are the corresponding right eigenvectors, so that 
@@ -34,29 +34,29 @@ function varargout = eig(sys, varargin)
 %       -W: left eigenvectors (square matrix)
 %
 % Examples:
-%       Load the benchmark "build" (SSS, SISO) and compute the eigenvalues.
+%       Load the benchmark 'build' (SSS, SISO) and compute the eigenvalues.
 %
 %> load build.mat
 %> sys = sss(A,B,C)
 %> e = eig(sys);
 %
-%       Load the benchmark "PEEC_MTLn1600" (DSS, MIMO) and compute the
+%       Load the benchmark 'rail_1357' (DSSS, MIMO) and compute the
 %       generalized eigenvalues as well as the right and left eigenvectors
-%       of the pair (sys.A,sys.E).
+%       of the pair (sys.A, sys.E).
 %
-%> load PEEC_MTLn1600.mat
+%> load rail_1357.mat
 %> p = size(C,1); m = size(B,2);
 %> sys = sss(A,B,C,zeros(p,m),E)
 %> [V,D,W] = eig(sys);
 %
 % See Also:
-%       ss/eig, sss/eigs
+%       ss/eig, eigs
 %
 %------------------------------------------------------------------
-% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State-Space, Model Order 
-% Reduction and System Analysis Toolbox developed at the Chair of 
-% Automatic Control, Technische Universitaet Muenchen. For updates 
-% and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % For any suggestions, submission and/or bug reports, mail us at
 %                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
 %
