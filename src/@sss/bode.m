@@ -23,8 +23,11 @@ function  [varargout] = bode(varargin)
 %       returned.
 %
 % Input Arguments:
+%       *Required Input Arguments:*
 %       -sys: sss-object containing the LTI system
 %       -omega: a vector of frequencies
+%       *Optional Input Arguments:*
+%       -'frd': string option to obtain an frd object as output argument
 %
 % Output Arguments:
 %       - mag/phase: magnitude and phase response
@@ -40,10 +43,7 @@ function  [varargout] = bode(varargin)
 %> bode(sys);
 %
 % See Also:
-%   sss/freqresp, sss/sigma
-%
-% References:
-%       TODO
+%   freqresp, sigma
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
