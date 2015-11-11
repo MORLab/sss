@@ -15,10 +15,10 @@ function sysd = diag(sys)
 %       conjugate eigenvalues with real part delta and imaginary part omega, 
 %       then the diagonal matrix sysd.A has a block-diagonal structure:
 %
-%       sysd.A = [delta1  omega1    0      0;
+%       |sysd.A = [delta1  omega1    0      0;
 %                 -omega1 delta1    0      0;
 %                    0       0   delta2  omega2;
-%                    0       0   -omega2 delta2]. 
+%                    0       0   -omega2 delta2]|.
 %       
 %       During the diagonalization, the C-vector is normalized to contain
 %       ones.
@@ -31,20 +31,23 @@ function sysd = diag(sys)
 %
 % Examples:
 %       To compute the diagonal state-space realization of the benchmark
-%       "build" (SSS, SISO) use
+%       "build" (SSS, SISO) use:
 %
 %> load build.mat
 %> sys = sss(A,B,C)
 %> sysd = diag(sys)
 %> [Ad,Bd,Cd] = ssdata(sysd);
 %
-%       You can compare the sparsity patterns of A and Ad:
+%       You can compare the sparsity patterns of |A| and |Ad|:
 %
 %> figure;
 %> subplot(1,2,1); spy(sys.A); title('Sparsity pattern of A');
 %> subplot(1,2,2); spy(Ad); title('Sparsity pattern of Ad');
 %
-%       DIAG also supports SIMO, MISO and MIMO as well as DSSS systems:
+%       DIAG also supports SIMO, MISO and MIMO as well as DSSS systems.
+%       The following code loads the benchmark 'rail_1357' (DSSS, MIMO)
+%       and transforms it into a diagonal representation with E=I (SSS,
+%       MIMO):
 % 
 %> load rail_1357.mat
 %> p = size(C,1); m = size(B,2);
@@ -53,7 +56,7 @@ function sysd = diag(sys)
 %> [Ad,Bd,Cd,Dd] = ssdata(sysd);
 %
 % See Also: 
-%        sss/eig, sss/residue
+%        eig, residue
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
