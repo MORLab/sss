@@ -22,14 +22,14 @@ function [y,x_,index] = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample)
 %       -x_: matrix of state vectors
 %       -index: time index for x_
 %
-% Examples:
-%       TODO
-%
 % See Also: 
 %       sss/sim, simForwardEuler, simRK4
 %
 % References:
-%       TODO
+%       Gear, C. William, Numerical Initial Value Problems in Ordinary Differential Equations
+%       Shampine, L. F. , Numerical Solution of Ordinary Differential Equations, Chapman & Hall, New York, 1994.
+%       Shampine, L. F. and M. K. Gordon, Computer Solution of Ordinary Differential Equations: the Initial Value Problem, W. H. Freeman, San Francisco, 1975.
+%
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

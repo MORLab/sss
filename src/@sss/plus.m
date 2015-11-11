@@ -1,12 +1,15 @@
 function sum = plus(sys1, sys2)
-% plus - Computes sum of two LTI systems: u-->(sys1+sys2)-->y
+% PLUS - Computes sum of two LTI systems: u-->(sys1+sys2)-->y
 % 
 % Syntax:
-%       sum = plus(sys1, sys2)
+%       sum = PLUS(sys1, sys2)
 %       sum = sys1+sys2
 % 
 % Description:
-%       Computes sum of two LTI systems: u-->(sys1+sys2)-->y 
+%       PLUS gives as output the system sum, which is the combination of two different systems sys1 and sys2 that have the
+%       same number of inputs/outputs. The output of the system sum will be
+%       equivalent to the sum of the outputs from sys1 and sys2,
+%       considering that they are excited to the same input u.
 %
 % Input Arguments:
 %       -sys1, sys2: summand sss-object
@@ -15,13 +18,17 @@ function sum = plus(sys1, sys2)
 %       -sum: sss-object representing sys1+sys2
 %
 % Examples:
-%       TODO
+%> load build.mat
+%> sysBuild=sss(A,B,C);
+%> size(sysBuild)
+%> sysRandom=rss(10);
+%> size(sysRandom);
+%> plusSystems=plus(sysBuild,sysRandom);
+%> size(plusSystems)
 %
 % See Also:
-%       TODO
+%       minus, mtimes
 %
-% References:
-%       TODO
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

@@ -89,24 +89,14 @@ if ~isempty(sys.invariantZeros)
     z=sys.invariantZeros;
 else
     % no, they are not. solve for gen. eigenvalues of Rosenbrock matrix
-    %z = cell(sys.p,sys.m);
-    %for i=1:sys.m
-    %    for j=1:sys.p
     if sys.m==sys.p
             z=eig(full([sys.A,sys.B;sys.C,sys.D]), ...
                        [full(sys.E),zeros(sys.n,sys.m);zeros(sys.p,sys.n),zeros(sys.p,sys.m)]);
     else
         z=zeros(0,1);
     end
-            % ensure column vector
-     %       if size(z{j,i},1)<size(z{j,i},2)
-     %           z{j,i}z=transpose(z{j,i});
-     %       end
-     %   end
-    %end
 
     % remove zeros at infinity
-    %z=cellfun(@(x) x(~isinf(x)), z, 'UniformOutput', false);
     z=z(~isinf(z));
     sys.invariantZeros=z;
     
@@ -124,7 +114,6 @@ end
 
 options=varargin;
 fig_handle=gcf; %generate figure
-%axes_handle=zeros(sys.p,sys.m);
 
 % set random color if figure is not empty
 if isempty(options)
@@ -133,16 +122,10 @@ if isempty(options)
         options = {'Color', c};
     end
 end
-% loop for plotting the pole-zero-maps
-%for j=1:sys.p %secondly, go through all outputs
-%    for i=1:sys.m %firstly, go through all inputs
-        %rows: outputs, columns: inputs    
-        %axes_handle(j,i)=subplot(sys.p,sys.m,j*sys.m+i-sys.m);
         axes_handle=subplot(1,1,1);
         box on
         
         % plot o for zeros
-        %plot_handle=plot(real(z{j,i}), imag(z{j,i}), options{:});
         plot_handle=plot(real(z), imag(z), options{:}); 
         set(plot_handle, 'Marker', 'o', 'LineStyle', 'none');
         hold on
@@ -154,7 +137,6 @@ end
         set(hLegendEntry,'IconDisplayStyle','off')
 
         % determine x and y boundary
-      %  mni=min(imag([p;z{j,i}])); mxi=max(imag([p;z{j,i}]));
         mni=min(imag([p;z])); mxi=max(imag([p;z]));
         if mni*mxi<0 
             limy = [mni-(mxi-mni)/20 mxi+(mxi-mni)/20];
@@ -169,8 +151,7 @@ end
                 limy(2) = 1;
             end
         end
-        
-        %mnr=min(real([p;z{j,i}])); mxr=max(real([p;z{j,i}]));
+
         mnr=min(real([p;z])); mxr=max(real([p;z]));
         limx=[mnr*1.05,mxr*1.05];
         if mnr*mxr<0 
@@ -205,34 +186,6 @@ end
             circlePoints=0:0.01:2*pi;
             plot_handle=plot(r*cos(circlePoints),r*sin(circlePoints),':k');
         end
-
-        % label input / output number
-%         if j==1 && sys.m>1
-%             x_lab=sprintf('From In(%i)',i);
-%             title(x_lab)
-%         end
-%         if i==1 && sys.p>1
-%             y_lab=sprintf('To Out(%i)',j);
-%             ylabel(y_lab)
-%         end
-%    end
-%end
-
-% create invisible background plot for labelling
-% h=axes('position',[0,0,1,1],'Visible','off');
-% text(0.4,0.98,'Pole-Zero Map');
-% text(0.5,0.02,'Real Axis')
-% text(0.01,0.5,'Imaginary Axis','Rotation',90)
-% set(h,'HandleVisibility','off')
-% hold on
-% % bring subplots to front
-% for i=1:size(axes_handle,1)
-%     for j=1:size(axes_handle,2)
-% %         set(fig_handle, 'CurrentAxes', axes_handle(i,j));
-%         axes(axes_handle(i,j))
-%     end
-% end
-% set(fig_handle, 'CurrentAxes', axes_handle(1,1));
 
 % make subplots content of the figure
 set(fig_handle,'UserData',axes_handle)

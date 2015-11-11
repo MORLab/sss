@@ -23,7 +23,10 @@ function [nrm, varargout] = norm(sys, varargin)
 %       -hInfPeakfreq:    peak frequency of magnitude of H_inf norm
 %
 % Examples:
-%       TODO
+%> load cdplayer.mat
+%> sys=sss(A,B,C);
+%> h2Norm=norm(sys,2);
+%> hInftyNorm=norm(sys,inf);
 %
 % See also:
 %       norm, sss, lyapchol

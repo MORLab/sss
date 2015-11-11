@@ -5,7 +5,7 @@ function sys = connectSss(sys, K)
 %       sys = CONNECTSSS(sys,K)
 %
 % Description:
-%       TODO
+%       CONNECTSSS - Connects an appended sparse state space  LTI system (sss) with feedback matrix K
 %   
 % Input Arguments:
 %       -sys: appended open loop sparse state-space LTI system (sss)
@@ -15,7 +15,12 @@ function sys = connectSss(sys, K)
 %       -sys: closed loop sparse state-space LTI system (sss)
 %
 % Examples:
-%       TODO
+% load cdplayer.mat
+% K=eye(2);
+% sys=sss(A,B,C); %Stable system
+% sysConnected=connectSss(sys,K); %Unstable system
+% step(sys);
+% figure, step(sysConnected);
 %
 % See Also:
 %       connect, append

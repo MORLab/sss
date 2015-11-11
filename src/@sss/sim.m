@@ -25,13 +25,26 @@ function [data,X,tx] = sim(sys,data,method,Ts_sample)
 %       -tx: time vector for X
 %
 % Examples:
-%       TODO
+%> load build.mat
+%> sys=sss(A,B,C);
+%> Ts = 1e-4; %Sampling time
+%> t = 0:Ts:10; %Time vector
+%> u = idinput(length(t),'rgs',[0 0.5/(1/2/Ts)])';
+%> datau = iddata([],u',Ts); %Create a vector with the input information
+%> dataRK = sim(sys,datau,'RK4'); %Simulation
+%> dataForward = sim(sys,datau,'forwardEuler'); %Simulation
+%> plot(t,dataRK.y,'r');
+%> hold on, plot(t,dataForward.y,'--k');
 %
 % See Also:
-%       iddata/sim, DynamicSystem/lsim
+%       iddata/sim, DynamicSystem/lsim, simForwardEuler, simDiscrete,
+%       simBackwardEuler
 %
 % References:
-%       TODO
+%       Gear, C. William, Numerical Initial Value Problems in Ordinary Differential Equations
+%       Shampine, L. F. , Numerical Solution of Ordinary Differential Equations, Chapman & Hall, New York, 1994.
+%       Shampine, L. F. and M. K. Gordon, Computer Solution of Ordinary Differential Equations: the Initial Value Problem, W. H. Freeman, San Francisco, 1975.
+%
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

@@ -13,17 +13,19 @@ function sys = truncate(sys, idxOut, idxIn)
 %       -idxIn:  indices of inputs to be preserved
 %
 % Output Arguments:
-%       -sys_S:  appended (open loop) sparse state space 
+%       -sys:  appended (open loop) sparse state space 
 %                (sss)-object
 %
 % Examples:
-%       TODO
+%> load cdplayer.mat
+%> sys=sss(A,B,C);
+%> TruncatedSys=truncate(sys,1,2);
+%> step(TruncatedSys);
+%> figure, impulse(sys);
 %
 % See Also:
-%       TODO
+%       sss, plus, minus, mtimes
 %
-% References:
-%       TODO
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

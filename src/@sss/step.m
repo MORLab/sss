@@ -218,7 +218,9 @@ else
     
     heightAxis=round(deltaOutput.*10.^(-orderMagnitude)).*10.^orderMagnitude;
     minOutputAxis=minOutput-heightAxis/2;
+    minOutputAxis(isnan(minOutputAxis))=-inf;
     maxOutputAxis=maxOutput+heightAxis/2;
+    maxOutputAxis(isnan(maxOutputAxis))=inf;
     
     minOutputAxis(minOutput>0&minOutputAxis<=0)=0;
     maxOutputAxis(maxOutput<0&maxOutputAxis>=0)=0;

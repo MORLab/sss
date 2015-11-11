@@ -27,9 +27,6 @@ function spy(sys,name)
 % See Also: 
 %		spy
 %
-% References:
-%       TODO
-%
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
 % Reduction and System Analysis Toolbox developed at the Chair of 

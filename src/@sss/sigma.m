@@ -20,13 +20,12 @@ function  [mag, omega] = sigma(sys, varargin)
 %       -omega: vector of complex frequencies
 %
 % Examples:
-%       TODO
+%> load cdplayer.mat
+%> sys=sss(A,B,C);
+%> sigma(sys);
 %
 % See Also:
-%       TODO
-%
-% References:
-%       TODO
+%       bode, freqresp
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
