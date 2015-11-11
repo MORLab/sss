@@ -6,21 +6,28 @@ function sys = c2d(sys,Ts,method)
 %
 % Description:
 %       C2D coverts a continuous sparse state system sys in a discrete sparse
-%       state system. It is required for the conversion the samping Time Ts
-%       and the chosen method, that can be explicit Euler or implicit Euler.
+%       state system. For the conversion, the samping time |Ts| is
+%       required.
+%
+%       If the function is called without giving a method, then sys = c2d(sys,Ts) 
+%       uses explicit Euler ('forward') as a default discretization method.
 %
 % Input Arguments:
+%       *Required Input Arguments:*
 %       -sys: continuous time sss-object
 %       -Ts:  sampling time
-%       -method: string containing the selected discretization method.
-%       Possible options are 'forward' (explicit Euler) or 'backward'
-%       (implicit Euler)
+%       *Optional Input Arguments:*
+%       -method: string containing the selected discretization method. 
+%                Possible options are: [{'forward'} / 'backward' / 'tustin' / 'zoh']
+%
+%//Note: This function currently works only for the method 'forward', but
+%the other methods will be implemented in one of the next releases.
 %
 % Output Arguments:
 %       -sys: discrete time sss-object
 %
 % Examples:
-%       The benchmark "build" is loaded and converted to a discrete model:
+%       The benchmark 'build' is loaded and converted to a discrete model:
 %
 %> load build.mat
 %> sysC = sss(A,B,C)
@@ -28,6 +35,9 @@ function sys = c2d(sys,Ts,method)
 %
 % See Also:
 %       ss/c2d
+%
+% References:
+%       * *[1] Franklin, Powell, and Workman (1997)*, Digital Control of Dynamic Systems (3rd Edition), Prentice Hall.
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
@@ -60,10 +70,18 @@ switch method
         sys.A = sys.E + Ts * sys.A;
         sys.B =  Ts * sys.B;        
     case 'backward' % s = (z-1)/(Ts*z)
-        A = sys.A; E = sys.E;
-        sys.E = E - Ts * A;
-        sys.A = E;
-        sys.B =  Ts * sys.B;
+        %FIXME
+        error('The conversion with the discretization method backward is not implemented yet');
+%         A = sys.A; E = sys.E;
+%         sys.E = E - Ts * A;
+%         sys.A = E;
+%         sys.B =  Ts * sys.B;
+    case 'tustin'
+        %TODO
+        error('The conversion with the discretization method tustin is not implemented yet');
+    case 'zoh'
+        %TODO
+        error('The conversion with the discretization method zoh is not implemented yet');
     otherwise
         error(['Method: ' method ' is not defined'])
 end
