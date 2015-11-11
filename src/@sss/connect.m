@@ -6,8 +6,8 @@ function sys_S = connect(varargin)
 %       sys_S = CONNECT(sys1,sys2,...,inputNames,outputNames)
 %
 % Description:
-%       Connects a set of sparse LTI system (sss) 
-%       by evaluating the names of in- and outputs. TODO
+%       Connects a set of sparse LTI system (sss) by evaluating the names 
+%       of in- and outputs.
 %
 % Input Arguments:
 %       *Required Input Arguments:*
@@ -20,22 +20,21 @@ function sys_S = connect(varargin)
 %       -sys_S: closed loop sparse state space (sss)-object
 %
 % Examples:
-%       load build.mat
-%       sys=sss(A,B,C);
-%       Controller=sss(tf(pid(10^3,0,0)));
-%       sys.y={'y'};
-%       sys.u={'u'};
-%       Controller.u={'e'};
-%       Controller.y={'u'};
-%       Subtract=sss(zeros(1,1),zeros(1,2),zeros(1,1),[1 -1]);
-%       Subtract.u={'desired';'y'};
-%       Subtract.y={'e'};
-%       connectedSys=connect(sys,Controller,Subtract,{'desired'},{'y'});
-%       step(connectedSys);
+%> load build.mat
+%> sys=sss(A,B,C);
+%> sys.y={'y'};
+%> sys.u={'u'};
+%> Controller=sss(tf(pid(10^3,0,0)));
+%> Controller.u={'e'};
+%> Controller.y={'u'};
+%> Subtract=sss(zeros(1,1),zeros(1,2),zeros(1,1),[1 -1]);
+%> Subtract.u={'desired';'y'};
+%> Subtract.y={'e'};
+%> connectedSys=connect(sys,Controller,Subtract,{'desired'},{'y'});
+%> step(connectedSys);
 %            
-%
 % See Also:
-%       sss/connectSss, sss/append
+%       connectSss, append
 %
 % References:
 %       * *[1] Edwards, J.W. (1976)*, A FORTRAN program for the analysis of linear continuous and sample-data systems.
