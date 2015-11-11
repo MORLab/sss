@@ -24,7 +24,7 @@ classdef sss
 %       -sys: sparse state-space (sss)-object
 %
 % Examples:
-%       To create a sparse state-space model of the benchmark "build"
+%       To create a sparse state-space model of the benchmark 'build'
 %       (SISO) use:
 %
 %> load build.mat
