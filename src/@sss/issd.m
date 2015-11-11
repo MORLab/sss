@@ -25,26 +25,29 @@ function [issd, numericalAbscissa] = issd(sys)
 %
 % Output Arguments:
 %       -issd: a boolean value (1=true, 0=false, NaN= dissipative but not
-%       strictly).
+%              strictly).
 %       -numericalAbscissa: the 20 largest eigenvalues of sys.
 %
 % Examples:
-%       load cdplayer.mat
-%       sys=sss(A,B,C);
-%       [issd, numericalAbscissa]=issd(sys);
+%       The following code checks the strictly dissipativity of the
+%       benchmark 'CDplayer' (SSS, MIMO):
+%
+%> load CDplayer.mat
+%> sys=sss(A,B,C);
+%> [issd, numericalAbscissa]=issd(sys);
 %	
 % See Also:
 %       ispd, eigs, chol, sparse
 %
 % References:
-%   [1] Panzer 2014 Model order reduction by Krylov subspace methods
-%       with global error bounds and automatic choice of parameters
+%       * *[1] Panzer (2014)*, Model order reduction by Krylov subspace methods
+%       with Global Error Bounds and Automatic Choice of Parameters
 %
 %------------------------------------------------------------------
-% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
-% Reduction and System Analysis Toolbox developed at the Chair of 
-% Automatic Control, Technische Universitaet Muenchen. For updates 
-% and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen.
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % For any suggestions, submission and/or bug reports, mail us at
 %                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
 %
