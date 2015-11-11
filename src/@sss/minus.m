@@ -2,31 +2,33 @@ function diff = minus(sys1, sys2)
 % MINUS - Computes difference of two LTI systems: u-->(sys1-sys2)-->y
 % 
 % Syntax:
-%       diff = minus(sys1, sys2)
+%       diff = MINUS(sys1, sys2)
 %       diff = sys1-sys2 
 %
 % Description:
-%       Computes difference of two LTI systems: u-->(sys1-sys2)-->y
+%       diff = MINUS(sys1, sys2) computes the difference of the two LTI
+%       systems: diff = sys1-sys2
 %
 % Input Arguments:       
 %       -sys1: minuend sss-object
 %       -sys2: subtrahend sss-object
 %
 % Output Arguments:      
-%       -sss-object representing sys1-sys2
+%       -diff: sss-object representing sys1-sys2
 %
 % Examples:
-%       In this example a model will be reduced and its behaviour will be
-%       compared with the original model.
-%       load build.mat
-%       sys=sss(A,B,C);
-%       sysReduced=tbr(sys,12);
-%       sysError=minus(sysReduced,sys);
-%       H2_Norm=norm(sysError,2);
-%       H2_Infty=norm(sysError,inf);
+%       In this example the benchmark 'build' will be reduced and its behaviour 
+%       will be compared with the original model.
+%
+%> load build.mat
+%> sys=sss(A,B,C);
+%> sysReduced=tbr(sys,12); %original order: 48, reduced order: 12
+%> sysError=minus(sysReduced,sys); %sysError = sysReduced - sys
+%> H2_Norm=norm(sysError,2);
+%> H8_Norm=norm(sysError,inf);
 %
 % See Also:
-%       sss/plus, sss/mtimes
+%       plus, mtimes
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
