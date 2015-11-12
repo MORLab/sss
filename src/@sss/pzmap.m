@@ -48,13 +48,11 @@ function [p, z] = pzmap(sys, varargin)
 % See Also:
 %       ss/pzmap
 %
-% References:
-%       TODO
 %------------------------------------------------------------------
-% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
-% Reduction and System Analysis Toolbox developed at the Chair of 
-% Automatic Control, Technische Universitaet Muenchen. For updates 
-% and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % For any suggestions, submission and/or bug reports, mail us at
 %                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
 %
