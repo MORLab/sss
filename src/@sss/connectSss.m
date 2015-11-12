@@ -15,12 +15,12 @@ function sys = connectSss(sys, K)
 %       -sys: closed loop sparse state-space LTI system (sss)
 %
 % Examples:
-% load cdplayer.mat
-% K=eye(2);
-% sys=sss(A,B,C); %Stable system
-% sysConnected=connectSss(sys,K); %Unstable system
-% step(sys);
-% figure, step(sysConnected);
+%> load cdplayer.mat
+%> K=eye(2);
+%> sys=sss(A,B,C); %Stable system
+%> sysConnected=connectSss(sys,K); %Unstable system
+%> step(sys);
+%> figure, step(sysConnected);
 %
 % See Also:
 %       connect, append
