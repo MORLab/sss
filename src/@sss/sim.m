@@ -14,9 +14,9 @@ function [data,X,tx] = sim(sys,data,method,Ts_sample)
 %       -sys:   an sss-object containing the LTI system
 %       -data:  iddata object containing input time series
 %       *Optional Input Arguments:*
-%       -method:    time ingetration method 
-%                   ('forwardEuler' | 'backwardEuler' | 
-%                   'RK4' (def, continuous) | 'discrete' (def, descrete))
+%       -method: time integration method
+%                Possible options are ['forwardEuler' / 'backwardEuler' / 
+%                'RK4' (def, continuous) / 'discrete' (def, discrete)]
 %       -Ts_sample: sampling rate of the state-vector
 %
 % Output Arguments:      
@@ -25,26 +25,32 @@ function [data,X,tx] = sim(sys,data,method,Ts_sample)
 %       -tx: time vector for X
 %
 % Examples:
+%       The following code simulates the benchmark "build" (SSS, SISO) for
+%       different integration methods:
+%
 %> load build.mat
 %> sys=sss(A,B,C);
-%> Ts = 1e-4; %Sampling time
-%> t = 0:Ts:10; %Time vector
-%> u = idinput(length(t),'rgs',[0 0.5/(1/2/Ts)])';
-%> datau = iddata([],u',Ts); %Create a vector with the input information
-%> dataRK = sim(sys,datau,'RK4'); %Simulation
-%> dataForward = sim(sys,datau,'forwardEuler'); %Simulation
-%> plot(t,dataRK.y,'r');
-%> hold on, plot(t,dataForward.y,'--k');
+%> Ts = 1e-4; %sampling time
+%> t = 0:Ts:10; %time vector
+%> u = idinput(length(t),'rgs',[0 0.5/(1/2/Ts)])'; %random gaussian input signal
+%> datau = iddata([],u',Ts); %create an iddata object with the input information
+%> dataRK = sim(sys,datau,'RK4'); %simulation with RK4
+%> dataForward = sim(sys,datau,'forwardEuler'); %simulation with explicit Euler
+%> dataBackward = sim(sys,datau,'backwardEuler'); %simulation with implicit Euler
+%> figure; plot(t,dataRK.y,'r');
+%> hold on, plot(t,dataForward.y,'b'); plot(t,dataBackward.y,'k');
+%> xlabel('Time [s]'); ylabel('Amplitude');legend('RK4','Forward','Backward');
 %
 % See Also:
-%       iddata/sim, DynamicSystem/lsim, simForwardEuler, simDiscrete,
-%       simBackwardEuler
+%       iddata/sim, lsim, simForwardEuler, simDiscrete, simBackwardEuler
 %
 % References:
-%       Gear, C. William, Numerical Initial Value Problems in Ordinary Differential Equations
-%       Shampine, L. F. , Numerical Solution of Ordinary Differential Equations, Chapman & Hall, New York, 1994.
-%       Shampine, L. F. and M. K. Gordon, Computer Solution of Ordinary Differential Equations: the Initial Value Problem, W. H. Freeman, San Francisco, 1975.
-%
+%       * *[1] Gear, C. William (1971)*, Numerical Initial Value Problems in 
+%       Ordinary Differential Equations.
+%       * *[2] Shampine, L. F. (1994)*, Numerical Solution of Ordinary Differential Equations, 
+%       Chapman & Hall, New York.
+%       * *[3] Shampine, L. F. and M. K. Gordon (1975)*, Computer Solution of Ordinary Differential 
+%       Equations: the Initial Value Problem, W. H. Freeman, San Francisco.
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
