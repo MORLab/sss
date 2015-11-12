@@ -1,12 +1,20 @@
-function [varargout]  = size(varargin)
+function [varargout] = size(varargin)
 % SIZE - Computes the size of a sparse LTI system (sss)
 %
 % Syntax:
-%       [p, m] = size(sys);
 %       size(sys);
+%       sizeSys = size(sys);
+%       p = size(sys,1);
+%       m = size(sys,2);
+%       
 % 
 % Description:
-%       Computes the size of a sparse LTI system (sss)
+%       size(sys) computes the size of sys (number of outputs, number of inputs
+%       and number of states) and displays them on the Command Window.
+%
+%       sizeSys = size(sys) computes the size of sys (number of outputs and number
+%       of inputs) and stores it in the 1x2 vector sizeSys. This means:
+%       p=sizeSys(1) and m=sizeSys(2).
 %
 % Input Arguments:        
 %       -sys: sparse state space (sss)-object
@@ -16,10 +24,21 @@ function [varargout]  = size(varargin)
 %       -m:  input dimension
 %
 % Examples:
-%> load cdplayer.mat
-%> sys=sss(A,B,C);
-%> size(sys);
-%> sizeCdPlayer=size(sys); %Vector with number of inputs and outputs
+%       The following code computes the size of the benchmark model
+%       'rail_1357' (DSSS, MIMO):
+%
+%> load rail_1357.mat
+%> sys=sss(A,B,C,[],E);
+%> sizeRail_1357=size(sys); %Vector with number of outputs and inputs
+%> size(sys); %displaying the information in the Command Window
+%
+%       The 'sss' class has this functionality also implemented. When you
+%       want to get the number of output, input and state variables of a
+%       system, you just type:
+%
+%> p = sys.p %Number of outputs
+%> m = sys.m %Number of inputs
+%> n = sys.n %Number of state variables
 %
 % See Also:
 %       sss, spy, issd
