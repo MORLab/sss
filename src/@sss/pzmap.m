@@ -8,12 +8,16 @@ function [p, z] = pzmap(sys, varargin)
 %
 % Description:
 %       pzmap(sys) creates a pole-zero plot of the continuous- or discrete-time 
-%       dynamic system model sys. For MIMO systems, pzmap plots the system poles
-%       and invariant zeros of each SISO model in an individual subplot. The poles 
-%       are plotted as x's and the invariant zeros are plotted as o's.
+%       dynamic system model sys. For MIMO systems, pzmap plots the system 
+%       poles and the invariant zeros in one figure. The poles are plotted 
+%       as x's and the invariant zeros are plotted as o's.
 %
 %       [p,z] = pzmap(sys) returns the system poles and invariant zeros in the column 
 %       vectors p and z. No plot is drawn on the screen.
+%
+%//Note: The calculation of the invariant zeros is only defined for systems
+%        with the same number of inputs and outputs (m=p). That means that if
+%        pzmap is called with a system with m~=p, then z = [ ].
 %
 % Input Arguments:
 %       -sys:      an sss-object containing the LTI system
@@ -24,7 +28,7 @@ function [p, z] = pzmap(sys, varargin)
 %       -z: vector containing invariant zeros
 %
 % Examples:
-%       Create a random descriptor model (DSS, SISO) and compare the output
+%       Create a random descriptor model (DSSS, SISO) and compare the output
 %       of ss/pzmap and sss/pzmap:
 %
 %> A = randn(500,500); B = randn(500,1); C = randn(1,500); D = zeros(1,1);
@@ -34,9 +38,9 @@ function [p, z] = pzmap(sys, varargin)
 %> figure; pzmap(sys);
 %> figure; pzmap(sysSss);
 %
-%       Load the benchmark "PEEC_MTLn1600" (DSS, MIMO) and use pzmap:
+%       Load the benchmark 'rail_1357' (DSSS, MIMO) and use pzmap:
 %
-%> load PEEC_MTLn1600.mat
+%> load rail_1357.mat
 %> p = size(C,1); m = size(B,2);
 %> sys = sss(A,B,C,zeros(p,m),E)
 %> figure; pzmap(sys);
@@ -138,10 +142,13 @@ end
 
         % determine x and y boundary
         mni=min(imag([p;z])); mxi=max(imag([p;z]));
+        limy=[mni*1.05,mxi*1.05];
         if mni*mxi<0 
             limy = [mni-(mxi-mni)/20 mxi+(mxi-mni)/20];
         elseif mni*mxi>0 
             limy = sort([0 1.05*max(abs([mni mxi]))]*sign(mni));
+        elseif mni==0 && mxi==0
+            limy = [-1 1];
         end
         if sys.Ts ~= 0 %adjust the y-axis so that the unitary circle is visible
             if limy(1)>-1
@@ -158,7 +165,9 @@ end
             limx = [mnr-(mxr-mnr)/20 mxr+(mxr-mnr)/20];
         elseif mnr*mxr>0
             limx = sort([0 1.05*max(abs([mnr mxr]))]*sign(mnr));
-        end
+        elseif mnr==0 && mxr==0
+            limx = [-1 1];
+        end 
         if sys.Ts ~= 0 %adjust the x-axis so that the unitary circle is visible
             if limx(1)>-1
                 limx(1) = -1;
