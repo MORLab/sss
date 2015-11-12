@@ -52,6 +52,8 @@ function spy(sys,name)
     
     if nargin > 1
         onetitle(name);
+    elseif ~isempty(sys.Name)
+        onetitle(sys.Name);
     end
 end
 
