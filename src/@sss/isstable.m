@@ -71,12 +71,12 @@ function [isstable,spectralAbscissa] = isstable(sys)
 
 %%  Compute the eigenvalue with largest real part
 try
-    lambda = eigs(sys.a,sys.e,1,'lr',struct('v0',sys.b));
+    lambda = eigs(sys,1,'lr',struct('v0',sys.b));
 catch err
     if strcmp(err.identifier,'MATLAB:eigs:ARPACKroutineErrorMinus14')
         %eigs did not converge: lower the tolerance
         try
-            lambda=eigs(sys.a,sys.e,1,'lr',struct('tol',1e-4','v0',sys.b));
+            lambda=eigs(sys,1,'lr',struct('tol',1e-4','v0',sys.b));
         catch
             warning('eigs(..,''lr'') failed to compute the numerical abscissa. Trying with eig. This might take a while...');
             lambda = eig(sys);
