@@ -19,9 +19,11 @@ function [r,p,d] = residue(sys, Opts)
 %       system, so for large scale problems it might take a while.
 %
 %       The output r is a cell array of residuals or residual directions
-%       depending on the option rType = {'res' (def), 'dir'}
-%       For rType = 'res' r is a cell array of dimension nx1 with the
-%       residual r{k} for each pole p(k)
+%       depending on the option rType = {'res' (def), 'dir'}.
+%
+%       For rType = 'res', r is a cell array of dimension nx1 with the
+%       residual r{k} for each pole p(k).
+%
 %       For rType = 'dir' r is a cell array of dimension 1x2 with the
 %       output residual matrix Chat = r{1} and the input residual matrix 
 %       Bhat = r{2}. The residues can be computed using 
@@ -46,8 +48,7 @@ function [r,p,d] = residue(sys, Opts)
 %
 % Examples:
 %		To compute the residuals of a SISO or MIMO system such that 
-%//       G(s) = sum_i(r_i/(p_i+s) + d) 
-%       use
+%       $G(s) = \sum_i(\frac{r_i}{(p_i+s)} + d)$  use
 %
 %> load build; 
 %> sys = sss(A,B,C);
@@ -68,10 +69,10 @@ function [r,p,d] = residue(sys, Opts)
 %		* *[1] Bryson (1994)*, Control of Spacecraft and Aircraft
 %
 %------------------------------------------------------------------
-% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
-% Reduction and System Analysis Toolbox developed at the Chair of 
-% Automatic Control, Technische Universitaet Muenchen. For updates 
-% and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % For any suggestions, submission and/or bug reports, mail us at
 %                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
 %
