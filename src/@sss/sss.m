@@ -43,7 +43,7 @@ classdef sss
 %        ss, dss
 %
 % References:
-%		* *[1] Documentation of the Control System Toolbox from MATLAB
+%		* [1] Documentation of the Control System Toolbox from MATLAB
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
