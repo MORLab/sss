@@ -15,8 +15,8 @@ function [data,X,tx] = sim(sys,data,method,Ts_sample)
 %       -data:  iddata object containing input time series
 %       *Optional Input Arguments:*
 %       -method:    time ingetration method 
-%                   ('forwardEuler' | 'backwardEuler' | 
-%                   'RK4' (def, continuous) | 'discrete' (def, descrete))
+%                   ('forwardEuler' | 'backwardEuler' | 'RK4'
+%                   'RKDP' (def, continuous) | 'discrete' (def, descrete))
 %       -Ts_sample: sampling rate of the state-vector
 %
 % Output Arguments:      
@@ -85,7 +85,7 @@ if sys.Ts ~= 0 && sys.Ts ~= Ts
 end
 if nargin == 2 
     if sys.Ts == 0
-        method = 'RK4';        
+        method = 'RKDP';        
     else
         method = 'discrete';
     end      
@@ -113,6 +113,13 @@ switch method
             y = sss.simRK4(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
         else
             [y,X,index] = sss.simRK4(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
+            tx = data.SamplingInstants(index);
+        end
+    case 'RKDP'
+        if nargout == 1
+            y = sss.simRKDP(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
+        else
+            [y,X,index] = sss.simRKDP(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
             tx = data.SamplingInstants(index);
         end
     case 'discrete'
