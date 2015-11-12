@@ -72,12 +72,8 @@ switch method
         sys.A = sys.E + Ts * sys.A;
         sys.B =  Ts * sys.B;        
     case 'backward' % s = (z-1)/(Ts*z)
-        %FIXME
+        %TODO
         error('The conversion with the discretization method backward is not implemented yet');
-%         A = sys.A; E = sys.E;
-%         sys.E = E - Ts * A;
-%         sys.A = E;
-%         sys.B =  Ts * sys.B;
     case 'tustin'
         %TODO
         error('The conversion with the discretization method tustin is not implemented yet');
