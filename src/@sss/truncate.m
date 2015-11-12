@@ -4,8 +4,10 @@ function sys = truncate(sys, idxOut, idxIn)
 % Syntax:
 %       sys = truncate(sys, idxOut, idxIn)
 %
-% Descriptions:
-%       truncates a sparse LTI system (sss)
+% Description:
+%       sys = truncate(sys, idxOut, idxIn) truncates the sparse state-space
+%       system sys by preserving only the indices defined by idxOut and
+%       idxIn
 %
 % Input Arguments:
 %       -sys:    sparse state space (sss)-object
@@ -13,19 +15,22 @@ function sys = truncate(sys, idxOut, idxIn)
 %       -idxIn:  indices of inputs to be preserved
 %
 % Output Arguments:
-%       -sys:  appended (open loop) sparse state space 
-%                (sss)-object
+%       -sys: truncated sparse state-space (sss)-object
 %
 % Examples:
-%> load cdplayer.mat
-%> sys=sss(A,B,C);
-%> TruncatedSys=truncate(sys,1,2);
-%> step(TruncatedSys);
-%> figure, impulse(sys);
+%       The following code loads the benchmark 'CDplayer' (SSS, MIMO),
+%       creates a sss-object and then truncates this system to obtain
+%       sys12:
+%
+%> load CDplayer.mat
+%> sys=sss(A,B,C); %(SSS, MIMO)
+%> TruncatedSys=truncate(sys,1,2); %taking sys12 (SSS, SISO)
+%> figure; impulse(sys); %impulse response of the MIMO sss-system
+%> figure; impulse(TruncatedSys); %impulse response of sys12
+
 %
 % See Also:
 %       sss, plus, minus, mtimes
-%
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
