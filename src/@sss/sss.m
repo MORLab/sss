@@ -429,15 +429,7 @@ classdef sss
     
     methods(Access = private)
         sys = connect_sss(sys, K)
-    end
-    
-    methods(Static)
-        [y,x_,index] = simBackwardEuler(A,B,C,D,E,u,x,Ts,TsSample)
-        [y,x_,index] = simDiscrete(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
-        [y,x_,index] = simForwardEuler(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
-        [y,x_,index] = simRK4(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
-        [y,x_,index] = simRKDP(A,B,C,D,E,u,x,Ts,TsSample,isDescriptor)
-    end
+    end    
     
 end
 

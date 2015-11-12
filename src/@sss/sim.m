@@ -96,37 +96,37 @@ end
 switch method
     case 'forwardEuler'
         if nargout == 1
-            y = sss.simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
+            y = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
         else
-            [y,X,index] = sss.simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
+            [y,X,index] = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
             tx = data.SamplingInstants(index);
         end
     case 'backwardEuler'
         if nargout == 1
-            y = sss.simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample);
+            y = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample);
         else
-            [y,X,index] = sss.simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample);
+            [y,X,index] = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample);
             tx = data.SamplingInstants(index);
         end
     case 'RK4'
         if nargout == 1
-            y = sss.simRK4(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
+            y = simRK4(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
         else
-            [y,X,index] = sss.simRK4(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
+            [y,X,index] = simRK4(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
             tx = data.SamplingInstants(index);
         end
     case 'RKDP'
         if nargout == 1
-            y = sss.simRKDP(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
+            y = simRKDP(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
         else
-            [y,X,index] = sss.simRKDP(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
+            [y,X,index] = simRKDP(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
             tx = data.SamplingInstants(index);
         end
     case 'discrete'
         if nargout == 1
-            y = sss.simDiscrete(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
+            y = simDiscrete(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
         else
-            [y,X,index] = sss.simDiscrete(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
+            [y,X,index] = simDiscrete(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
             tx = data.SamplingInstants(index);
         end
 end
