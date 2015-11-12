@@ -8,7 +8,11 @@ function  [temp, t] = step(sys, varargin)
 %       [h, t] = STEP(sys, t, opts)
 %
 % Description:
-%       Computes and/or plots the step response of a sparse LTI system
+%       step(sys) plots the step response of the sparse LTI system sys
+%
+%       [h, t] = step(sys, t) computes the step response of the sparse LTI
+%       system sys and returns the vectors h and t with the response and
+%       the time series, respectively.
 %
 % Input Arguments:
 %       *Required Input Arguments:*
@@ -21,12 +25,15 @@ function  [temp, t] = step(sys, varargin)
 %       -h, t: vectors containing step response and time vector
 %
 % Examples:
-%       load cdplayer.mat
-%       sys=sss(A,B,C);
-%       step(sys);
+%       The following code plots the step response of the benchmark 
+%       'CDplayer' (SSS, MIMO):
+%
+%> load CDplayer.mat
+%> sys=sss(A,B,C);
+%> step(sys);
 %
 % See Also:
-%       sss/residue, sss/impulse
+%       residue, impulse
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis
