@@ -21,11 +21,13 @@ function sum = plus(sys1, sys2)
 % Examples:
 %> load build.mat
 %> sysBuild=sss(A,B,C);
-%> size(sysBuild)
-%> sysRandom=rss(10);
-%> size(sysRandom);
-%> plusSystems=plus(sysBuild,sysRandom);
-%> size(plusSystems)
+%> size(sysBuild);
+%> sysRandom=rss(10); sysRandomSparse=sss(sysRandom);
+%> size(sysRandomSparse);
+%> plusSystems=plus(sysBuild,sysRandomSparse);
+%> size(plusSystems);
+%> plus = sysBuild+sysRandomSparse; %for comparison reasons
+%> plus.A == plusSystems.A; %for comparison reasons
 %
 % See Also:
 %       minus, mtimes
