@@ -5,26 +5,30 @@ function sys_ss = ss(sys_sss)
 %       sys_ss = ss(sys_sss)
 %
 % Description:
-%       Converts sparse LTI system (sss) to Matlab\control\ss. In that conversion all
-%       the information from sss, that is implemented in ss, is added in
-%       the sys_ss.
+%       This function converts the sparse LTI system sys_sss into Matlab\control\ss. 
+%       During the conversion, all the information from sss, that is implemented in ss, 
+%       is added in the sys_ss.
 %
 % Input Arguments:
-%       -sys_sss: sparse state space (sss)-object
+%       -sys_sss: sparse state-space (sss)-object
 %
 % Output Arguments:       
-%       -sys_ss:  ss- or dss-object, respectively
+%       -sys_ss:  ss- or dss-object (depending on the case)
 %
 % Examples:
+%       The following code loads the benchmark 'build' (SSS, SISO), creates
+%       a sparse state-space (sss) system and then converts it into ss. By
+%       calling |whos| one can see that the sss-object requires less
+%       storage capacity than the ss-object:
+%
 %> load build.mat;
-%> sys=sss(A,B,C);
-%> sysFull=ss(sys);
+%> sysSparse=sss(A,B,C);
+%> sysFull=ss(sysSparse);
 %> whos('sysFull');
-%> whos('sys');
+%> whos('sysSparse');
 %
 % See Also:
 %       sss, ss/ss
-%
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
