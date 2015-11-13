@@ -23,22 +23,25 @@ function [nrm, varargout] = norm(sys, varargin)
 %       -hInfPeakfreq:    peak frequency of magnitude of H_inf norm
 %
 % Examples:
-%> load cdplayer.mat
+%       The following code computes the H2- and the H_inf-norm of the
+%       benchmark 'CDplayer' (SSS, MIMO):
+%
+%> load CDplayer.mat
 %> sys=sss(A,B,C);
 %> h2Norm=norm(sys,2);
-%> hInftyNorm=norm(sys,inf);
+%> h_infNorm=norm(sys,inf);
 %
 % See also:
 %       norm, sss, lyapchol
 %
 % References:
-%       * *[1] Antoulas (2005), Approximation of large-scale Dnymical Systems
+%       * *[1] Antoulas (2005)*, Approximation of large-scale Dynamical Systems
 %
 %------------------------------------------------------------------
-% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
-% Reduction and System Analysis Toolbox developed at the Chair of 
-% Automatic Control, Technische Universitaet Muenchen. For updates 
-% and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % For any suggestions, submission and/or bug reports, mail us at
 %                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
 %

@@ -6,10 +6,11 @@ function sum = plus(sys1, sys2)
 %       sum = sys1+sys2
 % 
 % Description:
-%       PLUS gives as output the system sum, which is the combination of two different systems sys1 and sys2 that have the
-%       same number of inputs/outputs. The output of the system sum will be
-%       equivalent to the sum of the outputs from sys1 and sys2,
-%       considering that they are excited to the same input u.
+%       PLUS gives as output the system sum, which is the combination of two 
+%       different systems sys1 and sys2 that have the same number of inputs/outputs. 
+%       The output of the system sum will be equivalent to the sum of the 
+%       outputs from sys1 and sys2, considering that they are excited with 
+%       the same input u.
 %
 % Input Arguments:
 %       -sys1, sys2: summand sss-object
@@ -20,15 +21,16 @@ function sum = plus(sys1, sys2)
 % Examples:
 %> load build.mat
 %> sysBuild=sss(A,B,C);
-%> size(sysBuild)
-%> sysRandom=rss(10);
-%> size(sysRandom);
-%> plusSystems=plus(sysBuild,sysRandom);
-%> size(plusSystems)
+%> size(sysBuild);
+%> sysRandom=rss(10); sysRandomSparse=sss(sysRandom);
+%> size(sysRandomSparse);
+%> plusSystems=plus(sysBuild,sysRandomSparse);
+%> size(plusSystems);
+%> plus = sysBuild+sysRandomSparse; %for comparison reasons
+%> plus.A == plusSystems.A; %for comparison reasons
 %
 % See Also:
 %       minus, mtimes
-%
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
