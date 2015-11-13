@@ -1,5 +1,5 @@
 function sys = loadSss(fname,Opts)
-% LOADSSS - Creates an sss object from .mat file data
+% LOADSSS - Creates an sss-object from .mat file data
 %
 % Syntax:
 %       ssy = LOADSSS(fname,Opts)
