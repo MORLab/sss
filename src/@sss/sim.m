@@ -45,11 +45,11 @@ function [data,X,tx] = sim(sys,data,method,Ts_sample)
 %       iddata/sim, lsim, simForwardEuler, simDiscrete, simBackwardEuler
 %
 % References:
-%       * *[1] Gear, C. William (1971)*, Numerical Initial Value Problems in 
+%       * *[1] Gear (1971)*, Numerical Initial Value Problems in 
 %       Ordinary Differential Equations.
-%       * *[2] Shampine, L. F. (1994)*, Numerical Solution of Ordinary Differential Equations, 
+%       * *[2] Shampine (1994)*, Numerical Solution of Ordinary Differential Equations, 
 %       Chapman & Hall, New York.
-%       * *[3] Shampine, L. F. and M. K. Gordon (1975)*, Computer Solution of Ordinary Differential 
+%       * *[3] Shampine and Gordon (1975)*, Computer Solution of Ordinary Differential 
 %       Equations: the Initial Value Problem, W. H. Freeman, San Francisco.
 %
 %------------------------------------------------------------------
