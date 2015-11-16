@@ -54,7 +54,7 @@ function sys = loadSss(fname,Opts)
 %       sss
 %
 % References:
-%       TODO: add references to the technical report or paper describing sssMOR
+%       TODO
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
