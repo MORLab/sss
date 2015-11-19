@@ -31,7 +31,7 @@ function [issd, numericalAbscissa] = issd(sys)
 % Examples:
 %       The following code checks the strictly dissipativity of the
 %       benchmark 'CDplayer' (SSS, MIMO):
-%
+%> clear all;
 %> load CDplayer.mat
 %> sys=sss(A,B,C);
 %> [issd, numericalAbscissa]=issd(sys);
