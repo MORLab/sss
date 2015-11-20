@@ -11,17 +11,17 @@ function [isstable,spectralAbscissa] = isstable(sys)
 %       asymptotically stable. The computations are meant to avoid 
 %       operations on full matrices. However, whenever this is not possible,
 %       a warning is issued. 
-%
+% 
 %       The stability check is done by first computing the eigenvalues with 
 %       largest real part ('lr'). Afterwards, the spectral abscissa, i.e.
 %       the largest occurring real part is calculated. The system is
 %       asymptotically stable, if the spectral abscissa is strictly less 
 %       than zero.
-%       
+% 
 %       If no output is defined, then the result is printed on the screen.
 %       Depending on the number of ouputs defined the function can return
 %       isstable and spectralAbscissa.
-%
+% 
 %       NaN is returned either, when the computation was not possible, or 
 %       when the spectral abscissa is zero. In the latter case, the system
 %       might be stable (in the sense of Lyapunov) or unstable if the
