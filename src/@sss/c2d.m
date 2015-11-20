@@ -29,9 +29,9 @@ function sys = c2d(sys,Ts,method)
 %       -sys: discrete time sss-object
 %
 % Examples:
-%       The benchmark 'build' is loaded and converted to a discrete model:
+%       The benchmark 'building' is loaded and converted to a discrete model:
 %
-%> load build.mat
+%> load building.mat
 %> sysC = sss(A,B,C)
 %> sysD = c2d(sysC,0.001,'forward')
 %
