@@ -34,9 +34,9 @@ function varargout = eig(sys, varargin)
 %       -W: left eigenvectors (square matrix)
 %
 % Examples:
-%       Load the benchmark 'build' (SSS, SISO) and compute the eigenvalues.
+%       Load the benchmark 'building' (SSS, SISO) and compute the eigenvalues.
 %
-%> load build.mat
+%> load building.mat
 %> sys = sss(A,B,C)
 %> e = eig(sys);
 %

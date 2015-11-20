@@ -31,9 +31,9 @@ function sysd = diag(sys)
 %
 % Examples:
 %       To compute the diagonal state-space realization of the benchmark
-%       "build" (SSS, SISO) use:
+%       "building" (SSS, SISO) use:
 %
-%> load build.mat
+%> load building.mat
 %> sys = sss(A,B,C)
 %> sysd = diag(sys)
 %> [Ad,Bd,Cd] = ssdata(sysd);

@@ -17,14 +17,14 @@ function sys1 = mtimes(sys1, sys2)
 %       prod: sss-object representing sys1*sys2
 %
 % Examples:
-%> load build.mat
-%> sysBuild=sss(A,B,C);
-%> size(sysBuild)
+%> load building.mat
+%> sysBuilding=sss(A,B,C);
+%> size(sysBuilding)
 %> sysRandom=rss(10); sysRandomSparse=sss(sysRandom);
 %> size(sysRandomSparse);
-%> prodSystems=mtimes(sysBuild,sysRandomSparse);
+%> prodSystems=mtimes(sysBuilding,sysRandomSparse);
 %> size(prodSystems);
-%> prod = sysBuild*sysRandomSparse; %for comparison reasons
+%> prod = sysBuilding*sysRandomSparse; %for comparison reasons
 %> prod.A == prodSystems.A; %for comparison reasons
 %
 % See Also:

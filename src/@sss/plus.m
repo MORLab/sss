@@ -19,14 +19,14 @@ function sum = plus(sys1, sys2)
 %       -sum: sss-object representing sys1+sys2
 %
 % Examples:
-%> load build.mat
-%> sysBuild=sss(A,B,C);
-%> size(sysBuild);
+%> load building.mat
+%> sysBuilding=sss(A,B,C);
+%> size(sysBuilding);
 %> sysRandom=rss(10); sysRandomSparse=sss(sysRandom);
 %> size(sysRandomSparse);
-%> plusSystems=plus(sysBuild,sysRandomSparse);
+%> plusSystems=plus(sysBuilding,sysRandomSparse);
 %> size(plusSystems);
-%> plus = sysBuild+sysRandomSparse; %for comparison reasons
+%> plus = sysBuilding+sysRandomSparse; %for comparison reasons
 %> plus.A == plusSystems.A; %for comparison reasons
 %
 % See Also:

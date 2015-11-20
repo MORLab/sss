@@ -24,10 +24,10 @@ function [G, omega, sys] = freqresp(varargin)
 %
 % Examples:
 %       The following code computes the frequency response of the benchmark
-%       'build' and returns also the vector of frequencies at which the
+%       'building' and returns also the vector of frequencies at which the
 %       response was computed |omega|:
 %
-%> load build.mat
+%> load building.mat
 %> sys=sss(A,B,C);
 %> [G,omega]=freqresp(sys);
 %

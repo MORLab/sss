@@ -50,14 +50,14 @@ function [r,p,d] = residue(sys, Opts)
 %		To compute the residuals of a SISO or MIMO system such that 
 %       $G(s) = \sum_i(\frac{r_i}{(p_i+s)} + d)$  use
 %
-%> load build; 
+%> load building; 
 %> sys = sss(A,B,C);
 %> [r,p,d] = residue(sys);
 %
 %       To get the residue directions instead of the residues, use the
 %       option Opts.rType = 'dir'
 %
-%> load build; 
+%> load building; 
 %> sys = sss(A,B,C);
 %> Opts.rType = 'dir';
 %> [r,p,d] = residue(sys,Opts);
