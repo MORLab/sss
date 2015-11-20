@@ -40,7 +40,7 @@ function [isstable,spectralAbscissa] = isstable(sys)
 %
 %> load CDplayer.mat
 %> sys=sss(A,B,C);
-%> [issd, spectralAbscissa]=issstable(sys);
+%> [issd, spectralAbscissa]=isstable(sys);
 %
 %       Another example, this time using the benchmark 'rail_5177' (DSSS,
 %       MIMO):
