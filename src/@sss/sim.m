@@ -25,10 +25,10 @@ function [data,X,tx] = sim(sys,data,method,Ts_sample)
 %       -tx: time vector for X
 %
 % Examples:
-%       The following code simulates the benchmark "build" (SSS, SISO) for
+%       The following code simulates the benchmark "building" (SSS, SISO) for
 %       different integration methods:
 %
-%> load build.mat
+%> load building.mat
 %> sys=sss(A,B,C);
 %> Ts = 1e-4; %sampling time
 %> t = 0:Ts:10; %time vector

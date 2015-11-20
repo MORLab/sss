@@ -16,12 +16,12 @@ function sys_ss = ss(sys_sss)
 %       -sys_ss:  ss- or dss-object (depending on the case)
 %
 % Examples:
-%       The following code loads the benchmark 'build' (SSS, SISO), creates
+%       The following code loads the benchmark 'building' (SSS, SISO), creates
 %       a sparse state-space (sss) system and then converts it into ss. By
 %       calling |whos| one can see that the sss-object requires less
 %       storage capacity than the ss-object:
 %
-%> load build.mat;
+%> load building.mat;
 %> sysSparse=sss(A,B,C);
 %> sysFull=ss(sysSparse);
 %> whos('sysFull');

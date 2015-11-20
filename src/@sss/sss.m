@@ -42,10 +42,10 @@ classdef sss
 %       -sys: sparse state-space (sss)-object
 %
 % Examples:
-%       To create a sparse state-space model of the benchmark 'build'
+%       To create a sparse state-space model of the benchmark 'building'
 %       (SSS, SISO) use:
 %
-%> load build.mat
+%> load building.mat
 %> sys = sss(A,B,C)
 %
 %       SSS also supports descriptor (DSSS) and DAE systems. To create a sparse
