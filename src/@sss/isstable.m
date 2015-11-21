@@ -10,14 +10,20 @@ function [isstable,spectralAbscissa] = isstable(sys)
 %       This function determines whether the LTI, sss system "sys" is 
 %       asymptotically stable. The computations are meant to avoid 
 %       operations on full matrices. However, whenever this is not possible,
-%       a warning is issued.
-%       
+%       a warning is issued. 
+% 
+%       The stability check is done by first computing the eigenvalues with 
+%       largest real part ('lr'). Afterwards, the spectral abscissa, i.e.
+%       the largest occurring real part is calculated. The system is
+%       asymptotically stable, if the spectral abscissa is strictly less 
+%       than zero.
+% 
 %       If no output is defined, then the result is printed on the screen.
 %       Depending on the number of ouputs defined the function can return
 %       isstable and spectralAbscissa.
-%
+% 
 %       NaN is returned either, when the computation was not possible, or 
-%       when the numerical abscissa is zero. In the latter case, the system
+%       when the spectral abscissa is zero. In the latter case, the system
 %       might be stable (in the sense of Lyapunov) or unstable if the
 %       multiplicity of the eigenvalues at the origin is greater than one.
 %
@@ -34,7 +40,7 @@ function [isstable,spectralAbscissa] = isstable(sys)
 %
 %> load CDplayer.mat
 %> sys=sss(A,B,C);
-%> [issd, numericalAbscissa]=issstable(sys);
+%> [issd, spectralAbscissa]=isstable(sys);
 %
 %       Another example, this time using the benchmark 'rail_5177' (DSSS,
 %       MIMO):
@@ -61,7 +67,7 @@ function [isstable,spectralAbscissa] = isstable(sys)
 % More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Sylvia Cremer, Alessandro Castagnotto
+% Authors:      Sylvia Cremer, Alessandro Castagnotto, Maria Cruz Varona
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
@@ -78,19 +84,19 @@ catch err
         try
             lambda=eigs(sys,1,'lr',struct('tol',1e-4','v0',sys.b));
         catch
-            warning('eigs(..,''lr'') failed to compute the numerical abscissa. Trying with eig. This might take a while...');
+            warning('eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
             lambda = eig(sys);
             lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
         end
     else
-        warning('eigs(..,''lr'') failed to compute the numerical abscissa. Trying with eig. This might take a while...');
+        warning('eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
         lambda = eig(sys);
         lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
     end
 end
 spectralAbscissa = max(real(lambda));
 
-%%  Check wether the numerical abscissa is strictly less than zero
+%%  Check wether the spectral abscissa is strictly less than zero
 if  spectralAbscissa < 0
     if nargout<1, fprintf('The system is asymptotically stable\n');
     else isstable = 1; end

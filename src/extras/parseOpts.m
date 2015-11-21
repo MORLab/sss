@@ -1,5 +1,5 @@
 function Opts = parseOpts(Opts,Def)
-% PARSEOPTS - Createa an sss object from .mat file data
+% PARSEOPTS - Creates an optional struct after parsing
 %
 % Syntax:
 %       Opts = PARSEOPTS(Opts,Def)

@@ -38,7 +38,7 @@ function  [varargout] = bode(varargin)
 %		This code loads a benchmark model included in the toolbox
 %		and plots its bode diagram using the sparse state-space class:
 %
-%> load build; 
+%> load building; 
 %> sys = sss(A,B,C);
 %> bode(sys);
 %

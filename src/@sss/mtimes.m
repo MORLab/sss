@@ -16,28 +16,35 @@ function sys1 = mtimes(sys1, sys2)
 % Outputs Arguments:
 %       prod: sss-object representing sys1*sys2
 %
+% Examples:
+%> load building.mat
+%> sysBuilding=sss(A,B,C);
+%> size(sysBuilding)
+%> sysRandom=rss(10); sysRandomSparse=sss(sysRandom);
+%> size(sysRandomSparse);
+%> prodSystems=mtimes(sysBuilding,sysRandomSparse);
+%> size(prodSystems);
+%> prod = sysBuilding*sysRandomSparse; %for comparison reasons
+%> prod.A == prodSystems.A; %for comparison reasons
+%
 % See Also:
 %       plus, minus
 %
-% Examples:
-%       TODO
-%
-% References:
-%       TODO
-%
 %------------------------------------------------------------------
-% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
-% Reduction and System Analysis Toolbox developed at the Chair of 
-% Automatic Control, Technische Universitaet Muenchen. For updates 
-% and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % For any suggestions, submission and/or bug reports, mail us at
 %                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
 %
 % More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
 %------------------------------------------------------------------
 % Authors:      Heiko Panzer
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Work Adress:  Technische Universitaet Muenchen
 % Last Change:  05 Nov 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------

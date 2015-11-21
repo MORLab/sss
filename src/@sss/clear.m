@@ -15,7 +15,7 @@ function sys = clear(sys)
 %       -sys: the same system with cleared system matrices and labels
 %
 % Examples:
-%> load build.mat;
+%> load building.mat;
 %> sys=sss(A,B,C);
 %> whos('sys'); %shows the size of sys
 %> sys=clear(sys);

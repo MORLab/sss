@@ -9,7 +9,25 @@ classdef sss
 %       sys = SSS(D)
 %
 % Description:
-%       TODO
+%       This class allows you to create sparse state-space (sss) objects by
+%       just passing the corresponding sparse system matrices.
+%
+%       The class supports SSS (E=I), descriptor (DSSS, E~=I, E nonsingular)
+%       as well as DAE (E~=I, E singular) systems. You can create both
+%       continous- and discrete-time sss objects. For creating
+%       discrete-time sss objects, one has only to pass the sampling time Ts
+%       after passing the system matrices: sys = SSS(A,B,C,D,E,Ts).
+%
+%       If you call sys = SSS(sys_ss) then the state-space (ss)-object
+%       sys_ss is converted into a sparse state-space (sss)-object
+%
+%       The sss class comprises both properties and methods of sss-objects.
+%       Some of them are: 'A', 'E', ..., 'InputName', 'isSiso', 'isDAE', 
+%       'n', 'p', 'poles', 'residues', 'HankelSingularValues', 'decayTime', ... 
+%
+%       After creating an sss-object, one can get properties and call the
+%       implemented functions by just making use of the .-operator, i.e.
+%       e.g. sys.p, sys.isMimo.
 %
 % Input Arguments:
 %       -A: system matrix
@@ -24,32 +42,44 @@ classdef sss
 %       -sys: sparse state-space (sss)-object
 %
 % Examples:
-%       To create a sparse state-space model of the benchmark 'build'
-%       (SISO) use:
+%       To create a sparse state-space model of the benchmark 'building'
+%       (SSS, SISO) use:
 %
-%> load build.mat
+%> load building.mat
 %> sys = sss(A,B,C)
-%> sysd = diag(sys)
-%> [Ad,Bd,Cd] = ssdata(sysd);
 %
-%       SSS also supports descriptor and DAE systems. To create a sparse
-%       state-space model of the benchmark "PEEC_MTLn1600" (DSSS, MIMO)
-%       use:
+%       SSS also supports descriptor (DSSS) and DAE systems. To create a sparse
+%       state-space model of the benchmark 'rail_1357' (DSSS, MIMO) use:
 % 
-%> load PEEC_MTLn1600.mat
-%> sys = sss(A,B,C,zeros(14,14),E)
+%> load rail_1357.mat
+%> sys = sss(A,B,C,[],E)
+%
+%       To convert a ss-object into a sss-object just type:
+%
+%> sys = rss(1000); %random ss model with 100 state variables
+%> sysSparse = sss(sys); %convert to sss-object
+%
+%       After creating a sss-object, one can get properties and call the
+%       implemented functions by just making use of the .-operator:
+%
+%> load peec
+%> sys = sss(A,B,C,[],E);
+%> p = sys.p %get the number of outputs
+%> isMimo = sys.isMimo %get if the system is MIMO
+%> isDae = sys.isDae %get if the system is DAE
+%> sys.bode %call the function bode
 %
 % See Also: 
 %        ss, dss
 %
 % References:
-%		* *[1] Documentation of the Control System Toolbox from MATLAB
+%		* *[1] Documentation of the Control System Toolbox from MATLAB*
 %
 %------------------------------------------------------------------
-% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
-% Reduction and System Analysis Toolbox developed at the Chair of 
-% Automatic Control, Technische Universitaet Muenchen. For updates 
-% and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % For any suggestions, submission and/or bug reports, mail us at
 %                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
 %

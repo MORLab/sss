@@ -22,9 +22,9 @@ function tmax = decayTime(sys)
 %       -tmax: time after which the system has settled down
 %
 % Examples:
-%       This code computes the decay time of the benchmark 'build':
+%       This code computes the decay time of the benchmark 'building':
 %
-%> load build; 
+%> load building; 
 %> sys = sss(A,B,C);
 %> tmax = decayTime(sys);
 %

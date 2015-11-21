@@ -1,5 +1,5 @@
 function sys = loadSss(fname,Opts)
-% LOADSSS - Creates an sss object from .mat file data
+% LOADSSS - Creates an sss-object from .mat file data
 %
 % Syntax:
 %       ssy = LOADSSS(fname,Opts)
@@ -51,10 +51,8 @@ function sys = loadSss(fname,Opts)
 %> sys = loadSss('gyro')
 %
 % See Also:
-%       sss
+%       sss, load
 %
-% References:
-%       TODO: add references to the technical report or paper describing sssMOR
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
@@ -110,8 +108,9 @@ elseif isfield(LoadData,'M') %2nd order form
         case 'alpha'
             % TODO: add the transformation to strictly dissipative form by
             % Panzer
+            warning('alpha option not implemented yet, using K instead');
             alpha = 1; 
-            E1 = -alpha*LoadData.K;
+            E1 = alpha*LoadData.K;
     end
     % generate 1st order system matrices
     LoadData.E = blkdiag(E1,LoadData.M);

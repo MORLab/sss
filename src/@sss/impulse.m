@@ -20,9 +20,9 @@ function  [temp,t] = impulse(sys, varargin)
 %
 % Examples:
 %       The following code computes the impulse response of the benchmark
-%       'build' (SSS, SISO) and compares it with the MATLAB built-in function:
+%       'building' (SSS, SISO) and compares it with the MATLAB built-in function:
 %
-%> load build.mat
+%> load building.mat
 %> sysSparse=sss(A,B,C); %sparse state-space (sss)
 %> sys=ss(sysSparse); %full state-space (ss)
 %> figure; impulse(sys); hold on; impulse(sysSparse);

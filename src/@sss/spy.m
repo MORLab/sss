@@ -7,31 +7,36 @@ function spy(sys,name)
 % 
 % Description:
 %       This function plots the sparsity pattern of the E and A matrices of
-%       the sparse state space system sys. 
+%       the sparse state-space system sys. 
 %
 %       It is possible to pass a name via a second optional argument.
 %
 % Input Arguments:
+%       *Required Input Arguments:*
 %		-sys:  sparse state space (sss)-object
+%       *Optional Input Arguments:*
 %       -name: Plot title
 %       
 % Output Arguments:
+%       No Output Arguments, just a figure
 %
 % Examples:
-%		
+%		The following code plots the sparsity pattern of the benchmark
+%		'SpiralInductorPeec' (DSSS, SISO):
+%
 %> sys = loadSss('SpiralInductorPeec.mat'); 
 %> spy(sys,'Peec inductor');
 %
-%// 	Note: the .mat file for the example can be found in the benchmarks folder
+%//Note: The .mat file for the example can be found in the benchmarks folder
 %
 % See Also: 
 %		spy
 %
 %------------------------------------------------------------------
-% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State Space, Model Order 
-% Reduction and System Analysis Toolbox developed at the Chair of 
-% Automatic Control, Technische Universitaet Muenchen. For updates 
-% and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % For any suggestions, submission and/or bug reports, mail us at
 %                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
 %
@@ -52,6 +57,8 @@ function spy(sys,name)
     
     if nargin > 1
         onetitle(name);
+    elseif ~isempty(sys.Name)
+        onetitle(sys.Name);
     end
 end
 

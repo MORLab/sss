@@ -1,5 +1,5 @@
 function [A11,A12,A21,A22] = partition(A,row,col)
-% PARTITION - Createa an sss object from .mat file data
+% PARTITION - Partitions a matrix into four submatrices
 %
 % Syntax:
 %       [A11,A12,A21,A22] = PARTITION(A,row)

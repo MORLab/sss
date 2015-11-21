@@ -1,5 +1,5 @@
 function [y,x_,index] = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample)
-% simBackwardEuler - Integrates sss model using backward Euler
+% simBackwardEuler - Integrates sss model using backward (implicit) Euler
 % 
 % Syntax:
 %       y = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
@@ -7,15 +7,15 @@ function [y,x_,index] = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample)
 %       [y,x_,index] = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 %
 % Description:
-%       Integrates sss model using backward Euler
+%       Integrates sss model using backward (implicit) Euler
 % 
 % Input Arguments:       
-%       -A,B,C,D,E:     state space matrices
-%       -u:             input vector in [Nsample,Ninput]
-%       -x:             start vector for time integration
-%       -Ts:            Sampling time
-%       -Ts_sample:     Sampling time for matrix of state-vectors
-%       -isDescriptor:  is descriptor
+%       -A,B,C,D,E:     state-space matrices
+%       -u:             input vector/matrix with dimension Nsample x Ninput
+%       -x:             initial state vector for time integration
+%       -Ts:            sampling time
+%       -Ts_sample:     sampling time for matrix of state-vectors
+%       -isDescriptor:  isDescriptor-boolean
 %
 % Output Arguments:      
 %       -y: output vector
@@ -23,13 +23,15 @@ function [y,x_,index] = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample)
 %       -index: time index for x_
 %
 % See Also: 
-%       sss/sim, simForwardEuler, simRK4
+%       sim, simForwardEuler, simRK4
 %
 % References:
-%       Gear, C. William, Numerical Initial Value Problems in Ordinary Differential Equations
-%       Shampine, L. F. , Numerical Solution of Ordinary Differential Equations, Chapman & Hall, New York, 1994.
-%       Shampine, L. F. and M. K. Gordon, Computer Solution of Ordinary Differential Equations: the Initial Value Problem, W. H. Freeman, San Francisco, 1975.
-%
+%       * *[1] Gear (1971)*, Numerical Initial Value Problems in 
+%       Ordinary Differential Equations.
+%       * *[2] Shampine (1994)*, Numerical Solution of Ordinary Differential Equations, 
+%       Chapman & Hall, New York.
+%       * *[3] Shampine and Gordon (1975)*, Computer Solution of Ordinary Differential 
+%       Equations: the Initial Value Problem, W. H. Freeman, San Francisco.
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

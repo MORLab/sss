@@ -17,11 +17,11 @@ function sys = append(varargin)
 %		This code loads two benchmark models included in the toolbox
 %		and groups the models by |append|ing their inputs and outputs:
 %
-%> load build; 
-%> sysBuild = sss(A,B,C);
+%> load building; 
+%> sysBuilding = sss(A,B,C);
 %> load CDplayer
 %> sysCdplayer = sss(A,B,C);
-%> sysAppended = append(sysBuild,sysCdplayer);
+%> sysAppended = append(sysBuilding,sysCdplayer);
 %> spy(sysAppended)
 %
 % See Also:

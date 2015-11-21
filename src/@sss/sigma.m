@@ -20,7 +20,10 @@ function  [mag, omega] = sigma(sys, varargin)
 %       -omega: vector of complex frequencies
 %
 % Examples:
-%> load cdplayer.mat
+%       The following code plots the amplitude of the frequency response of
+%       the benchmark 'CDplayer' (SSS, MIMO):
+%
+%> load CDplayer.mat
 %> sys=sss(A,B,C);
 %> sigma(sys);
 %

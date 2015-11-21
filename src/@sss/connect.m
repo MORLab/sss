@@ -20,7 +20,7 @@ function sys_S = connect(varargin)
 %       -sys_S: closed loop sparse state space (sss)-object
 %
 % Examples:
-%> load build.mat
+%> load building.mat
 %> sys=sss(A,B,C);
 %> sys.y={'y'};
 %> sys.u={'u'};

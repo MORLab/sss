@@ -17,10 +17,10 @@ function diff = minus(sys1, sys2)
 %       -diff: sss-object representing sys1-sys2
 %
 % Examples:
-%       In this example the benchmark 'build' will be reduced and its behaviour 
+%       In this example the benchmark 'building' will be reduced and its behaviour 
 %       will be compared with the original model.
 %
-%> load build.mat
+%> load building.mat
 %> sys=sss(A,B,C);
 %> sysReduced=tbr(sys,12); %original order: 48, reduced order: 12
 %> sysError=minus(sysReduced,sys); %sysError = sysReduced - sys
