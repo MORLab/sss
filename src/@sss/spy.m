@@ -65,7 +65,7 @@ end
 function onetitle(str)
     %   Create one common title for different subplots
     set(gcf,'NextPlot','add');
-    ha = axes; h = title(str);
+    ha = axes; h = title(str,'Interpreter','none');
     set(ha,'Visible','off');
     set(h,'Visible','on'); 
 end
