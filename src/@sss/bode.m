@@ -1,6 +1,7 @@
 function  [varargout] = bode(varargin)
 % BODE Plots the bode diagram of an LTI system
 %
+%
 % Syntax:
 %   BODE(sys)
 %   BODE(sys,omega)
