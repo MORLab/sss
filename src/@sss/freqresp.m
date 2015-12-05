@@ -135,7 +135,6 @@ while(1)
     %Conditions to refine. If the values get smaller, the final bode will
     %be more refined.
     wEvaluated=w(any(any(or(delta1>0.05,delta2>0.01),1),2));
-    numel(wEvaluated)
     if not(numel(wEvaluated))
         break;
     end
