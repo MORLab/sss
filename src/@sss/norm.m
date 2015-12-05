@@ -48,12 +48,12 @@ function [nrm, varargout] = norm(sys, varargin)
 % More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Heiko Panzer, Sylvia Cremer, Rudy Eid
+% Authors:      Jorge Luiz Moreira Silva, Heiko Panzer, Sylvia Cremer, Rudy Eid
 %               Alessandro Castagnotto, Maria Cruz Varona
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  05 Nov 2015
+% Last Change:  05 Dez 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
@@ -71,8 +71,8 @@ end
 if isinf(p)
     % H_inf-norm
     if isempty(sys.hInfNorm)
-        warning('calling MATLAB''s built-in norm');
-        [sys.hInfNorm, sys.hInfPeakfreq] = norm(ss(sys),inf);
+        %warning('calling MATLAB''s built-in norm');
+        [sys.hInfNorm, sys.hInfPeakfreq] = H_Infty(sys);
         if nargout>1
             varargout{1}=sys.hInfPeakfreq;
         end
@@ -173,3 +173,94 @@ elseif p==2
 else
     error(['H_' num2str(p) '-norm not implemented.'])
 end
+end
+
+function [ H_Infty,freq ] = H_Infty( sys )
+
+[mag,w] = freqresp( sys );
+[magExtreme]=freqresp(sys,[0,inf]);
+mag=cat(3,magExtreme(:,:,1),mag,magExtreme(:,:,2));
+w=[0;w;inf];
+indices=1:numel(w);
+%%Defining Boundaries
+maxNorm=sqrt(sum(sum(abs(mag).^2,1),2)); %Frobenius Norm immer smaller than the real norm
+[~,indexMaxNorm]=max(maxNorm);
+index=indexMaxNorm;
+H_Infty=norm(mag(:,:,index),2);
+i=0;
+%Find the maximum norm computed in freqresp
+while(1)
+    i=i+1;
+    maxNorm(index)=0;
+    indices(maxNorm<=H_Infty)=[];
+    maxNorm(maxNorm<=H_Infty)=[];
+    if not(numel(maxNorm))
+        break;
+    end
+    [~,index]=max(maxNorm);
+    computedNorm=norm(mag(:,:,indices(index)),2);
+    if (computedNorm>H_Infty)
+        H_Infty=computedNorm;
+        indexMaxNorm=indices(index);
+    end
+end
+freq=w(indexMaxNorm);
+
+%Optimization of the maximum Hinfty norm
+[A,B,C,D,E]=dssdata(sys);
+minusA=-A;
+w=freq;
+[eigenvectors,eigenvalues]=eig(mag(:,:,indexMaxNorm)'*mag(:,:,indexMaxNorm));
+[~,Index]=max(diag(eigenvalues));
+v=eigenvectors(:,Index);
+[Deriv0,Deriv1,Deriv2]=computeDerivatives(minusA,B,C,D,E,w);
+lambida=norm(v'*Deriv0)/norm(v');
+Vals=[v;lambida;w];
+firstDeriv=[-v'*(Deriv0+transp(Deriv0))+2*lambida*v',(v'*v)-1,real(-v'*Deriv1*v)]';
+secondDeriv=[-(Deriv0+transp(Deriv0))+2*lambida*eye(size(Deriv0,1)),2*v,(-v'*(Deriv1+transp(Deriv1)))';...
+    2*v',0,0;...
+    (-v'*(Deriv1+transp(Deriv1))),0,real(-v'*Deriv2*v)];
+delta=inf;
+i=0;
+while(1)
+    i=i+1;
+    deltaBefore=delta;
+    delta=secondDeriv\firstDeriv;
+    Vals=Vals-delta;
+    w=real(Vals(end));
+    lambida=Vals(end-1);
+    v=Vals(1:end-2);
+    [Deriv0,Deriv1,Deriv2]=computeDerivatives(minusA,B,C,D,E,w);
+    firstDeriv=[-v'*(Deriv0+transp(Deriv0))+2*lambida*v',(v'*v)-1,real(-v'*Deriv1*v)]';
+    if (abs((norm(deltaBefore)-norm(delta))/norm(delta))<1e-9)|norm(delta(end))<eps(w)|i>=10
+        break;
+    end
+    secondDeriv=[-(Deriv0+transp(Deriv0))+2*lambida*eye(size(Deriv0,1)),2*v,(-v'*(Deriv1+transp(Deriv1)))';...
+        2*v',0,0;...
+        (-v'*(Deriv1+transp(Deriv1))),0,real(-v'*Deriv2*v)];
+end
+freq=w;
+H_Infty=sqrt(max(eig(full(Deriv0))));
+end
+
+function [Deriv0,Deriv1,Deriv2]=computeDerivatives(minusA,B,C,D,E,w)
+[L,U,k,l,S]=lu((minusA+E*w*1i),'vector');
+b=S\B; b=b(k,:);
+LinearSolve0=L\b;
+LinearSolve0(l,:)=U\LinearSolve0;
+resp=(C*LinearSolve0)+D;
+Deriv0=((resp)'*resp); %it is ln
+%Compute first derivative
+b=S\(E*LinearSolve0); b=b(k,:);
+LinearSolve1=L\b;
+LinearSolve1(l,:)=U\LinearSolve1;
+respp=-1i*C*LinearSolve1;
+Deriv1=((respp)'*resp+(resp)'*respp);
+%Compute second derivative
+b=S\(E*LinearSolve1); b=b(k,:);
+LinearSolve2=L\b;
+LinearSolve2(l,:)=U\LinearSolve2;
+resppp=-2*C*LinearSolve2;
+Deriv2=((resppp)'*resp+resp'*resppp+2*(respp)'*respp);
+end
+

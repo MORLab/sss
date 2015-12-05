@@ -59,19 +59,25 @@ nOutputs=sys.p;
 nInputs=sys.m;
 [A,B,C,D,E]=dssdata(sys);
 %Reordering Matrices
-ACopy=A;
-ACopy(find(E))=1;
-reOrder=symrcm(ACopy);
+nnzA=nnz(A);
+nnzE=nnz(E);
+S = spalloc(size(A,1),size(A,1),nnzA+nnzE);
+S(find(A))=1;
+S(find(E))=1;
+reOrder=symrcm(S);
+S=S(reOrder,reOrder);
 sys=sss(A(reOrder,reOrder),B(reOrder,:),C(:,reOrder),D,E(reOrder,reOrder));
 %Verifying relation between Inputs and Outputs
-M=InputOutputRelation(sys);
+M=InputOutputRelation(sys,S);
 
 omegaIndex = cellfun(@isfloat,varargin);
 if ~isempty(omegaIndex) && nnz(omegaIndex)
     %frequency vector was specified
     omega = varargin{omegaIndex};
+    omega=unique(omega);
     varargin(omegaIndex)=[];
 else
+    if any(any(M))
     %Finding mininum and maximum frequencies
     minW=findminW(sys,M);
     maxW=findmaxW(sys,M);
@@ -82,6 +88,9 @@ else
     %Refine the frequency response points
     [G,omega]=FreqRefinement(sys,omega,firstDerivLog,secondDerivLog,magnitude,resp,M);
     return
+    else
+        error('All the inputs of the system are disconnected to all outputs');
+    end
 end
 
 %%  Compute the value of the transfer function at selected freq.
@@ -95,7 +104,7 @@ end
 for iSys=1:length(varargin)
     sys= varargin{iSys};
     m=sys.m; p=sys.p;
-    if (m~=nInputs|p~=nOutputs)
+    if (m~=nInputs||p~=nOutputs)
         error('The number of inputs and outputs of all input-systems must be the same');
     end
     [~,~,~,resp]=ComputeFreqResp(sys,s,M);
@@ -126,6 +135,7 @@ while(1)
     %Conditions to refine. If the values get smaller, the final bode will
     %be more refined.
     wEvaluated=w(any(any(or(delta1>0.05,delta2>0.01),1),2));
+    numel(wEvaluated)
     if not(numel(wEvaluated))
         break;
     end
@@ -161,6 +171,11 @@ resppp=zeros(nOutputs,nInputs,numel(wEval));
 M=repmat(not(M),1,1,numel(wEval));
 for i=1:numel(wEval)
     w=wEval(i);
+    if isinf(w)
+        resp(:,:,i)=D;
+        respp(:,:,i)=nan(size(D));
+        resppp(:,:,i)=nan(size(D));
+    else
     %Computation of the frequency response for w=wEval(i)
     [L,U,k,l,S]=lu(minusA+E*w,'vector');
     warning('OFF', 'MATLAB:nearlySingularMatrix');
@@ -179,6 +194,7 @@ for i=1:numel(wEval)
     linSolve2(l,:)=U\linSolve2;
     warning('ON', 'MATLAB:nearlySingularMatrix');
     resppp(:,:,i)=2*C*linSolve2;
+    end
 end
 %Computation of the first two derivatives for a log-log of the magnitude plot
 resppp=resppp.*repmat(reshape(wEval,1,1,numel(wEval)),nOutputs,nInputs,1).^2+respp;
@@ -212,19 +228,18 @@ if any(any(any(isinf(firstDerivLog)))) || any(any(any(isinf(secondDerivLog))))
 end
 end
 
-function [M]=InputOutputRelation(sys)
+function [M]=InputOutputRelation(sys,S)
 %Function to determine which inputs and outputs are connected through the
 %matrices A and E.
 %The output is a matrix M p x m.
-[A,B,C,~,E]=dssdata(sys);
+[~,B,C,~,~]=dssdata(sys);
 C(find(C))=1;
-A(find(E))=1;
-vec=zeros(sys.m,size(A,1));
+vec=zeros(sys.m,size(S,1));
  for k=1:sys.m
     [i,~]=find(B(:,k));
     vec(k,i)=1;
 while(1)
-    [~,j]=find(A(i,:));
+    [~,j]=find(S(i,:));
     j=unique(j);
     newVec=(not(vec(k,j)));
     vec(k,j(newVec))=1;
@@ -266,7 +281,6 @@ while(1)
     if i>1
         minW=minW*10;
     end
-    %Matrix=H+identity*minW*1i;
     Matrix=minusA+E*minW*1i;
     if any(any(CondSuf==0))
         Cond=repmat(condest(Matrix),nOutputs,nInputs);
