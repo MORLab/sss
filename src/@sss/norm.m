@@ -71,7 +71,6 @@ end
 if isinf(p)
     % H_inf-norm
     if isempty(sys.hInfNorm)
-        warning('calling MATLAB''s built-in norm');
         [sys.hInfNorm, sys.hInfPeakfreq] = norm(ss(sys),inf);
         if nargout>1
             varargout{1}=sys.hInfPeakfreq;
