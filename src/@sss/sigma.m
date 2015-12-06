@@ -81,21 +81,21 @@ mag=mag2db(mag); %can be overwritten since it is not returned
 m = sys.m; p = sys.p;
 plot_handles=zeros(m,p);
 
-for i=1:m %for each input
-    for j=1:p %for each output
-        plot_handles(i,j)=subplot(m,p,((i-1)*p)+j);
+for i=1:p %for each output
+    for j=1:m %for each input
+        plot_handles(i,j)=subplot(p,m,((i-1)*p)+j);
         hold on
-        if j==1 && sys.p>1
+        if j==1 && sys.m>1
             y_lab=sprintf('To Out(%i)',ceil(i/2));
             ylabel(y_lab)
         end
-        if i==1 && sys.m>1
+        if i==1 && sys.p>1
             x_lab=sprintf('From In(%i)',j);
             title(x_lab)
         end
       
         % amplitude
-        y_plot=squeeze(mag(j,i,:));
+        y_plot=squeeze(mag(i,j,:));
         plot(omega,y_plot,options{:})
         set(gca, 'XScale', 'log');
         set(gca, 'XLim', [min(omega) max(omega)]);
