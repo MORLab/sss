@@ -72,14 +72,14 @@ if isinf(p)
     % H_inf-norm
     if isempty(sys.hInfNorm)
         [sys.hInfNorm, sys.hInfPeakfreq] = norm(ss(sys),inf);
-        if nargout>1
-            varargout{1}=sys.hInfPeakfreq;
-        end
         if inputname(1)
             assignin('caller', inputname(1), sys);
         end
     end
     nrm=sys.hInfNorm; 
+    if nargout>1
+        varargout{1}=sys.hInfPeakfreq;
+    end
 elseif p==2
     % H_2-norm
     if ~isempty(sys.h2Norm)
