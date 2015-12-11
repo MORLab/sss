@@ -75,23 +75,29 @@ function [isstable,spectralAbscissa] = isstable(sys)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-%%  Compute the eigenvalue with largest real part
-try
-    lambda = eigs(sys,1,'lr',struct('v0',sys.b));
-catch err
-    if strcmp(err.identifier,'MATLAB:eigs:ARPACKroutineErrorMinus14')
-        %eigs did not converge: lower the tolerance
-        try
-            lambda=eigs(sys,1,'lr',struct('tol',1e-4','v0',sys.b));
-        catch
+%%  For small systems, compute the eigenvalue decomposition directy
+if sys.n < 100
+    lambda = eig(sys);
+    lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
+else       
+    %%  Compute the eigenvalue with largest real part
+    try
+        lambda = eigs(sys,1,'lr',struct('v0',sys.b));
+    catch err
+        if strcmp(err.identifier,'MATLAB:eigs:ARPACKroutineErrorMinus14')
+            %eigs did not converge: lower the tolerance
+            try
+                lambda=eigs(sys,1,'lr',struct('tol',1e-4','v0',sys.b));
+            catch
+                warning('eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
+                lambda = eig(sys);
+                lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
+            end
+        else
             warning('eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
             lambda = eig(sys);
             lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
         end
-    else
-        warning('eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
-        lambda = eig(sys);
-        lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
     end
 end
 spectralAbscissa = max(real(lambda));
@@ -105,6 +111,6 @@ if  spectralAbscissa < 0
         warning('The system has eigenvalues on the imaginary axis. It might be unstable.'); 
         isstable = NaN;
     else
-        if nargout<1, warning('The system is unstable.'); else isstable=0;end
+        if nargout<1, fprintf('The system is unstable.'); else isstable=0;end
 end
 end
