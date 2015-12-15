@@ -16,7 +16,8 @@ function [nrm, varargout] = norm(sys, varargin)
 %       *Required Input Arguments:*
 %       -sys: sss-object containing the LTI system
 %       *Optional Input Arguments:* 
-%       -p: 2 for H_2-norm or inf for H_inf-norm
+%       -p: choise of H_2-norm or H_inf-norm 
+%           [{'2'} / 'inf']
 %
 % Output Arguments:
 %       -nrm:             value of norm

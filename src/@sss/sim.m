@@ -15,8 +15,8 @@ function [data,X,tx] = sim(sys,data,method,Ts_sample)
 %       -data:  iddata object containing input time series
 %       *Optional Input Arguments:*
 %       -method:    time ingetration method 
-%                   ('forwardEuler' | 'backwardEuler' | 'RK4'
-%                   'RKDP' (def, continuous) | 'discrete' (def, descrete))
+%                   [{'RKDP' (continuous) / 'discrete' (discrete)} /
+%                   'forwardEuler' / 'backwardEuler' / 'RK4']
 %       -Ts_sample: sampling rate of the state-vector
 %
 % Output Arguments:      

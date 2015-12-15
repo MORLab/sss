@@ -33,13 +33,14 @@ function [r,p,d] = residue(sys, Opts)
 %       *Required Input Arguments:*
 %		-sys: sss-object of the LTI system
 %       *Optional Input Arguments:*
-%       -Opts: Structure containing computation options
-%           -.rType: define the output format of the residue
-%           -.rType='res' (def): r is a cell array of dimension nx1 with the
-%                                residual r{k} for each pole p(k)
-%           -.rType='dir': r is a cell array of dimension 1x2 with the
-%                          output residual matrix Chat = r{1} and the input residual matrix 
-%                          Bhat = r{2}
+%       -Opts:          Structure containing computation options
+%           -.rType:    define the output format of the residue r either
+%                       as a cell array of dimension nx1 with the residual 
+%                       r{k} for each pole p(k) ('res'); or a cell array 
+%                       of dimension 1x2 with the output residual matrix 
+%                       Chat = r{1} and the input residual matrix Bhat = r{2}
+%                       ('dir');
+%                       [{'res'} / 'dir']
 %
 % Output Arguments:
 %       -r: cell of residuals (format depends on Opts.rType)
