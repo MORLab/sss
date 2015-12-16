@@ -67,15 +67,20 @@ else
     inputname = sort(unique(sys_ap.u));
     outputname = sort(unique(sys_ap.y));
 end
+% Remove empty input and output names
+inputname = inputname(not(cellfun(@isempty,inputname)));
+outputname = outputname(not(cellfun(@isempty,outputname)));
 
 % Find open loop internal feedbacks of appended system
 rows = [];
 cols = [];
 for k = 1 : length(sys_ap.u)
-    col = find(strcmp(sys_ap.y, sys_ap.u(k)));
-    
-    rows = [rows; k*ones(size(col))];
-    cols = [cols; col];
+    if not(isempty(sys_ap.u{k}))
+        col = find(strcmp(sys_ap.y, sys_ap.u(k)));
+        
+        rows = [rows; k*ones(size(col))];
+        cols = [cols; col];
+    end
 end
 vals = ones(size(rows));
 K= sparse(rows,cols,vals,sys_ap.m,sys_ap.p);
@@ -92,6 +97,7 @@ for i = 1: length(inputname)
     end
     idx(i) = id(1); % TODO: special treatment for one output to multiple inputs (?)
 end
+idx = [idx; find(cellfun(@isempty,sys_S.u))]; % Add inputs with empty Inputnames
 u = sys_S.u(idx);
 Groups = sys_S.InputGroup;
 if not(isempty(Groups))
@@ -130,6 +136,7 @@ for i = 1: length(outputname)
     end
     idx(i) = id(1);
 end
+idx = [idx; find(cellfun(@isempty,sys_S.y))]; % Add outputs with empty Outputnames
 y = sys_S.y(idx);
 
 Groups = sys_S.OutputGroup;
