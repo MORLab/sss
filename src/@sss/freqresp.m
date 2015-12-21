@@ -20,8 +20,7 @@ function [G, omega] = freqresp(varargin)
 %
 % Inputs:
 %       *Required Input Arguments:*
-%       -sys: an sss-object containing the LTI system or an array with many
-%       LTI-Systems with the same number of inputs and outputs.
+%       -sys: an sss-object containing the LTI system
 %       -s: vector of complex frequencies
 %       
 % Outputs:      
