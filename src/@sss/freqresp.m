@@ -7,15 +7,15 @@ function [G, omega] = freqresp(varargin)
 %       frequencies is automatically selected.
 %
 % Syntax:
-%       G = freqresp(sys, s)
-%       G = freqresp(sys, s, opts)
-%       [G, omega] = freqresp(sys)
+%       G = freqresp(sys, w)
+%       G = freqresp(sys, w, Opts)
+%       [G, w] = freqresp(sys)
 %
 % Inputs:
 %       *Required Input Arguments:*
 %       -sys: an sss-object containing the LTI system or an array with many
 %       LTI-Systems with the same number of inputs and outputs.
-%       -s: vector of complex frequencies
+%       -w: vector of frequencies over the imaginary axis
 %       
 % Outputs:      
 %       -G: vector of complex frequency response values
@@ -75,6 +75,15 @@ if ~isempty(omegaIndex) && nnz(omegaIndex)
     %frequency vector was specified
     omega = varargin{omegaIndex};
     omega=unique(omega);
+    % make sure omega is real
+    if ~isreal(omega)
+        omega = 1i*omega; 
+        % make sure this worked. If not, then omega was a mixture of real
+        % and complex frequecies, so return an error
+        if ~isreal(omega)
+            error('Freqresp computes the frequency response only on the imaginary axis. Pass a vector of either all real or all imaginary frequencies');
+        end
+    end
     varargin(omegaIndex)=[];
 else
     if any(any(M))
