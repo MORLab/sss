@@ -76,16 +76,9 @@ omegaIndex = cellfun(@isfloat,varargin);
 if ~isempty(omegaIndex) && nnz(omegaIndex)
     %frequency vector was specified
     omega = varargin{omegaIndex};
-    omega=unique(omega);
-    % make sure omega is real
-    if ~isreal(omega)
-        omega = 1i*omega; 
-        % make sure this worked. If not, then omega was a mixture of real
-        % and complex frequecies, so return an error
-        if ~isreal(omega)
-            error('Freqresp computes the frequency response only on the imaginary axis. Pass a vector of either all real or all imaginary frequencies');
-        end
-    end
+    %make sure it's a column vector
+    if size(omega,2)>size(omega,1), omega = omega.'; end
+    
     varargin(omegaIndex)=[];
 else
     if any(any(M))
@@ -106,9 +99,26 @@ end
 
 %%  Compute the value of the transfer function at selected freq.
 if (sys.Ts==0) % Convert frequency to either laplace or z variable
-    s = 1i* omega;
+    %{
+    % if omega is a real vector, then make it imaginary for the transfer
+    % function evaluations. If it is purely imaginary, complex or mixed,
+    % than just use the values passed.
+    % NOTE: this is in line with the built-in case. However, if one desired
+    % to evaluate the transfer function ONLY on the real axis, this implementation does not allow it. 
+    % In this case, we recommend evaluating the transfer function manually
+    % or add an imaginary frequency which can be disregarded afterwards
+    %}
+    if isreal(omega)
+        s = 1i* omega;
+    else
+        s = omega;
+    end
 else
-    s = exp(1i* omega*sys.Ts);
+    if isreal(omega)
+        s = exp(1i* omega*sys.Ts);
+    else
+        s = omega;
+    end
 end
     G=zeros(nOutputs,nInputs,numel(s));
     [~,~,~,resp]=ComputeFreqResp(sys,s,M);
