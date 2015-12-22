@@ -4,7 +4,14 @@ function [G, omega] = freqresp(varargin)
 % Description:
 %       Evaluates complex transfer function of LTI systems. If the vector
 %       of complex frequencies is not passed, then a range of imaginary
-%       frequencies is automatically selected.
+%       frequencies is automatically selected. 
+%       This automatic selection is done through the computation of the
+%       first and second derivatives of the magnitude of the frequency
+%       response. 
+%       Also, one of the steps is the computation of the connection between
+%       inputs and outputs of the system. The value of M(i,j) is one when
+%       the input j is connected to the output i. When it is zero, then a
+%       change in the input j doesn't influence the output i.
 %
 % Syntax:
 %       G = freqresp(sys, w)
@@ -13,8 +20,7 @@ function [G, omega] = freqresp(varargin)
 %
 % Inputs:
 %       *Required Input Arguments:*
-%       -sys: an sss-object containing the LTI system or an array with many
-%       LTI-Systems with the same number of inputs and outputs.
+%       -sys: an sss-object containing the LTI system
 %       -w: vector of frequencies over the imaginary axis
 %       
 % Outputs:      
@@ -49,7 +55,7 @@ function [G, omega] = freqresp(varargin)
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  04 Dez 2015
+% Last Change:  20 Dec 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
@@ -59,16 +65,12 @@ nOutputs=sys.p;
 nInputs=sys.m;
 [A,B,C,D,E]=dssdata(sys);
 %Reordering Matrices
-nnzA=nnz(A);
-nnzE=nnz(E);
-S = spalloc(size(A,1),size(A,1),nnzA+nnzE);
-S(find(A))=1;
-S(find(E))=1;
-reOrder=symrcm(S);
-S=S(reOrder,reOrder);
+reOrderMatrix=abs(A)+abs(E); %abs is used to guarantee that any terms will be cancelled in this combination of A and E
+reOrder=symrcm(reOrderMatrix);
+reOrderMatrix=reOrderMatrix(reOrder,reOrder);
 sys=sss(A(reOrder,reOrder),B(reOrder,:),C(:,reOrder),D,E(reOrder,reOrder));
 %Verifying relation between Inputs and Outputs
-M=InputOutputRelation(sys,S);
+M=InputOutputRelation(sys,reOrderMatrix);
 
 omegaIndex = cellfun(@isfloat,varargin);
 if ~isempty(omegaIndex) && nnz(omegaIndex)
@@ -108,17 +110,9 @@ if (sys.Ts==0) % Convert frequency to either laplace or z variable
 else
     s = exp(1i* omega*sys.Ts);
 end
-
-    G=zeros(nOutputs,nInputs*length(varargin),numel(s));
-for iSys=1:length(varargin)
-    sys= varargin{iSys};
-    m=sys.m; p=sys.p;
-    if (m~=nInputs||p~=nOutputs)
-        error('The number of inputs and outputs of all input-systems must be the same');
-    end
+    G=zeros(nOutputs,nInputs,numel(s));
     [~,~,~,resp]=ComputeFreqResp(sys,s,M);
-    G(1:nOutputs,(1:nInputs)*iSys,:) = resp;
-end
+    G(1:nOutputs,1:nInputs,:) = resp;
 end
 
 
@@ -317,7 +311,8 @@ minusA=-A;
 nInputs=size(B,2);
 nOutputs=size(C,1);
 normInvE=condest(E)/norm(E,1);
-%Gershgorin circle theorem
+%Gershgorin circle theorem: one of its implications is that the first norm
+%of a matrix will be greater or equal to its biggest absolute eigenvalue.
 normA=norm(minusA,1);
 maxW=normA*normInvE;
 

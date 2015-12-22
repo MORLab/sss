@@ -53,7 +53,7 @@ function [nrm, varargout] = norm(sys, varargin)
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  05 Dez 2015
+% Last Change:  20 Dec 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
@@ -213,13 +213,20 @@ w=freq;
 [eigenvectors,eigenvalues]=eig(mag(:,:,indexMaxNorm)'*mag(:,:,indexMaxNorm));
 [~,Index]=max(diag(eigenvalues));
 v=eigenvectors(:,Index);
+a=real(v);
+b=imag(v);
 [Deriv0,Deriv1,Deriv2]=computeDerivatives(minusA,B,C,D,E,w);
+sizeMatrix=size(Deriv0,2);
 lambida=norm(v'*Deriv0)/norm(v');
-Vals=[v;lambida;w];
-firstDeriv=[-v'*(Deriv0+transp(Deriv0))+2*lambida*v',(v'*v)-1,real(-v'*Deriv1*v)]';
-secondDeriv=[-(Deriv0+transp(Deriv0))+2*lambida*eye(size(Deriv0,1)),2*v,(-v'*(Deriv1+transp(Deriv1)))';...
-    2*v',0,0;...
-    (-v'*(Deriv1+transp(Deriv1))),0,real(-v'*Deriv2*v)];
+Vals=[a;b;lambida;w];
+firstDeriv=[-2*real(Deriv0)*a+2*imag(Deriv0)*b+2*lambida*a;...
+            -2*real(Deriv0)*b-2*imag(Deriv0)*a+2*lambida*b;...
+            dot(a,a)+dot(b,b)-1;...
+            -real((a+b*1i)'*(Deriv1)*(a+b*1i))];
+secondDeriv=[-2*real(Deriv0)+2*lambida*eye(sizeMatrix), 2*imag(Deriv0),2*a,-2*real(Deriv1)*a+2*imag(Deriv1)*b;...
+              -2*imag(Deriv0),-2*real(Deriv0)+2*lambida*eye(sizeMatrix),2*b,-2*real(Deriv1)*b-2*imag(Deriv1)*a;...
+              2*a',2*b',0,0;...
+              (-2*real(Deriv1)*a+2*imag(Deriv1)*b)',(-2*real(Deriv1)*b-2*imag(Deriv1)*a)',0,-real((a+b*1i)'*Deriv2*(a+b*1i))];
 delta=inf;
 i=0;
 while(1)
@@ -229,15 +236,18 @@ while(1)
     Vals=Vals-delta;
     w=real(Vals(end));
     lambida=Vals(end-1);
-    v=Vals(1:end-2);
+    a=Vals(1:sizeMatrix);
+    b=Vals(sizeMatrix+1:2*sizeMatrix);
+    %v=Vals(1:end-2);
     [Deriv0,Deriv1,Deriv2]=computeDerivatives(minusA,B,C,D,E,w);
-    firstDeriv=[-v'*(Deriv0+transp(Deriv0))+2*lambida*v',(v'*v)-1,real(-v'*Deriv1*v)]';
-    if (abs((norm(deltaBefore)-norm(delta))/norm(delta))<1e-9)|norm(delta(end))<eps(w)|i>=10
-        break;
-    end
-    secondDeriv=[-(Deriv0+transp(Deriv0))+2*lambida*eye(size(Deriv0,1)),2*v,(-v'*(Deriv1+transp(Deriv1)))';...
-        2*v',0,0;...
-        (-v'*(Deriv1+transp(Deriv1))),0,real(-v'*Deriv2*v)];
+firstDeriv=[-2*real(Deriv0)*a+2*imag(Deriv0)*b+2*lambida*a;...
+            -2*real(Deriv0)*b-2*imag(Deriv0)*a+2*lambida*b;...
+            dot(a,a)+dot(b,b)-1;...
+            -real((a+b*1i)'*(Deriv1)*(a+b*1i))];
+secondDeriv=[-2*real(Deriv0)+2*lambida*eye(sizeMatrix), 2*imag(Deriv0),2*a,-2*real(Deriv1)*a+2*imag(Deriv1)*b;...
+              -2*imag(Deriv0),-2*real(Deriv0)+2*lambida*eye(sizeMatrix),2*b,-2*real(Deriv1)*b-2*imag(Deriv1)*a;...
+              2*a',2*b',0,0;...
+              (-2*real(Deriv1)*a+2*imag(Deriv1)*b)',(-2*real(Deriv1)*b-2*imag(Deriv1)*a)',0,-real((a+b*1i)'*Deriv2*(a+b*1i))];
 end
 freq=w;
 H_Infty=sqrt(max(eig(full(Deriv0))));
@@ -255,12 +265,12 @@ b=S\(E*LinearSolve0); b=b(k,:);
 LinearSolve1=L\b;
 LinearSolve1(l,:)=U\LinearSolve1;
 respp=-1i*C*LinearSolve1;
-Deriv1=((respp)'*resp+(resp)'*respp);
+Deriv1=(respp'*resp)+(respp'*resp)';
 %Compute second derivative
 b=S\(E*LinearSolve1); b=b(k,:);
 LinearSolve2=L\b;
 LinearSolve2(l,:)=U\LinearSolve2;
 resppp=-2*C*LinearSolve2;
-Deriv2=((resppp)'*resp+resp'*resppp+2*(respp)'*respp);
+Deriv2=(resppp'*resp)+(resppp'*resp)'+2*(respp'*respp);
 end
 
