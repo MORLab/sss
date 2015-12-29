@@ -15,8 +15,8 @@ function [data,X,tx] = sim(sys,data,method,Ts_sample)
 %       -data:  iddata object containing input time series
 %       *Optional Input Arguments:*
 %       -method:    time ingetration method 
-%                   [{'RKDP' (continuous) / 'discrete' (discrete)} /
-%                   'forwardEuler' / 'backwardEuler' / 'RK4']
+%                   [{'RK4' (continuous) / 'discrete' (discrete)} /
+%                   'forwardEuler' / 'backwardEuler' / 'RKDP']
 %       -Ts_sample: sampling rate of the state-vector
 %
 % Output Arguments:      
@@ -91,7 +91,7 @@ if sys.Ts ~= 0 && sys.Ts ~= Ts
 end
 if nargin == 2 
     if sys.Ts == 0
-        method = 'RKDP';        
+        method = 'RK4';        
     else
         method = 'discrete';
     end      
@@ -122,6 +122,7 @@ switch method
             tx = data.SamplingInstants(index);
         end
     case 'RKDP'
+        warning('RKDP: determination of time step size should be improved')
         if nargout == 1
             y = simRKDP(A,B,C,D,E,u,x,Ts,Ts_sample,sys.isDescriptor);
         else
