@@ -7,15 +7,15 @@ function [nrm, varargout] = norm(sys, varargin)
 %       [nrm, hInfPeakfreq] = NORM(sys, inf)
 %
 % Description:
-%       This function computes the p-norm of an LTI system given 
-%       as a sparse state-space (sss) object sys. The value of p can be 
+%       This function computes the p-norm of an LTI system given
+%       as a sparse state-space (sss) object sys. The value of p can be
 %       passed as a second optional argument to the function and is set to
 %       2 otherwise.
 %
 % Input Arguments:
 %       *Required Input Arguments:*
 %       -sys: sss-object containing the LTI system
-%       *Optional Input Arguments:* 
+%       *Optional Input Arguments:*
 %       -p: 2 for H_2-norm or inf for H_inf-norm
 %
 % Output Arguments:
@@ -38,9 +38,9 @@ function [nrm, varargout] = norm(sys, varargin)
 %       * *[1] Antoulas (2005)*, Approximation of large-scale Dynamical Systems
 %
 %------------------------------------------------------------------
-% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis
 % Toolbox developed at the Chair of Automatic Control in collaboration
-% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
+% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen.
 % For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % For any suggestions, submission and/or bug reports, mail us at
 %                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
@@ -80,7 +80,7 @@ if isinf(p)
             assignin('caller', inputname(1), sys);
         end
     end
-    nrm=sys.hInfNorm; 
+    nrm=sys.hInfNorm;
 elseif p==2
     % H_2-norm
     if ~isempty(sys.h2Norm)
@@ -93,7 +93,7 @@ elseif p==2
         sys.h2Norm=inf;
         return
     end
-
+    
     % see if a Gramian or its Cholesky factor is already available
     if isempty(sys.ConGramChol)
         if isempty(sys.ObsGramChol)
@@ -143,7 +143,7 @@ elseif p==2
                                 nrm = Inf;
                             else
                                 warning(ex.message, 'Error solving Lyapunov equation. Trying without Cholesky factorization...')
-                                sys.ConGram = lyap(sys.A, sys.B*sys.B');                
+                                sys.ConGram = lyap(sys.A, sys.B*sys.B');
                                 nrm=sqrt(trace(sys.C*sys.ConGram*sys.C'));
                             end
                         end
@@ -210,44 +210,31 @@ freq=w(indexMaxNorm);
 [A,B,C,D,E]=dssdata(sys);
 minusA=-A;
 w=freq;
-[eigenvectors,eigenvalues]=eig(mag(:,:,indexMaxNorm)'*mag(:,:,indexMaxNorm));
-[~,Index]=max(diag(eigenvalues));
-v=eigenvectors(:,Index);
-a=real(v);
-b=imag(v);
 [Deriv0,Deriv1,Deriv2]=computeDerivatives(minusA,B,C,D,E,w);
-sizeMatrix=size(Deriv0,2);
-lambida=norm(v'*Deriv0)/norm(v');
-Vals=[a;b;lambida;w];
-firstDeriv=[-2*real(Deriv0)*a+2*imag(Deriv0)*b+2*lambida*a;...
-            -2*real(Deriv0)*b-2*imag(Deriv0)*a+2*lambida*b;...
-            dot(a,a)+dot(b,b)-1;...
-            -real((a+b*1i)'*(Deriv1)*(a+b*1i))];
-secondDeriv=[-2*real(Deriv0)+2*lambida*eye(sizeMatrix), 2*imag(Deriv0),2*a,-2*real(Deriv1)*a+2*imag(Deriv1)*b;...
-              -2*imag(Deriv0),-2*real(Deriv0)+2*lambida*eye(sizeMatrix),2*b,-2*real(Deriv1)*b-2*imag(Deriv1)*a;...
-              2*a',2*b',0,0;...
-              (-2*real(Deriv1)*a+2*imag(Deriv1)*b)',(-2*real(Deriv1)*b-2*imag(Deriv1)*a)',0,-real((a+b*1i)'*Deriv2*(a+b*1i))];
+[eigenVectors,eigenValues]=(eig(full(Deriv0)));
+eigenValues=diag(eigenValues);
+[~,Index]=max(eigenValues);
+vec=eigenVectors(:,Index);
+firstDeriv=real(vec'*Deriv1*vec);
+secondDeriv=real(vec'*Deriv2*vec);
 delta=inf;
 i=0;
 while(1)
     i=i+1;
     deltaBefore=delta;
-    delta=secondDeriv\firstDeriv;
-    Vals=Vals-delta;
-    w=real(Vals(end));
-    lambida=Vals(end-1);
-    a=Vals(1:sizeMatrix);
-    b=Vals(sizeMatrix+1:2*sizeMatrix);
-    %v=Vals(1:end-2);
+    delta=firstDeriv/secondDeriv;
+    w=w-delta;
     [Deriv0,Deriv1,Deriv2]=computeDerivatives(minusA,B,C,D,E,w);
-firstDeriv=[-2*real(Deriv0)*a+2*imag(Deriv0)*b+2*lambida*a;...
-            -2*real(Deriv0)*b-2*imag(Deriv0)*a+2*lambida*b;...
-            dot(a,a)+dot(b,b)-1;...
-            -real((a+b*1i)'*(Deriv1)*(a+b*1i))];
-secondDeriv=[-2*real(Deriv0)+2*lambida*eye(sizeMatrix), 2*imag(Deriv0),2*a,-2*real(Deriv1)*a+2*imag(Deriv1)*b;...
-              -2*imag(Deriv0),-2*real(Deriv0)+2*lambida*eye(sizeMatrix),2*b,-2*real(Deriv1)*b-2*imag(Deriv1)*a;...
-              2*a',2*b',0,0;...
-              (-2*real(Deriv1)*a+2*imag(Deriv1)*b)',(-2*real(Deriv1)*b-2*imag(Deriv1)*a)',0,-real((a+b*1i)'*Deriv2*(a+b*1i))];
+    
+    [eigenVectors,eigenValues]=(eig(full(Deriv0)));
+    eigenValues=diag(eigenValues);
+    [~,Index]=max(eigenValues);
+    vec=eigenVectors(:,Index);
+    if (abs((norm(deltaBefore)-norm(delta))/norm(delta))<1e-9)|norm(delta(end))<eps(w)|i>=10
+        break;
+    end
+    firstDeriv=real(vec'*Deriv1*vec);
+    secondDeriv=real(vec'*Deriv2*vec);
 end
 freq=w;
 H_Infty=sqrt(max(eig(full(Deriv0))));
