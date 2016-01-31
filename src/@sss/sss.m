@@ -91,7 +91,7 @@ classdef sss
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  03 Nov 2015
+% Last Change:  31 Jan 2016
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 %
@@ -141,6 +141,8 @@ classdef sss
         
         simulationTime
         decayTime
+        
+        isSym
     end
     
     methods
@@ -326,6 +328,11 @@ classdef sss
             end
         end
         
+        function sys = set.isSym(sys, isSym)
+            sys.isSym = isSym;
+        end
+        
+        
         %% Compatibility with small letters
         function a = get.a(sys); a = sys.A; end
         function b = get.b(sys); b = sys.B; end
@@ -363,6 +370,18 @@ classdef sss
             sys.A = sys.E\sys.A;
             sys.B = sys.E\sys.B;
             sys.E = [];
+        end
+        
+        function isSym = get.isSym(sys) %A=A', E=E'
+            if isequal(sys.isSym,0) || isequal(sys.isSym,1)
+                isSym = sys.isSym;
+            else
+                if issymmetric(sys.A) && issymmetric(sys.E)
+                    isSym = 1;
+                else
+                    isSym = 0;
+                end
+            end
         end
         
         % Return system matrices
