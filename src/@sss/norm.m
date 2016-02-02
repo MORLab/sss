@@ -16,7 +16,7 @@ function [nrm, varargout] = norm(sys, varargin)
 %       *Required Input Arguments:*
 %       -sys: sss-object containing the LTI system
 %       *Optional Input Arguments:* 
-%       -p: choise of H_2-norm or H_inf-norm 
+%       -p: choice of H_2-norm or H_inf-norm 
 %           [{'2'} / 'inf']
 %
 % Output Arguments:
@@ -54,7 +54,7 @@ function [nrm, varargout] = norm(sys, varargin)
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  05 Nov 2015
+% Last Change:  02 Feb 2016
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
@@ -100,54 +100,129 @@ elseif p==2
             if isempty(sys.ConGram)
                 if isempty(sys.ObsGram)
                     % No, it is not. Solve Lyapunov equation.
+                    if ~sys.isDae
+                        % Lyapack opts for Adi
+                        lyaOpts.l0=20;
+                        lyaOpts.kp=50;
+                        lyaOpts.km=25;
+                        lyaOpts.method='heur';
+                        lyaOpts.zk='Z';
+                        lyaOpts.rc='C';
+                        lyaOpts.adi=struct('type','B','max_it', 100,'min_res',0,'with_rs','N',...
+                            'min_in',1e-12,'min_end',0,'info',0,'cc_upd',0,'cc_tol',0);
+                    end
                     if sys.isDescriptor
                         try
-                            try
-                                sys.ConGramChol = lyapchol(sys.A,sys.B,sys.E); % P=S'*S3
-                                nrm=norm(sys.ConGramChol*sys.C','fro');
-                                if ~isreal(nrm)
-                                    error('Gramian must be positive definite');
-                                end
-                            catch ex3
-                                P = lyapchol(sys.A',sys.C',sys.E');
-                                nrm=norm(P*sys.B,'fro');
+                            if sys.n<100
+                                error('System is too small for ADI. ');
                             end
+                            if sys.isDae
+                                error('ADI does not work with DAE systems. ');
+                            end
+                            if sys.isSym
+                                 lyaOpts.usfs=struct('s','msns_s','m','msns_m');
+                                [M0,MU0,N0,B0,C0]=msns_pre(sys.E,sys.A,sys.B,sys.C);
+                                msns_m_i(M0,MU0,N0); 
+                                msns_l_i;
+                                p=lp_para(msns,[],[],lyaOpts,ones(length(B0),1));
+                                lyaOpts.p=p.p;
+                                msns_s_i(lyaOpts.p);
+                            else
+                                lyaOpts.usfs=struct('s','munu_s','m','munu_m');
+                                [M0,ML0,MU0,N0,B0,C0]=munu_pre(sys.E,sys.A,sys.B,sys.C);
+                                munu_m_i(M0,ML0,MU0,N0); 
+                                munu_l_i;
+                                p=lp_para(munu,[],[],lyaOpts,ones(length(B0),1));
+                                lyaOpts.p=p.p;
+                                munu_s_i(lyaOpts.p);
+                            end
+
+                            R=lp_lradi([],[],B0,lyaOpts); %ADI solution of lyapunov equation
+                            sys.ConGramChol=R';
+                            nrm=norm(sys.ConGramChol*C0','fro');
+                            munu_m_d;
+                            munu_l_d;
+                            munu_s_d(p.p);
                         catch ex
-                            warning(ex.identifier, 'Error solving Lyapunov equation. Trying without Cholesky factorization...')
+                            warning([ex.message,'Trying without ADI...']);
                             try
                                 try
-                                    X = lyap(sys.A, sys.B*sys.B', [], sys.E);
-                                    nrm=sqrt(trace(sys.C*X*sys.C'));
+                                    sys.ConGramChol = lyapchol(sys.A,sys.B,sys.E); % P=S'*S3
+                                    nrm=norm(sys.ConGramChol*sys.C','fro');
                                     if ~isreal(nrm)
                                         error('Gramian must be positive definite');
                                     end
                                 catch ex3
-                                    Y = lyap(sys.A', sys.C'*sys.C, [], sys.E');
-                                    nrm=sqrt(trace(sys.B'*Y*sys.B));
+                                    P = lyapchol(sys.A',sys.C',sys.E');
+                                    nrm=norm(P*sys.B,'fro');
                                 end
-                            catch ex2
-                                warning(ex2.message, 'Error solving Lyapunov equation. Premultiplying by E^(-1)...')
-                                tmp = sys.E\sys.B;
-                                X = lyap(sys.E\sys.A, tmp*tmp');
-                                nrm=sqrt(trace(sys.C*X*sys.C'));
+                            catch ex
+                                warning(ex.identifier, 'Error solving Lyapunov equation. Trying without Cholesky factorization...')
+                                try
+                                    try
+                                        X = lyap(sys.A, sys.B*sys.B', [], sys.E);
+                                        nrm=sqrt(trace(sys.C*X*sys.C'));
+                                        if ~isreal(nrm)
+                                            error('Gramian must be positive definite');
+                                        end
+                                    catch ex3
+                                        Y = lyap(sys.A', sys.C'*sys.C, [], sys.E');
+                                        nrm=sqrt(trace(sys.B'*Y*sys.B));
+                                    end
+                                catch ex2
+                                    warning(ex2.message, 'Error solving Lyapunov equation. Premultiplying by E^(-1)...')
+                                    tmp = sys.E\sys.B;
+                                    X = lyap(sys.E\sys.A, tmp*tmp');
+                                    nrm=sqrt(trace(sys.C*X*sys.C'));
+                                end
                             end
                         end
                     else
                         try
-                            sys.ConGramChol = lyapchol(sys.A,sys.B);
-                            nrm=norm(sys.ConGramChol*sys.C','fro');
-                        catch ex
-                            if strcmp(ex.identifier,'Control:foundation:LyapChol4');
-                                %Unstable system. Set the norm to infinity
-                                warning('System appears to be unstable. The norm will be set to Inf.')
-                                nrm = Inf;
+                            if sys.n<100
+                                error('System is too small for ADI. ');
+                            end
+                            if sys.isSym
+                                lyaOpts.usfs=struct('s','as_s','m','as_m');
+                                [A0,B0,C0]=as_pre(sys.A,sys.B,sys.C);
+                                as_m_i(A0);
+                                as_l_i;
+                                p=lp_para(as,[],[],lyaOpts, ones(length(B0),1));
+                                lyaOpts.p=p.p;
+                                as_s_i(lyaOpts.p);
                             else
-                                warning(ex.message, 'Error solving Lyapunov equation. Trying without Cholesky factorization...')
-                                sys.ConGram = lyap(sys.A, sys.B*sys.B');                
-                                nrm=sqrt(trace(sys.C*sys.ConGram*sys.C'));
+                                lyaOpts.usfs=struct('s','au_s','m','au_m');
+                                [A0,B0,C0]=au_pre(sys.A,sys.B,sys.C);
+                                au_m_i(A0);
+                                au_l_i;
+                                p=lp_para(au,[],[],lyaOpts, ones(length(B0),1));
+                                lyaOpts.p=p.p;
+                                au_s_i(lyaOpts.p);
+                            end
+
+                            R=lp_lradi([],[],B0,lyaOpts); %ADI solution of lyapunov equation
+                            sys.ConGramChol=R';
+                            nrm=norm(sys.ConGramChol*C0','fro');
+                            au_m_d;
+                            au_l_d;
+                            au_s_d(p.p);
+                        catch ex
+                            warning([ex.message,'Trying without ADI...']);
+                            try
+                                sys.ConGramChol = lyapchol(sys.A,sys.B);
+                                nrm=norm(sys.ConGramChol'*sys.C','fro');
+                            catch ex
+                                if strcmp(ex.identifier,'Control:foundation:LyapChol4');
+                                    %Unstable system. Set the norm to infinity
+                                    warning('System appears to be unstable. The norm will be set to Inf.')
+                                    nrm = Inf;
+                                else
+                                    warning(ex.message, 'Error solving Lyapunov equation. Trying without Cholesky factorization...')
+                                    sys.ConGram = lyap(sys.A, sys.B*sys.B');                
+                                    nrm=sqrt(trace(sys.C*sys.ConGram*sys.C'));
+                                end
                             end
                         end
-                        
                     end
                 else
                     nrm=sqrt(trace(sys.B'*sys.ObsGram*sys.B));
