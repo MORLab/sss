@@ -1,10 +1,10 @@
-function [y,x_,index] = simDiscrete(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
+function [y,x_,tx] = simDiscrete(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % simDiscrete - Integrates discrete time model
 % 
 % Syntax:
 %       y = simDiscrete(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 %       [y,x_] = simDiscrete(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
-%       [y,x_,index] = simDiscrete(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
+%       [y,x_,tx] = simDiscrete(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 %
 % Description:
 %       Integrates discrete time model
@@ -20,7 +20,7 @@ function [y,x_,index] = simDiscrete(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % Output Arguments:      
 %       -y: output vector
 %       -x_: matrix of state vectors
-%       -index: time index for x_
+%       -tx: time vector for X
 %
 % See Also: 
 %       sim, simRK4, simBackwardEuler
@@ -82,4 +82,12 @@ for i = 2:size(u,1)
             k = k+1;            
         end
     end
+end
+
+if m==inf
+    x_ = x;
+    index = size(u,1);
+end
+if nargout>1
+    tx = index*Ts;
 end
