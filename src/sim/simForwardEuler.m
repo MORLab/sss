@@ -84,7 +84,7 @@ for i = 2:size(u,1)
         end
     end
 end
-if m==inf
+if ~isempty(x_) && m==inf
     x_ = x;
     index = size(u,1);
 end
