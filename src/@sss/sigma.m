@@ -83,7 +83,7 @@ plot_handles=zeros(m,p);
 
 for i=1:p %for each output
     for j=1:m %for each input
-        plot_handles(i,j)=subplot(p,m,((i-1)*p)+j);
+        plot_handles(i,j)=subplot(p,m,(i-1)+j);
         hold on
         if j==1 && sys.m>1
             y_lab=sprintf('To Out(%i)',ceil(i/2));

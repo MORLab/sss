@@ -119,6 +119,11 @@ elseif p==2
                             if sys.isDae
                                 error('ADI does not work with DAE systems. ');
                             end
+                            if isstable(sys)~=1
+                                warning('System appears to be unstable. The norm will be set to Inf.');
+                                nrm=Inf;
+                                return;
+                            end
                             if sys.isSym
                                  lyaOpts.usfs=struct('s','msns_s','m','msns_m');
                                 [M0,MU0,N0,B0,C0]=msns_pre(sys.E,sys.A,sys.B,sys.C);
@@ -138,8 +143,7 @@ elseif p==2
                             end
 
                             R=lp_lradi([],[],B0,lyaOpts); %ADI solution of lyapunov equation
-                            sys.ConGramChol=R';
-                            nrm=norm(sys.ConGramChol*C0','fro');
+                            nrm=norm(R'*C0','fro');
                             munu_m_d;
                             munu_l_d;
                             munu_s_d(p.p);
@@ -182,6 +186,11 @@ elseif p==2
                             if sys.n<100
                                 error('System is too small for ADI. ');
                             end
+                            if isstable(sys)~=1
+                                warning('System appears to be unstable. The norm will be set to Inf.');
+                                nrm=Inf;
+                                return;
+                            end
                             if sys.isSym
                                 lyaOpts.usfs=struct('s','as_s','m','as_m');
                                 [A0,B0,C0]=as_pre(sys.A,sys.B,sys.C);
@@ -201,8 +210,7 @@ elseif p==2
                             end
 
                             R=lp_lradi([],[],B0,lyaOpts); %ADI solution of lyapunov equation
-                            sys.ConGramChol=R';
-                            nrm=norm(sys.ConGramChol*C0','fro');
+                            nrm=norm(R'*C0','fro');
                             au_m_d;
                             au_l_d;
                             au_s_d(p.p);
@@ -210,7 +218,7 @@ elseif p==2
                             warning([ex.message,'Trying without ADI...']);
                             try
                                 sys.ConGramChol = lyapchol(sys.A,sys.B);
-                                nrm=norm(sys.ConGramChol'*sys.C','fro');
+                                nrm=norm(sys.ConGramChol*sys.C','fro');
                             catch ex
                                 if strcmp(ex.identifier,'Control:foundation:LyapChol4');
                                     %Unstable system. Set the norm to infinity
