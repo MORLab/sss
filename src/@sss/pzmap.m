@@ -16,8 +16,8 @@ function [p, z] = pzmap(sys, varargin)
 %       vectors p and z. No plot is drawn on the screen.
 %
 %//Note: The calculation of the invariant zeros is only defined for systems
-%        with the same number of inputs and outputs (m=p). That means that if
-%        pzmap is called with a system with m~=p, then z = [ ].
+%       with the same number of inputs and outputs (m=p). That means that if
+%       pzmap is called with a system with m~=p, then z = [ ].
 %
 % Input Arguments:
 %       -sys:      an sss-object containing the LTI system

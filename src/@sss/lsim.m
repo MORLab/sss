@@ -25,6 +25,9 @@ function [y,X,tx] = lsim(sys,u,Ts,method,Ts_sample)
 %       -X: Matrix of state vectors
 %       -tx: time vector for X
 %
+% See Also:
+%       sss/sim
+%
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
 % Toolbox developed at the Chair of Automatic Control in collaboration

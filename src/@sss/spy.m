@@ -27,7 +27,7 @@ function spy(sys,name)
 %> sys = loadSss('SpiralInductorPeec.mat'); 
 %> spy(sys,'Peec inductor');
 %
-%//Note: The .mat file for the example can be found in the benchmarks folder
+%//Note: The .mat file for the example can be found in the benchmarks folder.
 %
 % See Also: 
 %		spy

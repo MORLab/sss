@@ -21,7 +21,7 @@ function sys = c2d(sys,Ts,method)
 %       -method: string containing the selected discretization method. 
 %                Possible options are: [{'forward'} / 'backward' / 'tustin' / 'zoh']
 %
-%// Note: This function currently works only for the discretization method 'forward',
+%//Note: This function currently works only for the discretization method 'forward',
 %       but the other discretization methods will be implemented in one of the next
 %       releases.
 %
