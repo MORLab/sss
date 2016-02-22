@@ -88,8 +88,8 @@ classdef sss
 %------------------------------------------------------------------
 % Authors:      Heiko Panzer, Sylvia Cremer, Thomas Emmert (emmert@tfd.mw.tum.de)
 %               Alessandro Castagnotto, Maria Cruz Varona
-% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
-% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
 % Last Change:  31 Jan 2016
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen

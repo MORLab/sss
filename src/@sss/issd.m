@@ -55,8 +55,8 @@ function [issd, numericalAbscissa] = issd(sys)
 %
 %------------------------------------------------------------------
 % Authors:      Heiko Panzer, Alessandro Castagnotto, Maria Cruz Varona 
-% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
-% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
 % Last Change:  31 Oct 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
