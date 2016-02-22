@@ -48,12 +48,12 @@ function  [varargout] = bode(varargin)
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
 % Toolbox developed at the Chair of Automatic Control in collaboration
-% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
-% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% with the Professur fuer Thermofluiddynamik, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % For any suggestions, submission and/or bug reports, mail us at
-%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%                   -> <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a> <-
 %
-% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+% More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
 % Authors:      Heiko Panzer, Stefan Jaensch, Sylvia Cremer,
