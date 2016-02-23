@@ -5,6 +5,7 @@ function [nrm, varargout] = norm(sys, varargin)
 %       nrm = NORM(sys)
 %       nrm = NORM(sys,p)
 %       [nrm, hInfPeakfreq] = NORM(sys, inf)
+%       nrm = NORM(...,Opts)
 %
 % Description:
 %       This function computes the p-norm of an LTI system given 
@@ -18,6 +19,9 @@ function [nrm, varargout] = norm(sys, varargin)
 %       *Optional Input Arguments:* 
 %       -p: choice of H_2-norm or H_inf-norm 
 %           [{'2'} / 'inf']
+%       -Opts:              a structure containing following options
+%           -.adi:          try only solution by adi or lyapunov equation
+%                           [{'0'} / 'adi' / 'lyap']
 %
 % Output Arguments:
 %       -nrm:             value of norm
@@ -54,9 +58,11 @@ function [nrm, varargout] = norm(sys, varargin)
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  02 Feb 2016
+% Last Change:  23 Feb 2016
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
+%%  Define execution parameters
+Def.adi=0; %use only adi or lyapunov equation ('0','adi','lyap')
 
 p=2;    % default: H_2
 if nargin>1
@@ -64,9 +70,21 @@ if nargin>1
         p=varargin{1};
     elseif strcmpi(varargin{1},'inf')
         p=inf;
+    elseif isa(varargin{1},'struct')
+        Opts=varargin{1};
     else
         error('Input must be ''double''.');
     end
+    if nargin==3
+        Opts=varargin{2};
+    end
+end
+
+% create the options structure
+if ~exist('Opts','var') || isempty(Opts)
+    Opts = Def;
+else
+    Opts = parseOpts(Opts,Def);
 end
 
 if isinf(p)
@@ -113,11 +131,8 @@ elseif p==2
                     end
                     if sys.isDescriptor
                         try
-                            if sys.n<100
-                                error('System is too small for ADI. ');
-                            end
-                            if sys.isDae
-                                error('ADI does not work with DAE systems. ');
+                            if strcmp(Opts.adi,'lyap') || sys.n<100 || sys.isDae
+                                error('lyap');
                             end
                             if isstable(sys)~=1
                                 warning('System appears to be unstable. The norm will be set to Inf.');
@@ -148,7 +163,15 @@ elseif p==2
                             munu_l_d;
                             munu_s_d(p.p);
                         catch ex
-                            warning([ex.message,'Trying without ADI...']);
+                            if strcmp(Opts.adi,'adi')
+                                if strcmp(ex.message,'lyap')
+                                    error('ADI failed. System may be too small or DAE.');
+                                else
+                                    error(ex.message);
+                                end
+                            elseif  ~strcmp(ex.message,'lyap');
+                                warning([ex.message,' Trying without ADI...']);
+                            end                                 
                             try
                                 try
                                     sys.ConGramChol = lyapchol(sys.A,sys.B,sys.E); % P=S'*S3
@@ -183,8 +206,8 @@ elseif p==2
                         end
                     else
                         try
-                            if sys.n<100
-                                error('System is too small for ADI. ');
+                            if strcmp(Opts.adi,'lyap') || sys.n<100
+                                error('lyap');
                             end
                             if isstable(sys)~=1
                                 warning('System appears to be unstable. The norm will be set to Inf.');
@@ -215,7 +238,15 @@ elseif p==2
                             au_l_d;
                             au_s_d(p.p);
                         catch ex
-                            warning([ex.message,'Trying without ADI...']);
+                            if strcmp(Opts.adi,'adi')
+                                if strcmp(ex.message,'lyap')
+                                    error('ADI failed. System may be too small.');
+                                else
+                                    error(ex.message);
+                                end
+                            elseif  ~strcmp(ex.message,'lyap');
+                                warning([ex.message,' Trying without ADI...']);
+                            end   
                             try
                                 sys.ConGramChol = lyapchol(sys.A,sys.B);
                                 nrm=norm(sys.ConGramChol*sys.C','fro');
