@@ -1,8 +1,8 @@
 function [testpath] = loadBenchmarks(Opts)
 %% testpath
 clear;
-p = mfilename('fullpath'); k = strfind(p, '\test'); 
-testpath = [p(1:k(end)-1),'\testScripts'];
+p = mfilename('fullpath'); k = strfind(p, fullfile(filesep,'test')); 
+testpath = [p(1:k(end)-1), fullfile(filesep,'testScripts')];
 cd(testpath);
 
 % Default benchmarks (if testScript is not run by test.m)
@@ -19,7 +19,7 @@ else
 end
 %% Load benchmarks
 %the directory "benchmark" is in sssMOR
-p = mfilename('fullpath'); k = strfind(p, 'test\'); 
+p = mfilename('fullpath'); k = strfind(p, fullfile('test',filesep)); 
 pathBenchmarks = [p(1:k-1),'benchmarks'];
 cd(pathBenchmarks);
 badBenchmarks = {'LF10.mat','beam.mat','random.mat',...

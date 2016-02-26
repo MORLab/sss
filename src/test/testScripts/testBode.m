@@ -24,7 +24,7 @@ classdef testBode < matlab.unittest.TestCase
             end
 
             %the directory "benchmark" is in sssMOR
-            p = mfilename('fullpath'); k = strfind(p, 'test\'); 
+            p = mfilename('fullpath'); k = strfind(p, fullfile('test',filesep)); 
             pathBenchmarks = [p(1:k-1),'benchmarks'];
             cd(pathBenchmarks);
         end
@@ -51,7 +51,7 @@ classdef testBode < matlab.unittest.TestCase
                 [actMag, actPhase, actOmega]=bode(sys_sss,t);
                 [expMag, expPhase, expOmega]=bode(ss(sys_ss),t);
                 
-                %Phase between 0° to 360°
+                %Phase between 0? to 360?
                 for j=1:length(actPhase)
                     %if actPhase(:,:,j)<0
                     actPhase(:,:,j)=actPhase(:,:,j)-floor(actPhase(:,:,j)/360)*360;
