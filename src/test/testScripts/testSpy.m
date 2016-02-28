@@ -92,7 +92,7 @@ classdef testSpy < matlab.unittest.TestCase
             spy(sysSparse);
         end
         function testMIMObench(testCase)
-            load('cdplayer.mat');
+            load('CDplayer.mat');
             sysSparse=sss(A,B,C);
             spy(sysSparse);
         end

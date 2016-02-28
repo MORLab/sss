@@ -114,7 +114,7 @@ classdef testResidue < matlab.unittest.TestCase
          %   verification(testCase, actNorm, expNorm);
         end
         function testMIMObench(testCase)
-            load('cdplayer.mat');
+            load('CDplayer.mat');
             sysSparse=sss(A,B,C);
             sys=ss(full(A),full(B),full(C),zeros(2,2));
             residue(sysSparse);
