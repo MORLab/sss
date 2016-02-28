@@ -8,10 +8,11 @@ function f_new = bodeToFig(closeBode,defPos,subM,subN)
 %       TODO
 %
 % Input Arguments:
-%       -closeBode: closes bode figure if true
-%       -defPos: sets axis position to default if true
-%       -subM: m as in subplot
-%       -subN: n as in subplot
+%       *Required Input Arguments:*
+%           -closeBode: closes bode figure if true
+%           -defPos: sets axis position to default if true
+%           -subM: m as in subplot
+%           -subN: n as in subplot
 %
 % Output Arguments:
 %       -f_new: handle to figure
@@ -20,6 +21,9 @@ function f_new = bodeToFig(closeBode,defPos,subM,subN)
 %       TODO
 %
 % See Also:
+%       TODO
+%
+% References:
 %       TODO
 %
 %------------------------------------------------------------------

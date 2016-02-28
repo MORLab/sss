@@ -8,8 +8,9 @@ function Opts = parseOpts(Opts,Def)
 %       TODO
 %
 % Input Arguments:
-%       -Opts: struct containing optional input arguments
-%       -Def: default values for the fieldnames defined in the struct Opts
+%       *Required Input Arguments:*
+%           -Opts: A struct containing optional input arguments
+%           -Def: default values for the fieldnames defined in the struct Opts
 %
 % Output Arguments:
 %       -Opts: struct containing the optional arguments after the parsing
@@ -18,6 +19,9 @@ function Opts = parseOpts(Opts,Def)
 %       TODO
 %
 % See Also:
+%       TODO
+%
+% References:
 %       TODO
 %
 %------------------------------------------------------------------

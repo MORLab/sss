@@ -1,27 +1,54 @@
 function [y,x_,index] = simRKDP(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
-% Integrates sss model using Runge-Kutta Dormand–Prince
-% ------------------------------------------------------------------
-% [y,x_,index] = simRK4(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
-% Inputs:       * A,B,C,D,E: state space matrices
-%               * u: input vector in [Nsample,Ninput]
-%               * x: start vector for time integration
-%               * Ts: Sampling time
-%               * Ts_sample: Sampling time for matrix of state-vectors
-%               * isDescriptor: is descriptor
-% Outputs:      * y: output vector
-%               * X: matrix of state vectors [Optional]
-%               * index: time index for X  [Optional]
-% ------------------------------------------------------------------
-% This file is part of the MORLAB_GUI, a Model Order Reduction and
-% System Analysis Toolbox developed at the
-% Institute of Automatic Control, Technische Universitaet Muenchen
-% For updates and further information please visit www.rt.mw.tum.de
-% ------------------------------------------------------------------
-% Authors:      Stefan Jaensch (jaensch@tfd.mw.tum.de)
-% Last Change:
-% ------------------------------------------------------------------
+% simRKDP - Integrates sss model using Runge-Kutta Dormand–Prince
+% 
+% Syntax:
+%       [y,x_,index] = simRK4(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 %
-% see also: sss/sim, forwardEuler, backwardEuler
+% Description:
+%       Integrates sss model using Runge-Kutta Dormand–Prince
+%       TODO
+%
+% Input Arguments:    
+%       *Required Input Arguments:*
+%           -A,B,C,D,E: state space matrices
+%           -u: input vector in [Nsample,Ninput]
+%           -x: start vector for time integration
+%           -Ts: Sampling time
+%           -Ts_sample: Sampling time for matrix of state-vectors
+%           -isDescriptor: is descriptor
+%       *Optional Input Arguments:*
+%
+% Output Arguments:      
+%       -y: output vector
+%       -X: matrix of state vectors [Optional]
+% 
+% Examples:
+%       TODO
+%
+% See Also: 
+%       sss/sim, forwardEuler, backwardEuler* index: time index for X  [Optional]
+%
+% References:
+%       TODO
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Professur fuer Thermofluiddynamik, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
+% Authors:      Stefan Jaensch (jaensch@tfd.mw.tum.de)
+% Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  28 Feb 2016
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
+
 
 Ts0 = Ts;
 

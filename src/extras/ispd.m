@@ -14,7 +14,8 @@ function ispd = ispd(A)
 %       then the matrix is positive definite.
 %
 % Input Arguments:
-%       -A: matrix which have to be checked for positive definitness
+%       *Required Input Arguments:*
+%           -A: matrix which have to be checked for positive definitness
 %
 % Output Arguments:
 %       -ispd: a boolean value (1=true, 0=false)

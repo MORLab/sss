@@ -25,12 +25,14 @@ function sys = loadSss(fname,Opts)
 %       in the .mat file.
 %
 % Input Arguments:
-%       -fname: string containing either the name of a benchmark
-%       distributed with the sss class or the full path to the .mat file
-%       containing the matrices
-%       -Opts: a structure containing the following options
-%           -transf2nd: Type of transformation from 2nd to
-%                       1st order form: [{'I'}, 'K', '-K', 'alpha']
+%       *Required Input Arguments:*
+%           -fname: string containing either the name of a benchmark
+%                   distributed with the sss class or the full path to the .mat file
+%                   containing the matrices
+%       *Optional Input Arguments:*
+%           -Opts:           A structure containing the following fields
+%               -.transf2nd: Type of transformation from 2nd to
+%                            1st order form: [{'I'}, 'K', '-K', 'alpha']
 %
 % Output Arguments:
 %       -sys: sss object of the benchmark system
@@ -53,6 +55,8 @@ function sys = loadSss(fname,Opts)
 % See Also:
 %       sss, load
 %
+% References:
+%       TODO
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
