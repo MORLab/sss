@@ -14,9 +14,9 @@ function [A11,A12,A21,A22] = partition(A,row,col)
 %
 % Input Arguments:
 %       *Required Input Arguments:*
-%           -A: matrix to be partitioned
-%           -row: number of rows of the submatrix A11
-%           -col: number of columns of the submatrix A11
+%           -A:     matrix to be partitioned
+%           -row:   number of rows of the submatrix A11
+%           -col:   number of columns of the submatrix A11
 %
 % Output Arguments:
 %       -A11,A12,A21,A22: submatrices resulting from the partition of A

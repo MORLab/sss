@@ -10,13 +10,12 @@ function [y,x_,index] = simRKDP(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 %
 % Input Arguments:    
 %       *Required Input Arguments:*
-%           -A,B,C,D,E: state space matrices
-%           -u: input vector in [Nsample,Ninput]
-%           -x: start vector for time integration
-%           -Ts: Sampling time
-%           -Ts_sample: Sampling time for matrix of state-vectors
-%           -isDescriptor: is descriptor
-%       *Optional Input Arguments:*
+%           -A,B,C,D,E:     state space matrices
+%           -u:             input vector in [Nsample,Ninput]
+%           -x:             start vector for time integration
+%           -Ts:            Sampling time
+%           -Ts_sample:     Sampling time for matrix of state-vectors
+%           -isDescriptor:  is descriptor
 %
 % Output Arguments:      
 %       -y: output vector

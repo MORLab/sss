@@ -9,8 +9,8 @@ function Opts = parseOpts(Opts,Def)
 %
 % Input Arguments:
 %       *Required Input Arguments:*
-%           -Opts: A struct containing optional input arguments
-%           -Def: default values for the fieldnames defined in the struct Opts
+%           -Opts:  A struct containing optional input arguments
+%           -Def:   default values for the fieldnames defined in the struct Opts
 %
 % Output Arguments:
 %       -Opts: struct containing the optional arguments after the parsing
