@@ -11,6 +11,9 @@ function [nrm, varargout] = norm(sys, varargin)
 %       as a sparse state-space (sss) object sys. The value of p can be
 %       passed as a second optional argument to the function and is set to
 %       2 otherwise.
+%       The H_Infinity norm of a system is computed using a Newton Method
+%       optimization. Firstly, many frequency responses are computed, then, the
+%       maximal found frequency response is locally optimized in order to find the H_Infinity norm.
 %
 % Input Arguments:
 %       *Required Input Arguments:*
@@ -177,36 +180,36 @@ end
 
 function [ H_Infty,freq ] = H_Infty( sys )
 
-[mag,w] = freqresp( sys );
+[mag,w] = freqresp( sys ); %Compute the frequency response of the system
 [magExtreme]=freqresp(sys,[0,inf]);
 mag=cat(3,magExtreme(:,:,1),mag,magExtreme(:,:,2));
 w=[0;w;inf];
-indices=1:numel(w);
+possibleIndex=1:numel(w);
 %%Defining Boundaries
-maxNorm=sqrt(sum(sum(abs(mag).^2,1),2)); %Frobenius Norm immer smaller than the real norm
+maxNorm=sqrt(sum(sum(abs(mag).^2,1),2)); %Frobenius Norm always greater or equal than the 2-norm
 [~,indexMaxNorm]=max(maxNorm);
 index=indexMaxNorm;
 H_Infty=norm(mag(:,:,index),2);
 i=0;
 %Find the maximum norm computed in freqresp
-while(1)
+while(1==1)
     i=i+1;
     maxNorm(index)=0;
-    indices(maxNorm<=H_Infty)=[];
+    possibleIndex(maxNorm<=H_Infty)=[]; %All norms that can't be greater than the value of the variable of H_Infty are discarded
     maxNorm(maxNorm<=H_Infty)=[];
     if not(numel(maxNorm))
         break;
     end
     [~,index]=max(maxNorm);
-    computedNorm=norm(mag(:,:,indices(index)),2);
+    computedNorm=norm(mag(:,:,possibleIndex(index)),2);
     if (computedNorm>H_Infty)
         H_Infty=computedNorm;
-        indexMaxNorm=indices(index);
+        indexMaxNorm=possibleIndex(index);
     end
 end
 freq=w(indexMaxNorm);
 
-%Optimization of the maximum Hinfty norm
+%Optimization of the maximum Hinfty norm using newton method
 [A,B,C,D,E]=dssdata(sys);
 minusA=-A;
 w=freq;
@@ -215,22 +218,22 @@ w=freq;
 eigenValues=diag(eigenValues);
 [~,Index]=max(eigenValues);
 vec=eigenVectors(:,Index);
-firstDeriv=real(vec'*Deriv1*vec);
-secondDeriv=real(vec'*Deriv2*vec);
+firstDeriv=real(vec'*Deriv1*vec); %Computation of first derivative
+secondDeriv=real(vec'*Deriv2*vec); %Computation of second derivative
 delta=inf;
 i=0;
-while(1)
+while(1==1) %Newton-Method Iteration
     i=i+1;
     deltaBefore=delta;
     delta=firstDeriv/secondDeriv;
-    w=w-delta;
+    w=w-delta; %Update of w in order to find firstDeriv=0
     [Deriv0,Deriv1,Deriv2]=computeDerivatives(minusA,B,C,D,E,w);
     
     [eigenVectors,eigenValues]=(eig(full(Deriv0)));
     eigenValues=diag(eigenValues);
     [~,Index]=max(eigenValues);
     vec=eigenVectors(:,Index);
-    if (abs((norm(deltaBefore)-norm(delta))/norm(delta))<1e-9)|norm(delta(end))<eps(w)|i>=10
+    if (abs((norm(deltaBefore)-norm(delta))/norm(delta))<1e-9)|norm(delta(end))<eps(w)|i>=10 %Condition to stop iterations
         break;
     end
     firstDeriv=real(vec'*Deriv1*vec);
