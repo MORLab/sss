@@ -1,11 +1,11 @@
 function [y,x_,index] = simRKDP(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
-% simRKDP - Integrates sss model using Runge-Kutta Dormand–Prince
+% simRKDP - Integrates sss model using Runge-Kutta Dormandï¿½Prince
 % 
 % Syntax:
 %       [y,x_,index] = simRK4(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 %
 % Description:
-%       Integrates sss model using Runge-Kutta Dormand–Prince
+%       Integrates sss model using Runge-Kutta Dormandï¿½Prince
 %       TODO
 %
 % Input Arguments:    
@@ -48,6 +48,7 @@ function [y,x_,index] = simRKDP(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
+warning('This function is work in progress')
 
 Ts0 = Ts;
 
@@ -119,7 +120,7 @@ while t(end)<=tu(end)
     if t(end)==tu(end)
         break;
     end
-     
+    %TODO: implement proper criterion for adaptive time stepping
     if norm(x-x6thOrder)/norm(x6thOrder)>1e-6
         Ts = Ts/2;
     else
@@ -137,7 +138,7 @@ for i = 1:size(y,1)
     y_(i,:) = interp1(t,y(i,:),tu);
 end
 y = y_;
-
+%TODO: define correct output variables
 if ~isempty(x_)
     index = interp1(t(index),index,ti,'nearest');
 end
