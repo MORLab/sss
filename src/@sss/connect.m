@@ -42,17 +42,17 @@ function sys_S = connect(varargin)
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
 % Toolbox developed at the Chair of Automatic Control in collaboration
-% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
-% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% with the Professur fuer Thermofluiddynamik, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % For any suggestions, submission and/or bug reports, mail us at
-%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%                   -> <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a> <-
 %
-% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+% More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
 % Authors:      Thomas Emmert (emmert@tfd.mw.tum.de)
-% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
-% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
 % Last Change:  05 Nov 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
@@ -67,15 +67,20 @@ else
     inputname = sort(unique(sys_ap.u));
     outputname = sort(unique(sys_ap.y));
 end
+% Remove empty input and output names
+inputname = inputname(not(cellfun(@isempty,inputname)));
+outputname = outputname(not(cellfun(@isempty,outputname)));
 
 % Find open loop internal feedbacks of appended system
 rows = [];
 cols = [];
 for k = 1 : length(sys_ap.u)
-    col = find(strcmp(sys_ap.y, sys_ap.u(k)));
-    
-    rows = [rows; k*ones(size(col))];
-    cols = [cols; col];
+    if not(isempty(sys_ap.u{k}))
+        col = find(strcmp(sys_ap.y, sys_ap.u(k)));
+        
+        rows = [rows; k*ones(size(col))];
+        cols = [cols; col];
+    end
 end
 vals = ones(size(rows));
 K= sparse(rows,cols,vals,sys_ap.m,sys_ap.p);
@@ -92,6 +97,7 @@ for i = 1: length(inputname)
     end
     idx(i) = id(1); % TODO: special treatment for one output to multiple inputs (?)
 end
+idx = [idx; find(cellfun(@isempty,sys_S.u))]; % Add inputs with empty Inputnames
 u = sys_S.u(idx);
 Groups = sys_S.InputGroup;
 if not(isempty(Groups))
@@ -130,6 +136,7 @@ for i = 1: length(outputname)
     end
     idx(i) = id(1);
 end
+idx = [idx; find(cellfun(@isempty,sys_S.y))]; % Add outputs with empty Outputnames
 y = sys_S.y(idx);
 
 Groups = sys_S.OutputGroup;

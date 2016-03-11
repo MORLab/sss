@@ -33,13 +33,14 @@ function [r,p,d] = residue(sys, Opts)
 %       *Required Input Arguments:*
 %		-sys: sss-object of the LTI system
 %       *Optional Input Arguments:*
-%       -Opts: Structure containing computation options
-%           -.rType: define the output format of the residue
-%           -.rType='res' (def): r is a cell array of dimension nx1 with the
-%                                residual r{k} for each pole p(k)
-%           -.rType='dir': r is a cell array of dimension 1x2 with the
-%                          output residual matrix Chat = r{1} and the input residual matrix 
-%                          Bhat = r{2}
+%       -Opts:          Structure containing computation options
+%           -.rType:    define the output format of the residue r either
+%                       as a cell array of dimension nx1 with the residual 
+%                       r{k} for each pole p(k) ('res'); or a cell array 
+%                       of dimension 1x2 with the output residual matrix 
+%                       Chat = r{1} and the input residual matrix Bhat = r{2}
+%                       ('dir');
+%                       [{'res'} / 'dir']
 %
 % Output Arguments:
 %       -r: cell of residuals (format depends on Opts.rType)
@@ -71,17 +72,17 @@ function [r,p,d] = residue(sys, Opts)
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
 % Toolbox developed at the Chair of Automatic Control in collaboration
-% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
-% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% with the Professur fuer Thermofluiddynamik, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % For any suggestions, submission and/or bug reports, mail us at
-%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%                   -> <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a> <-
 %
-% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+% More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
 % Authors:      Heiko Panzer, Sylvia Cremer, Alessandro Castagnotto
-% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
-% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
 % Last Change:  28 Oct 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen

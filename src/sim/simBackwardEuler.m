@@ -1,10 +1,10 @@
-function [y,x_,index] = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample)
+function [y,x_,tx] = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % simBackwardEuler - Integrates sss model using backward (implicit) Euler
 % 
 % Syntax:
 %       y = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 %       [y,x_] = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
-%       [y,x_,index] = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
+%       [y,x_,tx] = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 %
 % Description:
 %       Integrates sss model using backward (implicit) Euler
@@ -20,7 +20,7 @@ function [y,x_,index] = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample)
 % Output Arguments:      
 %       -y: output vector
 %       -x_: matrix of state vectors
-%       -index: time index for x_
+%       -tx: time vector for X
 %
 % See Also: 
 %       sim, simForwardEuler, simRK4
@@ -79,4 +79,12 @@ for i = 2:size(u,1)
             k = k+1;            
         end
     end
+end
+
+if ~isempty(x_) && m==inf
+    x_ = x;
+    index = size(u,1);
+end
+if nargout>1
+    tx = index*Ts;
 end

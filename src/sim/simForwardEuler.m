@@ -1,10 +1,10 @@
-function [y,x_,index] = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
+function [y,x_,tx] = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % simForwardEuler - Integrates sss model using forward (explicit) Euler
 % 
 % Syntax:
 %       y = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 %       [y,x_] = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
-%       [y,x_,index] = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
+%       [y,x_,tx] = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 %
 % Description:
 %       Integrates sss model using forward (explicit) Euler 
@@ -20,7 +20,7 @@ function [y,x_,index] = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % Output Arguments:      
 %       -y: output vector
 %       -x_: matrix of state vectors
-%       -index: time index for x_
+%       -tx: time vector for x_
 %
 % See Also: 
 %       sim, simBackwardEuler, simRK4
@@ -83,4 +83,11 @@ for i = 2:size(u,1)
             k = k+1;            
         end
     end
+end
+if ~isempty(x_) && m==inf
+    x_ = x;
+    index = size(u,1);
+end
+if nargout>1
+    tx = index*Ts;
 end

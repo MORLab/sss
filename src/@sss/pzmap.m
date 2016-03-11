@@ -16,8 +16,8 @@ function [p, z] = pzmap(sys, varargin)
 %       vectors p and z. No plot is drawn on the screen.
 %
 %//Note: The calculation of the invariant zeros is only defined for systems
-%        with the same number of inputs and outputs (m=p). That means that if
-%        pzmap is called with a system with m~=p, then z = [ ].
+%       with the same number of inputs and outputs (m=p). That means that if
+%       pzmap is called with a system with m~=p, then z = [ ].
 %
 % Input Arguments:
 %       -sys:      an sss-object containing the LTI system
@@ -51,17 +51,17 @@ function [p, z] = pzmap(sys, varargin)
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
 % Toolbox developed at the Chair of Automatic Control in collaboration
-% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
-% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% with the Professur fuer Thermofluiddynamik, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % For any suggestions, submission and/or bug reports, mail us at
-%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%                   -> <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a> <-
 %
-% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+% More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
 % Authors:      Heiko Panzer, Sylvia Cremer, Maria Cruz Varona
-% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
-% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
 % Last Change:  10 Nov 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen

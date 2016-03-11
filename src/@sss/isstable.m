@@ -59,39 +59,45 @@ function [isstable,spectralAbscissa] = isstable(sys)
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
 % Toolbox developed at the Chair of Automatic Control in collaboration
-% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
-% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% with the Professur fuer Thermofluiddynamik, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % For any suggestions, submission and/or bug reports, mail us at
-%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%                   -> <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a> <-
 %
-% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+% More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
 % Authors:      Sylvia Cremer, Alessandro Castagnotto, Maria Cruz Varona
-% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
-% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
 % Last Change:  05 Nov 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-%%  Compute the eigenvalue with largest real part
-try
-    lambda = eigs(sys,1,'lr',struct('v0',sys.b));
-catch err
-    if strcmp(err.identifier,'MATLAB:eigs:ARPACKroutineErrorMinus14')
-        %eigs did not converge: lower the tolerance
-        try
-            lambda=eigs(sys,1,'lr',struct('tol',1e-4','v0',sys.b));
-        catch
+%%  For small systems, compute the eigenvalue decomposition directy
+if sys.n < 100
+    lambda = eig(sys);
+    lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
+else       
+    %%  Compute the eigenvalue with largest real part
+    try
+        lambda = eigs(sys,1,'lr',struct('v0',sys.b));
+    catch err
+        if strcmp(err.identifier,'MATLAB:eigs:ARPACKroutineErrorMinus14')
+            %eigs did not converge: lower the tolerance
+            try
+                lambda=eigs(sys,1,'lr',struct('tol',1e-4','v0',sys.b));
+            catch
+                warning('eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
+                lambda = eig(sys);
+                lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
+            end
+        else
             warning('eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
             lambda = eig(sys);
             lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
         end
-    else
-        warning('eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
-        lambda = eig(sys);
-        lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
     end
 end
 spectralAbscissa = max(real(lambda));
@@ -105,6 +111,6 @@ if  spectralAbscissa < 0
         warning('The system has eigenvalues on the imaginary axis. It might be unstable.'); 
         isstable = NaN;
     else
-        if nargout<1, warning('The system is unstable.'); else isstable=0;end
+        if nargout<1, fprintf('The system is unstable.'); else isstable=0;end
 end
 end

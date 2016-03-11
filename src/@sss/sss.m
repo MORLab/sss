@@ -78,20 +78,20 @@ classdef sss
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
 % Toolbox developed at the Chair of Automatic Control in collaboration
-% with the Chair of Thermofluid Dynamics, Technische Universitaet Muenchen. 
-% For updates and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% with the Professur fuer Thermofluiddynamik, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % For any suggestions, submission and/or bug reports, mail us at
-%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%                   -> <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a> <-
 %
-% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+% More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
 % Authors:      Heiko Panzer, Sylvia Cremer, Thomas Emmert (emmert@tfd.mw.tum.de)
 %               Alessandro Castagnotto, Maria Cruz Varona
-% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
-% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  03 Nov 2015
+% Last Change:  31 Jan 2016
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 %
@@ -141,6 +141,8 @@ classdef sss
         
         simulationTime
         decayTime
+        
+        isSym
     end
     
     methods
@@ -326,6 +328,11 @@ classdef sss
             end
         end
         
+        function sys = set.isSym(sys, isSym)
+            sys.isSym = isSym;
+        end
+        
+        
         %% Compatibility with small letters
         function a = get.a(sys); a = sys.A; end
         function b = get.b(sys); b = sys.B; end
@@ -363,6 +370,18 @@ classdef sss
             sys.A = sys.E\sys.A;
             sys.B = sys.E\sys.B;
             sys.E = [];
+        end
+        
+        function isSym = get.isSym(sys) %A=A', E=E'
+            if isequal(sys.isSym,0) || isequal(sys.isSym,1)
+                isSym = sys.isSym;
+            else
+                if issymmetric(sys.A) && issymmetric(sys.E)
+                    isSym = 1;
+                else
+                    isSym = 0;
+                end
+            end
         end
         
         % Return system matrices

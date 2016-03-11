@@ -1,4 +1,4 @@
-function [y,x_,index] = simRK4(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
+function [y,x_,tx] = simRK4(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % SIMRK4 - Integrates sss model using Runge-Kutta 4
 % 
 % Syntax:
@@ -20,7 +20,7 @@ function [y,x_,index] = simRK4(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % Output Arguments:      
 %       -y: output vector
 %       -x_: matrix of state vectors
-%       -index: time index for x_
+%       -tx: time vector for x_
 %
 % See Also: 
 %       sim, simForwardEuler, simBackwardEuler
@@ -93,4 +93,11 @@ for i = 2:size(u,1)
             k = k+1;            
         end
     end
+end
+if ~isempty(x_) && m==inf
+    x_ = x;
+    index = size(u,1);
+end
+if nargout>1
+    tx = index*Ts;
 end
