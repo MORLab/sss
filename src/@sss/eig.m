@@ -71,6 +71,11 @@ function varargout = eig(sys, varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
+if ~isempty(sys.poles) && nargout==1 && length(sys.poles)==sys.n
+    varargout{1}=sys.poles;
+    return;
+end
+
 if sys.isBig
     warning(['System order is very large: ',num2str(sys.n),'. You may want to try eigs(sys) instead.'])
 end
@@ -98,9 +103,13 @@ for i = 1:nargout
 end
 % Store poles for future computations
 if nargout>1
-    sys.poles = varargout{2};
+    sys.poles = diag(varargout{2});
 else
     sys.poles = varargout{1};
+end
+
+if inputname(1)
+    assignin('caller', inputname(1), sys);
 end
 
 end
