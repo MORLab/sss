@@ -54,6 +54,11 @@ function tmax = decayTime(sys)
 % Last Change:  04 Nov 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
+if ~isempty(sys.decayTime)
+    tmax=sys.decayTime;
+    return;
+end
+
 if ~isempty(sys.poles) && ~isempty(sys.residues)
     p=sys.poles;
     res=sys.residues;
