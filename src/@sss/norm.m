@@ -56,8 +56,8 @@ function [nrm, varargout] = norm(sys, varargin)
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  20 Dec 2015
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Last Change:  11 Mar 2016
+% Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
 p=2;    % default: H_2
@@ -74,7 +74,6 @@ end
 if isinf(p)
     % H_inf-norm
     if isempty(sys.hInfNorm)
-        %warning('calling MATLAB''s built-in norm');
         [sys.hInfNorm, sys.hInfPeakfreq] = H_Infty(sys);
         if nargout>1
             varargout{1}=sys.hInfPeakfreq;
