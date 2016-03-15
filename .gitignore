@@ -88,6 +88,8 @@ Temporary Items
 *.lol
 *.bib$
 
+*.mat
+
 # Pdf files beginning with "_"
 _*.pdf
 
