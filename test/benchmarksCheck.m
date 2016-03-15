@@ -1,5 +1,64 @@
 function benchmarksCheck(varargin)
-
+% BENCHMARKSCHECK - Verify standard benchmarks 
+% 
+% Syntax:
+%       BENCHMARKSCHECK
+%		BENCHMARKSCHECK('sourcePath','/source/path/for/benchmarks/')
+%		BENCHMARKSCHECK('destinationPath','/destination/path/for/benchmarks/')
+%		BENCHMARKSCHECK('benchmarksList',cellArrayOfBenchmarks)
+%
+% Description:
+%       BENCHMARKSCHECK verifies that the destination path ('destinationPath')
+%       contains all the benchmarks specified in a cell array ('benchmarksList')
+%       with the filenames of the benchmarks to be verified. In case a benchmark
+%       isn't found at the destination path, it is then copied from the source 
+%       path.
+%
+%       When no input arguments are given to BENCHMARKSCHECK, it verifies that a
+%       a standard list of benchmarks is available at sss/benchmarks. Any missing
+%       benchmark is downloaded from the webdisk.ads.mwn.de server.
+%
+% Input Arguments:
+%       *Parameter Input Arguments:*
+%       -'sourcePath':      Source path in case of missing benchmarks.;
+%                           'fullfile' or 'filesep' is recommended for path generation.;
+%                           Default is webdisk.ads.mwn.de server.
+%       -'destinationPath': Path that will be verified for missing benchmarks.;
+%                           Default is the sss/benchmarks folder.
+%       -'benchmarksList':  Cell array of strings with file names of benchmarks to be verified.;
+%                           Example file name: building.mat.;
+%                           Default cell array at the beginning of code.
+%
+%//Note: user defined paths for source and destination can only be folders, not webservers.
+%
+% Examples:
+%       This code verifies if the standard benchmarks are to be found
+%       in '~/test/benchmarks' (Unix path example). Missing benchmarks are
+%       then downloaded from the webdisk.ads.mwn.de server:
+%
+%> benchmarksCheck('destinationPath',fullfile('~','test','benchmarks'))
+%
+% See Also: 
+%       loadBenchmarks
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State-Space, Model Order 
+% Reduction and System Analysis Toolbox developed at the Chair of 
+% Automatic Control, Technische Universitaet Muenchen. For updates 
+% and further information please visit <a href="https://www.rt.mw.tum.de/?sssMOR">www.rt.mw.tum.de/?sssMOR</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
+% Authors:      Rodrigo Mancilla
+% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/?sssMOR">www.rt.mw.tum.de/?sssMOR</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  15 Mar 2016
+% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
 
 
 %% List of standard benchmarks that should always be in the Benchmarks folder
