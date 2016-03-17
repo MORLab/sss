@@ -1,15 +1,18 @@
-function spy(sys,name)
+function fh = spy(sys,name)
 % SPY - Plot sparsity pattern of sss system
 % 
 % Syntax:
-%       SPY(sys)
-%       SPY(sys,name)
+%               SPY(sys)
+%               SPY(sys,name)
+%       fh =    SPY(sys)
 % 
 % Description:
 %       This function plots the sparsity pattern of the E and A matrices of
-%       the sparse state-space system sys. 
+%       the sparse state-space system sys into a new figure. 
 %
-%       It is possible to pass a name via a second optional argument.
+%       It is possible to pass a name via a second optional argument or
+%       receive the figure handle as an output. If no name is passed, then
+%       the plot title is set to sys.Name
 %
 % Input Arguments:
 %       *Required Input Arguments:*
@@ -18,7 +21,7 @@ function spy(sys,name)
 %       -name: Plot title
 %       
 % Output Arguments:
-%       No Output Arguments, just a figure
+%       -fh:    figure handle
 %
 % Examples:
 %		The following code plots the sparsity pattern of the benchmark
@@ -47,11 +50,11 @@ function spy(sys,name)
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  02 Nov 2015
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Last Change:  17 Mar 2016
+% Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-    figure;
+    fh = figure;
     subplot(1,2,1);spy(sys.E); title('spy(E)');
     subplot(1,2,2);spy(sys.A); title('spy(A)');
     
