@@ -18,11 +18,14 @@ function lyapack
 %       hours on a regular workstation. When using standard methods, 
 %       supercomputers are needed to solve problems of this size.
 %
-% References:
-%		* *[1] Penzl (2000)*, LYAPACK - A MATLAB Toolbox for Large Lyapunov...
+%       For more toolbox info, have a look at the
+%       <https://www.tu-chemnitz.de/sfb393/lyapack/guide.pdf User Guide>
 %
-%------------------------------------------------------------------
-% For more toolbox info, have a look at the <a href="http://www.tu-chemnitz.de/sfb393/lyapack/guide.pdf">User Guide</a>
+% References:
+%		* *[1] Penzl (2000)*, LYAPACK - A MATLAB Toolbox for Large Lyapunov
+%		and Riccati Equations, Model Reduction Problems, and
+%		Linear-Quadratic Optimal Control Problems.
+%       
 %------------------------------------------------------------------
 % Authors:      Thilo Penzl, Volker Mehrmann
 % Email:        <a href="mailto:mehrmann@mathematik.tu-chemnitz.de">Volker Mehrmann</a>
