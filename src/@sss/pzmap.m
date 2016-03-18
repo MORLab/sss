@@ -99,6 +99,7 @@ else
     end
 
     % remove zeros at infinity
+    z=z(real(-z)<1e11);
     z=z(~isinf(z));
     sys.invariantZeros=z;
     
