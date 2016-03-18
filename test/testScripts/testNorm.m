@@ -1,4 +1,4 @@
-classdef testNorm < matlab.unittest.TestCase
+classdef testNorm < sssTest
     % testNorm - testing of norm.m
     %
     % Description:
@@ -25,43 +25,9 @@ classdef testNorm < matlab.unittest.TestCase
     % Last Change:  26 Out 2015
     % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
     % ------------------------------------------------------------------
-    properties
-        pwdPath
-        sysCell
-        deleteBenchmarks
-        testPath
-    end
-    
-    methods(TestClassSetup)
-        function getBenchmarks(testCase)
-            testCase.pwdPath=pwd;
-            if exist('benchmarksSysCell.mat','file')
-                testCase.deleteBenchmarks=0;
-            else
-                testCase.testPath=loadBenchmarks;
-                testCase.deleteBenchmarks=1;
-            end
-            
-            temp=load('benchmarksSysCell.mat');
-            testCase.sysCell=temp.benchmarksSysCell;
-            if isempty(testCase.sysCell)
-                error('No benchmarks loaded.');
-            end
-        end
-    end
-    
-    methods(TestClassTeardown)
-        function changePath(testCase)
-            if testCase.deleteBenchmarks
-                cd(testCase.testPath);
-                delete('benchmarksSysCell.mat');
-            end
-            cd(testCase.pwdPath);
-        end
-    end
     
     methods(Test)
-        function testSISObench(testCase)
+        function testNorm1(testCase)
             for i=1:length(testCase.sysCell)
                 sys_sss=testCase.sysCell{i};
                 sys_ss=ss(sys_sss);
