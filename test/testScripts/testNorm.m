@@ -62,148 +62,28 @@ classdef testNorm < matlab.unittest.TestCase
     
     methods(Test)
         function testSISObench(testCase)
-            load('building.mat');
-            sysSparse=sss(A,B,C);
-            sys=ss(A,B,C,zeros(1,1));
-            actNorm1=norm(sysSparse);
-            [actNorm2,actFreq]=norm(sysSparse,inf);
-            sysSparse.D=zeros(size(sysSparse.D));
-            actNorm3=norm(sysSparse,2);
-            actNorm = [actNorm1,actNorm2,actFreq,actNorm3];
-            expNorm1=norm(sys);
-            [expNorm2,expFreq]=norm(sys,inf);
-            sys.D=zeros(size(sys.D));
-            expNorm3=norm(sys,2);
-            if norm(freqresp(sys,actFreq),2)>expNorm2
-                expNorm2=actNorm2;
-                expFreq=actFreq;
+            for i=1:length(testCase.sysCell)
+                sys_sss=testCase.sysCell{i};
+                sys_ss=ss(sys_sss);
+                actNorm1=norm(sys_sss);
+                [actNorm2,actFreq]=norm(sys_sss,inf);
+                sys_sss.D=zeros(size(sys_sss.D));
+                actNorm3=norm(sys_sss,2);
+                actNorm = [actNorm1,actNorm2,actFreq,actNorm3];
+                expNorm1=norm(sys_ss);
+                [expNorm2,expFreq]=norm(sys_ss,inf);
+                sys_ss.D=zeros(size(sys_ss.D));
+                expNorm3=norm(sys_ss,2);
+                if norm(freqresp(sys_ss,actFreq),2)>expNorm2
+                    expNorm2=actNorm2;
+                    expFreq=actFreq;
+                end
+                if (actFreq==0 &&expFreq==0)
+                    expNorm2=actNorm2;
+                end
+                expNorm = [expNorm1,expNorm2,expFreq,expNorm3];
+                verification(testCase, actNorm, expNorm);
             end
-            if (actFreq==0 &&expFreq==0)
-                expNorm2=actNorm2;
-            end
-            expNorm = [expNorm1,expNorm2,expFreq,expNorm3];
-            verification(testCase, actNorm, expNorm);
-        end
-        function testSISOrandom(testCase)
-            sys=rss(35);
-            sysSparse=sss(sys);
-            actNorm1=norm(sysSparse);
-            [actNorm2,actFreq]=norm(sysSparse,inf);
-            sysSparse.D=zeros(size(sysSparse.D));
-            actNorm3=norm(sysSparse,2);
-            actNorm = [actNorm1,actNorm2,actFreq,actNorm3];
-            expNorm1=norm(sys);
-            [expNorm2,expFreq]=norm(sys,inf);
-            sys.D=zeros(size(sys.D));
-            expNorm3=norm(sys,2);
-            if norm(freqresp(sys,actFreq),2)>expNorm2
-                expNorm2=actNorm2;
-                expFreq=actFreq;
-            end
-            if (actFreq==0 &&expFreq==0)
-                expNorm2=actNorm2;
-            end
-            expNorm = [expNorm1,expNorm2,expFreq,expNorm3];
-            verification(testCase, actNorm, expNorm);
-        end
-        function testMISOrandom(testCase)
-            n=35;
-            nInputs=5;
-            sys=rss(n);
-            sys=ss(sys.A,rand(n,nInputs),sys.C,rand(1,nInputs));
-            sysSparse=sss(sys);
-            actNorm1=norm(sysSparse);
-            [actNorm2,actFreq]=norm(sysSparse,inf);
-            sysSparse.D=zeros(size(sysSparse.D));
-            actNorm3=norm(sysSparse,2);
-            actNorm = [actNorm1,actNorm2,actFreq,actNorm3];
-            expNorm1=norm(sys);
-            [expNorm2,expFreq]=norm(sys,inf);
-            sys.D=zeros(size(sys.D));
-            expNorm3=norm(sys,2);
-            if norm(freqresp(sys,actFreq),2)>expNorm2
-                expNorm2=actNorm2;
-                expFreq=actFreq;
-            end
-            if (actFreq==0 &&expFreq==0)
-                expNorm2=actNorm2;
-            end
-            expNorm = [expNorm1,expNorm2,expFreq,expNorm3];
-            verification(testCase, actNorm, expNorm);
-        end
-        function testSIMOrandom(testCase)
-            n=35;
-            nOutputs=5;
-            sys=rss(n);
-            sys=ss(sys.A,sys.B,rand(nOutputs,n),rand(nOutputs,1));
-            sysSparse=sss(sys);
-            actNorm1=norm(sysSparse);
-            [actNorm2,actFreq]=norm(sysSparse,inf);
-            sysSparse.D=zeros(size(sysSparse.D));
-            actNorm3=norm(sysSparse,2);
-            actNorm = [actNorm1,actNorm2,actFreq,actNorm3];
-            expNorm1=norm(sys);
-            [expNorm2,expFreq]=norm(sys,inf);
-            sys.D=zeros(size(sys.D));
-            expNorm3=norm(sys,2);
-            if norm(freqresp(sys,actFreq),2)>expNorm2
-                expNorm2=actNorm2;
-                expFreq=actFreq;
-            end
-            if (actFreq==0 &&expFreq==0)
-                expNorm2=actNorm2;
-            end
-            expNorm = [expNorm1,expNorm2,expFreq,expNorm3];
-            verification(testCase, actNorm, expNorm);
-        end
-        function testMIMObench(testCase)
-            load('CDplayer.mat');
-            sysSparse=sss(A,B,C);
-            sys=ss(full(A),full(B),full(C),zeros(2,2));
-            actNorm1=norm(sysSparse);
-            [actNorm2,actFreq]=norm(sysSparse,inf);
-            sysSparse.D=zeros(size(sysSparse.D));
-            actNorm3=norm(sysSparse,2);
-            actNorm = [actNorm1,actNorm2,actFreq,actNorm3];
-            expNorm1=norm(sys);
-            [expNorm2,expFreq]=norm(sys,inf);
-            sys.D=zeros(size(sys.D));
-            expNorm3=norm(sys,2);
-            if norm(freqresp(sys,actFreq),2)>expNorm2
-                expNorm2=actNorm2;
-                expFreq=actFreq;
-            end
-            if (actFreq==0 &&expFreq==0)
-                expNorm2=actNorm2;
-            end
-            expNorm = [expNorm1,expNorm2,expFreq,expNorm3];
-            verification(testCase, actNorm, expNorm);
-        end
-        function testMIMOrandom(testCase)
-            n=35;
-            nInputs=7;
-            nOutputs=5;
-            sys=rss(n);
-            sys=ss(sys.A,rand(n,nInputs),rand(nOutputs,n),rand(nOutputs,nInputs));
-            sysSparse=sss(sys);
-            actNorm1=norm(sysSparse);
-            [actNorm2,actFreq]=norm(sysSparse,inf);
-            sysSparse.D=zeros(size(sysSparse.D));
-            actNorm3=norm(sysSparse,2);
-            actNorm = [actNorm1,actNorm2,actFreq,actNorm3];
-            expNorm1=norm(sys);
-            [expNorm2,expFreq]=norm(sys,inf);
-            sys.D=zeros(size(sys.D));
-            expNorm3=norm(sys,2);
-            if norm(freqresp(sys,actFreq),2)>expNorm2
-                expNorm2=actNorm2;
-                expFreq=actFreq;
-            end
-            if (actFreq==0 &&expFreq==0)
-                expNorm2=actNorm2;
-            end
-            expNorm = [expNorm1,expNorm2,expFreq,expNorm3];
-            verification(testCase, actNorm, expNorm);
         end
     end
 end
