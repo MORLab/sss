@@ -75,10 +75,7 @@ function [isstable,spectralAbscissa] = isstable(sys)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-%% Check if poles are already available
-if ~isempty(sys.poles) && length(sys.poles)==sys.n
-    lambda=sys.poles(~isinf(sys.poles)); %get only finite eigenvalues
-elseif sys.n < 100
+if sys.n < 100
     %%  For small systems, compute the eigenvalue decomposition directy
     lambda = eig(sys);
     lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
@@ -94,22 +91,16 @@ else
             catch
                 warning('eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
                 lambda = eig(sys);
-                sys.poles=lambda;
                 lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
             end
         else
             warning('eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
             lambda = eig(sys);
-            sys.poles=lambda;
             lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
         end
     end
 end
 spectralAbscissa = max(real(lambda));
-
-if inputname(1)
-    assignin('caller', inputname(1), sys);
-end
 
 %%  Check wether the spectral abscissa is strictly less than zero
 if  spectralAbscissa < 0

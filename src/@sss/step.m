@@ -54,17 +54,8 @@ function  [temp, t] = step(sys, varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-% are poles and residues already available?
-if ~isempty(sys.poles) && ~isempty(sys.residues)
-    p=sys.poles;
-    res=sys.residues;
-else
-    [res,p]=residue(sys);
-    % store system to caller workspace
-    if inputname(1)
-        assignin('caller', inputname(1), sys);
-    end
-end
+[res,p]=residue(sys);
+
 builtinMATLAB=0;
 if condest(sys.E)>1/(100*eps) %Verify if E is singular
     warning('Matrix E is close to singular or badly scaled: running the MATLAB built-in function step');
@@ -134,16 +125,8 @@ else
     else
         % no, retrieve time values automatically
         
-        % is decayTime already available?
-        if ~isempty(sys.decayTime)
-            tmax = sys.decayTime;
-        else
-            tmax = decayTime(sys);
-            % store system to caller workspace
-            if inputname(1)
-                assignin('caller', inputname(1), sys);
-            end
-        end
+        tmax = decayTime(sys);
+        
         if isnan(tmax)||isinf(tmax)
             tmax=100;
         end

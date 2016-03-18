@@ -94,8 +94,6 @@ end
 B = (sys.E*T)\sys.B;
 C = sys.C*T;
 
-% save poles and residues
-sys.poles = transpose(diag(A));
 if sys.isSimo || sys.isMiso || sys.isMimo
     %simo, miso or mimo
     r = cell(sys.p, sys.m);
@@ -137,7 +135,3 @@ end
 B = real(B);
 
 sysd = sss(A, B, ones(size(C)), sys.D);
-
-if inputname(1)
-    assignin('caller', inputname(1), sys);
-end

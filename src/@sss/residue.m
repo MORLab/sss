@@ -94,14 +94,6 @@ if ~exist('Opts','var') || isempty(Opts)
     Opts = Def;
 else
     Opts = parseOpts(Opts,Def);
-end   
-
-% are poles and residues already available?
-if ~isempty(sys.poles) && ~isempty(sys.residues)
-    p=sys.poles;
-    r=sys.residues;
-    d=sys.D;
-    return
 end
 
 %perform eigen-decomposition of system
@@ -129,13 +121,6 @@ d=sys.D;
 r = cell(1,sys.n);
 for i=1:sys.n
     r{i} = full(C(:,i)*B(i,:));
-end
-
-% store results to caller workspace
-sys.residues=r;
-sys.poles=p;
-if inputname(1)
-    assignin('caller', inputname(1), sys);
 end
 
 % return the residual directions instead of the residuals

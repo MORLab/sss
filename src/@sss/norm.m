@@ -92,28 +92,16 @@ end
 
 if isinf(p)
     % H_inf-norm
-    if isempty(sys.hInfNorm)
-        [sys.hInfNorm, sys.hInfPeakfreq] = H_Infty(sys);
-        if inputname(1)
-            assignin('caller', inputname(1), sys);
-        end
-    end
-
-    nrm=sys.hInfNorm; 
+    [nrm, hInfPeakfreq] = H_Infty(sys);
+    
     if nargout>1
-        varargout{1}=sys.hInfPeakfreq;
+        varargout{1}=hInfPeakfreq;
     end
     
 elseif p==2
-    % H_2-norm
-    if ~isempty(sys.h2Norm)
-        nrm=sys.h2Norm;
-        return
-    end
     % when D ~=0, then H2 norm is unbounded
     if any(any(sys.D))
         nrm=inf;
-        sys.h2Norm=inf;
         return
     end
     
@@ -283,11 +271,6 @@ elseif p==2
     
     if imag(nrm)~=0
         nrm=Inf;
-    end
-    
-    sys.h2Norm=nrm;
-    if inputname(1)
-        assignin('caller', inputname(1), sys);
     end
 else
     error(['H_' num2str(p) '-norm not implemented.'])

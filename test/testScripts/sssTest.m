@@ -22,7 +22,6 @@ classdef sssTest < matlab.unittest.TestCase
             if isempty(testCase.sysCell)
                 error('No benchmarks loaded.');
             end
-            disp('sssTest executed...');
         end
     end
     

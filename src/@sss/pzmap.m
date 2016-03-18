@@ -67,47 +67,25 @@ function [p, z] = pzmap(sys, varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
-% are poles already available?
-if ~isempty(sys.poles)
-    p=sys.poles;
-else
-    % no, they are not. solve for eigenvalues of system
-    p = eig(sys);
+% no, they are not. solve for eigenvalues of system
+p = eig(sys);
     
-    sys.poles=p;
-    
-    % store system in caller workspace
-    if inputname(1)
-        assignin('caller', inputname(1), sys);
-    end
-end
 % ensure column vector
 if size(p,1)<size(p,2)
     p=transpose(p);
 end
 
-% are zeros already available?
-if ~isempty(sys.invariantZeros)
-    z=sys.invariantZeros;
-else
-    % no, they are not. solve for gen. eigenvalues of Rosenbrock matrix
-    if sys.m==sys.p
-            z=eig(full([sys.A,sys.B;sys.C,sys.D]), ...
-                       [full(sys.E),zeros(sys.n,sys.m);zeros(sys.p,sys.n),zeros(sys.p,sys.m)]);
-    else
-        z=zeros(0,1);
-    end
 
-    % remove zeros at infinity
-    z=z(real(-z)<1e11);
-    z=z(~isinf(z));
-    sys.invariantZeros=z;
-    
-    % store system in caller workspace
-    if inputname(1)
-        assignin('caller', inputname(1), sys);
-    end
+if sys.m==sys.p
+        z=eig(full([sys.A,sys.B;sys.C,sys.D]), ...
+                   [full(sys.E),zeros(sys.n,sys.m);zeros(sys.p,sys.n),zeros(sys.p,sys.m)]);
+else
+    z=zeros(0,1);
 end
+
+% remove zeros at infinity
+z=z(real(-z)<1e11);
+z=z(~isinf(z));
 
 if nargout>0
     return

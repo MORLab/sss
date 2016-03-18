@@ -54,21 +54,7 @@ function tmax = decayTime(sys)
 % Last Change:  04 Nov 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
-if ~isempty(sys.decayTime)
-    tmax=sys.decayTime;
-    return;
-end
-
-if ~isempty(sys.poles) && ~isempty(sys.residues)
-    p=sys.poles;
-    res=sys.residues;
-else
-    [res,p]=residue(sys);
-    % store system to caller workspace
-    if inputname(1)
-        assignin('caller', inputname(1), sys);
-    end
-end
+[res,p]=residue(sys);
 
 % is system stable?
 if any(real(p)>0)
@@ -102,10 +88,4 @@ for i=1:sys.p
         % when has slowest pole decayed to 1% of its maximum amplitude?
         tmax=max([tmax, log(100)/abs(real(p(I_dom(I2(1)))))]);
     end
-end
-
-% store system to caller workspace
-if inputname(1)
-    sys.decayTime=tmax;
-    assignin('caller', inputname(1), sys);
 end
