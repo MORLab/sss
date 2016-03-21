@@ -8,7 +8,7 @@ function  [varargout] = bode(varargin)
 %   BODE(sys1, sys2, ..., omega)
 %   BODE(sys1,'-r',sys2,'--k',w);
 %   [mag, phase, omega] = BODE(sys)
-%   frdData = BODE(sys,omega,'frd')
+%   frdData = BODE(sys,...,struct('frd',1))
 %
 % Description:
 %       This function computes the bode plot of one or several LTI systems
@@ -25,11 +25,12 @@ function  [varargout] = bode(varargin)
 %
 % Input Arguments:
 %       *Required Input Arguments:*
-%       -sys: sss-object containing the LTI system
+%       -sys:   sss-object containing the LTI system
 %       -omega: a vector of frequencies
 %       *Optional Input Arguments:*
-%       -'frd': string option to obtain an frd object as output argument
-%
+%       -Opts:  structure with execution parameters
+%			-.frd:  return frd object;
+%						[{0} / 1]%
 % Output Arguments:
 %       - mag/phase: magnitude and phase response
 %       - omega:     frequencies corresponding to the data
@@ -62,16 +63,47 @@ function  [varargout] = bode(varargin)
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  04 Nov 2015
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Last Change:  21 Mar 2016
+% Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
+%% Parse inputs and options
+if ~isempty(varargin) && isstruct(varargin{end})
+    Opts = varargin{end};
+    varargin = varargin(1:end-1);
+else
+    Opts = struct();
+end
+
+Def.frd = 0; %return magnitude instead of frd object as in bult-in case 
+
+% create the options structure
+if ~exist('Opts','var') || isempty(fieldnames(Opts))
+    Opts = Def;
+else
+    Opts = parseOpts(Opts,Def);
+end
+
+% Make sure the function is used in a correct way before running compts.
+nSys = 0;
+for iInp = 1:length(varargin)
+    if isa(varargin{iInp},'sss')
+        nSys = nSys+1;
+    end   
+end
+if nSys > 1 && nargout
+    error('sss:bode:RequiresSingleModelWithOutputArgs',...
+        'The "bode" command operates on a single model when used with output arguments.');
+end
+
+% Frequency vector
 omega = [];
 omegaIndex = cellfun(@isfloat,varargin);
 if ~isempty(omegaIndex) && nnz(omegaIndex)
     omega = varargin{omegaIndex};
     varargin(omegaIndex)=[];
 end
+
 
 for i = 1:length(varargin)
     % Set name to input variable name if not specified
@@ -88,7 +120,9 @@ for i = 1:length(varargin)
 end
 
 % Call ss/bode
-if nargout
+if nargout == 1 && Opts.frd
+    varargout{1} = varargin{1};
+elseif nargout
     [varargout{1},varargout{2},varargout{3},varargout{4},varargout{5}] = bode(varargin{:});
 else
     bode(varargin{:});
