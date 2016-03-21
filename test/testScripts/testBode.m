@@ -1,7 +1,9 @@
 classdef testBode < sssTest
     
     methods (Test)  
-        function testBode1(testCase)
+        function mainFunctionality(testCase)
+            % verify the correct execution compared to built-in for given
+            % frequencies
             for i=1:length(testCase.sysCell)
                 sys_sss=testCase.sysCell{i};
                 sys_ss=ss(sys_sss);
@@ -32,10 +34,42 @@ classdef testBode < sssTest
                 verifySize(testCase, actOmega, size(expOmega), 'Size not matching');
             end
         end
+        function frdFunctionality(testCase)
+            % FRD-Object functionality
+            % 1) return an error if more than one system was passed and
+            %    output variables are defined
+            % 2) return a magnitude array if no option is passed
+            % 3) return an frd-object if Opts.frd = 1
+            
+            for i=1:length(testCase.sysCell)
+                sys  = testCase.sysCell{i};
+ 
+                w = 1:100:1000;
+                
+                verifyError(testCase, @() triggerError(sys,sys),...
+                    'sss:bode:RequiresSingleModelWithOutputArgs');
+                
+                mag = bode(sys,w);
+                    verifyClass(testCase,mag,'double');
+                
+                Opts.frd = 1;
+                frdObj = bode(sys,w,Opts);
+                    verifyClass(testCase,frdObj,'frd');
+                    verifyEqual(testCase,mag,abs(frdObj.responseData))
+                
+                frdObj = bode(sys,Opts);
+                    verifyClass(testCase,frdObj,'frd');
+                    
+            end
+        end
     end
 end
     
 function [] = verification (testCase, actSolution, expSolution)
           verifyEqual(testCase, actSolution, expSolution, 'RelTol', 0.1,'AbsTol',0.000001, ...
                'Difference between actual and expected exceeds relative tolerance');
+end
+
+function triggerError(varargin)
+     bla = bode(varargin{:});
 end
