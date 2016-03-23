@@ -157,14 +157,13 @@ if isWeb
     fprintf(2,'Benchmark %s not found. Download in progress...\n',benchmarksList{iBenchmark});
     
     try
-        downloadFile = websave(benchmarksList{iBenchmark},[sourcePath benchmarksList{iBenchmark}]);
+        currBenchmark = fullfile(destinationPath,benchmarksList{iBenchmark});
+        websave(currBenchmark,[sourcePath benchmarksList{iBenchmark}]);
     catch
         fprintf('\n\n');
         error('Download was unsuccesful. Please check your internet connection!')
     end
-    
-    movefile(downloadFile,destinationPath)
-    
+        
     fprintf(2,'%s succesfully downloaded!\n\n',benchmarksList{iBenchmark});
     
 else
