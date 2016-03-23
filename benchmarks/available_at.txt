@@ -1,2 +1,6 @@
+# Original sources:
 http://slicot.org/20-site/126-benchmark-examples-for-model-reduction
 https://portal.uni-freiburg.de/imteksimulation/downloads/benchmark
+
+# Stable download sources for the toolbox:
+https://webdisk.ads.mwn.de/Handlers/AnonymousDownload.ashx?folder=7d2d07de&path=MORLab\sssMOR\benchmarks
