@@ -23,31 +23,30 @@ classdef testPlus < sssTest
     
     methods(Test)
         function testplus1(testCase)
-            load('building.mat');
-            sysSparse=sss(A,B,C);
-            sys=ss(full(A),full(B),full(C),zeros(1,1));
-            
-            resultSparse = plus(sysSparse, sysSparse);
-            result=plus(sys,sys);
-            verification(testCase, resultSparse, result);
+            for i=1:length(testCase.sysCell)
+                sysSparse=testCase.sysCell{i};
+                sys=ss(sysSparse);
+
+                resultSparse = plus(sysSparse, sysSparse);
+                result=plus(sys,sys);
+                verification(testCase, resultSparse, result);
+            end
         end
         function testplus2(testCase)
-            sys=rss(50);
-            sysSparse=sss(sys);
-            
-            resultSparse = plus(sysSparse, sysSparse);
-            result=plus(sys,sys);
-            verification(testCase, resultSparse, result);
-        end
-        function testplus3(testCase)
-            sys1=rss(50);
-            sys2=rss(35);
-            sysSparse1=sss(sys1);
-            sysSparse2=sss(sys2);
-            
-            resultSparse = plus(sysSparse1, sysSparse2);
-            result=plus(sys1,sys2);
-            verification(testCase, resultSparse, result);
+            initSys2=1;
+            for i=1:length(testCase.sysCell)
+                if testCase.sysCell{i}.isSiso
+                    sys1=testCase.sysCell{i};
+                    if initSys2==1
+                        sys2=testCase.sysCell{i};
+                        initSys2=0;
+                    end
+
+                    resultSparse = plus(sys1, sys2);
+                    result=plus(ss(sys1),ss(sys2));
+                    verification(testCase, resultSparse, result);
+                end
+            end
         end
 
     end

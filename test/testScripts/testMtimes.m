@@ -23,31 +23,30 @@ classdef testMtimes < sssTest
 
     methods(Test)
         function testMTimes1(testCase)
-            load('building.mat');
-            sysSparse=sss(A,B,C);
-            sys=ss(full(A),full(B),full(C),zeros(1,1));
+            for i=1:length(testCase.sysCell)
+                sys=testCase.sysCell{i};
             
-            resultSparse = mtimes(sysSparse, sysSparse);
-            result=mtimes(sys,sys);
-            verification(testCase, resultSparse, result);
+                resultSparse = mtimes(sys, sys);
+                result=mtimes(ss(sys),ss(sys));
+                verification(testCase, resultSparse, result);
+            end
         end
         function testMTimes2(testCase)
-            sys=rss(50);
-            sysSparse=sss(sys);
-            
-            resultSparse = mtimes(sysSparse, sysSparse);
-            result=mtimes(sys,sys);
-            verification(testCase, resultSparse, result);
-        end
-        function testMTimes3(testCase)
-            sys1=rss(50);
-            sys2=rss(35);
-            sysSparse1=sss(sys1);
-            sysSparse2=sss(sys2);
-            
-            resultSparse = mtimes(sysSparse1, sysSparse2);
-            result=mtimes(sys1,sys2);
-            verification(testCase, resultSparse, result);
+            initSys2=1;
+            for i=1:length(testCase.sysCell)
+                if testCase.sysCell{i}.isSiso
+                    sys1=testCase.sysCell{i};
+                    if initSys2==1
+                        sys2=testCase.sysCell{i};
+                        initSys2=0;
+                    end
+
+                    resultSparse = mtimes(sys1, sys2);
+                    result=mtimes(ss(sys1),ss(sys2));
+                    verification(testCase, resultSparse, result);
+                    sys2=sys1;
+                end
+            end
         end
     end
 end

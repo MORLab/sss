@@ -27,64 +27,25 @@ classdef testSigma < sssTest
     % ------------------------------------------------------------------
     
     methods(Test)
-        function testSISObench(testCase)
-            load('building.mat');
-            sysSparse=sss(A,B,C);
-            sys=ss(A,B,C,zeros(1,1));
-            sigma(sysSparse);
-            [mag,omega]=sigma(sysSparse);
-            close all;
-        end
-        function testSISOrandom(testCase)
-            sys=rss(35);
-            sysSparse=sss(sys);
-            sigma(sysSparse);
-            [mag,omega]=sigma(sysSparse);
-            close all;
-        end
-        function testMISO(testCase)
-            n=35;
-            nInputs=5;
-            sys=rss(n);
-            sys=ss(sys.A,rand(n,nInputs),sys.C,rand(1,nInputs));
-            sysSparse=sss(sys);
-            sigma(sysSparse);
-            [mag,omega]=sigma(sysSparse);
-            close all;
-        end
-        function testSIMO(testCase)
-            n=35;
-            nOutputs=5;
-            sys=rss(n);
-            sys=ss(sys.A,sys.B,rand(nOutputs,n),rand(nOutputs,1));
-            sysSparse=sss(sys);
-            sigma(sysSparse);
-            [mag,omega]=sigma(sysSparse);
-            close all;
-        end
-        function testMIMObench(testCase)
-            load('CDplayer.mat');
-            sysSparse=sss(A,B,C);
-            sys=ss(full(A),full(B),full(C),zeros(2,2));
-            sigma(sysSparse);
-            [mag,omega]=sigma(sysSparse);
-            close all;
-        end
-        function testMIMOrandom(testCase)
-            n=35;
-            nInputs=7;
-            nOutputs=5;
-            sys=rss(n);
-            sys=ss(sys.A,rand(n,nInputs),rand(nOutputs,n),rand(nOutputs,nInputs));
-            sysSparse=sss(sys);
-            sigma(sysSparse);
-            [mag,omega]=sigma(sysSparse);
-            close all;
+        function testBench(testCase)
+            for i=1:length(testCase.sysCell)
+                if testCase.sysCell{i}.isSiso
+                    sysSparse=testCase.sysCell{i};
+                    sys=ss(sysSparse);
+                    sigma(sysSparse);
+                    [expMag,omega]=sigma(sys);
+                    mag=sigma(sysSparse, omega');
+                    actMag=zeros(1,size(mag,3));
+                    actMag(:)=mag(1,1,:);
+                    verification(testCase, sort(actMag), sort(expMag(1,:)));
+                    close all;
+                end
+            end
         end
     end
 end
 
 function [] = verification(testCase, actSolution, expSolution)
-verifyEqual(testCase, actSolution(1:4),  expSolution(1:4),'RelTol',1e-3,...
+verifyEqual(testCase, actSolution,  expSolution,'RelTol',1e-3,'AbsTol',1e-4,...
     'Difference between actual and expected exceeds relative tolerance');
 end

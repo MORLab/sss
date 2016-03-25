@@ -27,77 +27,17 @@ classdef testResidue < sssTest
     % ------------------------------------------------------------------
    
     methods(Test)
-        function testSISObench(testCase)
-            load('building.mat');
-            sysSparse=sss(A,B,C);
-            sys=ss(A,B,C,zeros(1,1));
-            residue(sysSparse);
-            [r,p,d]=residue(sysSparse);
-            actNorm = {r,p,d};
-           % [r,p,d]=residue(sys);
-          %  expNorm = {r,p,d};
-         %   verification(testCase, actNorm, expNorm);
-        end
-        function testSISOrand(testCase)
-            sys=rss(35);
-            sysSparse=sss(sys);
-            residue(sysSparse);
-            [r,p,d]=residue(sysSparse);
-            actNorm = {r,p,d};
-            %[r,p,d]=residue(sys);
-          %  expNorm = {r,p,d};
-         %   verification(testCase, actNorm, expNorm);
-        end
-        function testMISO(testCase)
-            n=35;
-            nInputs=5;
-            sys=rss(n);
-            sys=ss(sys.A,rand(n,nInputs),sys.C,rand(1,nInputs));
-            sysSparse=sss(sys);
-            residue(sysSparse);
-            [r,p,d]=residue(sysSparse);
-            actNorm = {r,p,d};
-            %[r,p,d]=residue(sys);
-          %  expNorm = {r,p,d};
-         %   verification(testCase, actNorm, expNorm);
-        end
-        function testSIMO(testCase)
-            n=35;
-            nOutputs=5;
-            sys=rss(n);
-            sys=ss(sys.A,sys.B,rand(nOutputs,n),rand(nOutputs,1));
-            sysSparse=sss(sys);
-            residue(sysSparse);
-            [r,p,d]=residue(sysSparse);
-            actNorm = {r,p,d};
-            %[r,p,d]=residue(sys);
-          %  expNorm = {r,p,d};
-         %   verification(testCase, actNorm, expNorm);
-        end
-        function testMIMObench(testCase)
-            load('CDplayer.mat');
-            sysSparse=sss(A,B,C);
-            sys=ss(full(A),full(B),full(C),zeros(2,2));
-            residue(sysSparse);
-            [r,p,d]=residue(sysSparse);
-            actNorm = {r,p,d};
-          %  [r,p,d]=residue(sys);
-          %  expNorm = {r,p,d};
-         %   verification(testCase, actNorm, expNorm);
-        end
-        function testMIMOrandom(testCase)
-            n=35;
-            nInputs=7;
-            nOutputs=5;
-            sys=rss(n);
-            sys=ss(sys.A,rand(n,nInputs),rand(nOutputs,n),rand(nOutputs,nInputs));
-            sysSparse=sss(sys);
-            residue(sysSparse);
-            [r,p,d]=residue(sysSparse);
-            actNorm = {r,p,d};
-           % [r,p,d]=residue(sys);
-          %  expNorm = {r,p,d};
-         %   verification(testCase, actNorm, expNorm);
+        function test1(testCase)
+            for i=1:length(testCase.sysCell)
+                sysSparse=testCase.sysCell{i};
+                sys=ss(sysSparse);
+                residue(sysSparse);
+                [r,p,d]=residue(sysSparse);
+                actNorm = {r,p,d};
+               % [r,p,d]=residue(sys);
+               % expNorm = {r,p,d};
+               % verification(testCase, actNorm, expNorm);
+            end
         end
     end
 end

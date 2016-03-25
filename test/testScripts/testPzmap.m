@@ -28,85 +28,19 @@ classdef testPzmap < sssTest
     % ------------------------------------------------------------------
    
     methods(Test)
-        function testSISObench(testCase)
-            load('building.mat');
-            sysSparse=sss(A,B,C);
-            sys=ss(A,B,C,zeros(1,1));
-            [actP,actZ]=pzmap(sysSparse);
-            actPZ={sort(actP),sort(actZ)};
-            pzmap(sysSparse);
-            [expP,expZ]=pzmap(sys);
-            expPZ={sort(expP),sort(expZ)};
-            verification(testCase, actPZ, expPZ);
-            close all;
+        function test1(testCase)
+            for i=1:length(testCase.sysCell)
+                sysSparse=testCase.sysCell{i};
+                sys=ss(sysSparse);
+                [actP,actZ]=pzmap(sysSparse);
+                actPZ={sort(actP),sort(actZ)};
+                pzmap(sysSparse);
+                [expP,expZ]=pzmap(sys);
+                expPZ={sort(expP),sort(expZ)};
+                verification(testCase, actPZ, expPZ);
+                close all
+            end
         end
-        function testSISOrandom(testCase)
-            sys=rss(35);
-            sysSparse=sss(sys);
-            [actP,actZ]=pzmap(sysSparse);
-            actPZ={sort(actP),sort(actZ)};
-            pzmap(sysSparse);
-            [expP,expZ]=pzmap(sys);
-            expPZ={sort(expP),sort(expZ)};
-            verification(testCase, actPZ, expPZ);
-            close all;
-        end
-        function testMISOrandom(testCase)
-            n=35;
-            nInputs=5;
-            sys=rss(n);
-            sys=ss(sys.A,rand(n,nInputs),sys.C,rand(1,nInputs));
-            sysSparse=sss(sys);
-            [actP,actZ]=pzmap(sysSparse);
-            actPZ={sort(actP),sort(actZ)};
-            pzmap(sysSparse);
-            [expP,expZ]=pzmap(sys);
-            expPZ={sort(expP),sort(expZ)};
-            verification(testCase, actPZ, expPZ);
-            close all;
-        end
-        function testSIMOrandom(testCase)
-            n=35;
-            nOutputs=5;
-            sys=rss(n);
-            sys=ss(sys.A,sys.B,rand(nOutputs,n),rand(nOutputs,1));
-            sysSparse=sss(sys);
-            [actP,actZ]=pzmap(sysSparse);
-            actPZ={sort(actP),sort(actZ)};
-            pzmap(sysSparse);
-            [expP,expZ]=pzmap(sys);
-            expPZ={sort(expP),sort(expZ)};
-            verification(testCase, actPZ, expPZ);
-            close all;
-        end
-        function testMIMObench(testCase)
-            load('CDplayer.mat');
-            sysSparse=sss(A,B,C);
-            sys=ss(full(A),full(B),full(C),zeros(2,2));
-            [actP,actZ]=pzmap(sysSparse);
-            actPZ={sort(actP),sort(actZ)};
-            pzmap(sysSparse);
-            [expP,expZ]=pzmap(sys);
-            expPZ={sort(expP),sort(expZ)};
-            verification(testCase, actPZ, expPZ);
-            close all;
-        end
-        function testMIMOrandom(testCase)
-            n=35;
-            nInputs=7;
-            nOutputs=5;
-            sys=rss(n);
-            sys=ss(sys.A,rand(n,nInputs),rand(nOutputs,n),rand(nOutputs,nInputs));
-            sysSparse=sss(sys);
-            [actP,actZ]=pzmap(sysSparse);
-            actPZ={sort(actP),sort(actZ)};
-            pzmap(sysSparse);
-            [expP,expZ]=pzmap(sys);
-            expPZ={sort(expP),sort(expZ)};
-            verification(testCase, actPZ, expPZ);
-            close all;
-        end
-
     end
 end
 

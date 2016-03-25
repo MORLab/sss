@@ -26,45 +26,11 @@ classdef testSs < sssTest
     % ------------------------------------------------------------------
     
     methods(Test)
-        function testSISObench(testCase)
-            load('building.mat');
-            sysSparse=sss(A,B,C);
-            sys=ss(sysSparse);
-        end
-        function testSISOrandom(testCase)
-            sys=rss(35);
-            sysSparse=sss(sys);
-             sys=ss(sysSparse);
-        end
-        function testNormMISOrandom(testCase)
-            n=35;
-            nInputs=5;
-            sys=rss(n);
-            sys=ss(sys.A,rand(n,nInputs),sys.C,rand(1,nInputs));
-            sysSparse=sss(sys);
-             sys=ss(sysSparse);
-        end
-        function testSIMOrandom(testCase)
-            n=35;
-            nOutputs=5;
-            sys=rss(n);
-            sys=ss(sys.A,sys.B,rand(nOutputs,n),rand(nOutputs,1));
-            sysSparse=sss(sys);
-             sys=ss(sysSparse);
-        end
-        function testMIMObench(testCase)
-            load('CDplayer.mat');
-            sysSparse=sss(A,B,C);
-             sys=ss(sysSparse);
-        end
-        function testMIMOrand(testCase)
-            n=35;
-            nInputs=7;
-            nOutputs=5;
-            sys=rss(n);
-            sys=ss(sys.A,rand(n,nInputs),rand(nOutputs,n),rand(nOutputs,nInputs));
-            sysSparse=sss(sys);
-            sys=ss(sysSparse);
+        function testBench(testCase)
+            for i=1:length(testCase.sysCell)
+                sysSparse=testCase.sysCell{i};
+                sys=ss(sysSparse);
+            end
         end
     end
 end
