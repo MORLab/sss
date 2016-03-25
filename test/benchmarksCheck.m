@@ -128,7 +128,7 @@ matFilesInFolder = filesInFolder.mat; % cell array with names of mat-files
 %% Check if all the standard benchmarks are in the local folder
 nBenchmarks = length(benchmarksList);
 
-fprintf(2,'\nBenchmarks source:\t%s\nBenchmarks destination:\t%s\n\n',sourcePath,destinationPath);
+fprintf('\nBenchmarks source:\t%s\nBenchmarks destination:\t%s\n\n',sourcePath,destinationPath);
 
 if isempty(matFilesInFolder) % if there are no mat-files in the local folder, then copy all benchmarks
     for iBenchmark = 1:nBenchmarks
@@ -142,10 +142,10 @@ else
     end
 end
 
-fprintf(2,'-------------------------------------------------------------------------\n');
-fprintf(2,'-------------------------------------------------------------------------\n\n');
-fprintf(2,'Check complete! The following location contains all standard benchmarks:\n\n%s\n\n', destinationPath);
-
+fprintf('\n\n\n\t----> Check complete! The following location contains all standard benchmarks:\n');
+fprintf('\t----> %s\n\n', destinationPath);
+fprintf('-------------------------------------------------------------------------\n');
+fprintf('-------------------------------------------------------------------------\n\n');
 
 end
 
@@ -154,7 +154,7 @@ function transferfiles(sourcePath,destinationPath,isWeb,benchmarksList,iBenchmar
 % options = weboptions(Name,Value);
 
 if isWeb
-    fprintf(2,'Benchmark %s not found. Download in progress...\n',benchmarksList{iBenchmark});
+    fprintf('Benchmark %s not found. Download in progress...\n',benchmarksList{iBenchmark});
     
     try
         currBenchmark = fullfile(destinationPath,benchmarksList{iBenchmark});
@@ -164,10 +164,10 @@ if isWeb
         error('Download was unsuccesful. Please check your internet connection!')
     end
         
-    fprintf(2,'%s succesfully downloaded!\n\n',benchmarksList{iBenchmark});
+    fprintf('%s succesfully downloaded!\n\n',benchmarksList{iBenchmark});
     
 else
-    fprintf(2,'Benchmark %s not found. Copy in progress...\n',benchmarksList{iBenchmark});
+    fprintf('Benchmark %s not found. Copy in progress...\n',benchmarksList{iBenchmark});
     
     try
         copyfile([sourcePath benchmarksList{iBenchmark}] , destinationPath);
@@ -176,7 +176,8 @@ else
         error('Copy was unsuccesful. Please check if your source path is correct and accessible!')
     end
     
-    fprintf(2,'%s succesfully copied!\n\n',benchmarksList{iBenchmark});
+    fprintf('%s succesfully copied!\n\n',benchmarksList{iBenchmark});
+    
 end
 
 end
