@@ -95,35 +95,37 @@ end
 
 if any(real(rw) >= zeros(size(rw)))
   err_code = 1;
-  disp('These are the Ritz values computed by the Arnoldi process w.r.t. F:')
-  disp(rwp)
-  disp('These are the Ritz values computed by the Arnoldi process w.r.t. inv(F):')
-  disp(rwm)
-  disp(' ');
-  disp('####################################################################');
-  disp('WARNING in ''lp_para'': NON-STABLE RITZ VALUES DETECTED!!!')
-  disp(' ');
-  disp('This is quite a serious problem, that can be caused by  ');
-  disp('(i)   non-stable matrices F (Be sure that F is stable. ADI like');
-  disp('      methods only work for stable or antistable problems. If your');
-  disp('      Lyapunov equation is antistable, multiply it by -1.)');
-  disp('(ii)  matrices F that are stable but have an indefinite symmetric')
-  disp('      part (This is THE weak point of this algorithm. Try to work')
-  disp('      with the "reduced" Ritz values, i.e., the unstable values are')
-  disp('      simply removed. This is not an elegant measure but it may work.')
-  disp('      However, the convergence of ADI can be poor. This measure is')
-  disp('      taken automatically. Another measure might be to enlarge the')
-  disp('      values of kp or km, and run the program again.')
-  disp('(iii) matrices F with a negative definite, but ill-conditioned')
-  disp('      symmetric part (This is quite unlikely. The problem is')
-  disp('      caused by round-off errors).')
-  disp(' ')
-  disp('#####################################################################')
-  disp(' ');
-  disp(' ');
-  disp('NOTE: The unstable Ritz values will be ignored in the further computation!!! ');
-  disp(' ')
-  pause(3);
+%   disp('These are the Ritz values computed by the Arnoldi process w.r.t. F:')
+%   disp(rwp)
+%   disp('These are the Ritz values computed by the Arnoldi process w.r.t. inv(F):')
+%   disp(rwm)
+%   disp(' ');
+%   disp('####################################################################');
+%   disp('WARNING in ''lp_para'': NON-STABLE RITZ VALUES DETECTED!!!')
+%   disp(' ');
+%   disp('This is quite a serious problem, that can be caused by  ');
+%   disp('(i)   non-stable matrices F (Be sure that F is stable. ADI like');
+%   disp('      methods only work for stable or antistable problems. If your');
+%   disp('      Lyapunov equation is antistable, multiply it by -1.)');
+%   disp('(ii)  matrices F that are stable but have an indefinite symmetric')
+%   disp('      part (This is THE weak point of this algorithm. Try to work')
+%   disp('      with the "reduced" Ritz values, i.e., the unstable values are')
+%   disp('      simply removed. This is not an elegant measure but it may work.')
+%   disp('      However, the convergence of ADI can be poor. This measure is')
+%   disp('      taken automatically. Another measure might be to enlarge the')
+%   disp('      values of kp or km, and run the program again.')
+%   disp('(iii) matrices F with a negative definite, but ill-conditioned')
+%   disp('      symmetric part (This is quite unlikely. The problem is')
+%   disp('      caused by round-off errors).')
+%   disp(' ')
+%   disp('#####################################################################')
+%   disp(' ');
+%   disp(' ');
+%   disp('NOTE: The unstable Ritz values will be ignored in the further computation!!! ');
+%   disp(' ')
+%   pause(3);
+  warning(['Unstable Ritz values detected. Only stable Ritz values will be ',...
+      'used in the further computation.']);
   rw0 = rw; rw = [];
   for j = 1:length(rw0)
     if real(rw0(j))<0
