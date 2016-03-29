@@ -43,7 +43,7 @@ function varargout = eigs(sys, varargin)
 %> D = eigs(sys,5,'sm')
 %
 % See Also: 
-%        eigs
+%        sparfun/eigs
 %
 % References:
 %       * *[1] Lehoucq, R.B. and D.C. Sorensen (1996)*, Deflation Techniques for an Implicitly Re-Started Arnoldi Iteration.

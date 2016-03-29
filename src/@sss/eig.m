@@ -50,7 +50,7 @@ function varargout = eig(sys, varargin)
 %> [V,D,W] = eig(sys);
 %
 % See Also:
-%       ss/eig, eigs
+%       matfun/eig, eigs
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
