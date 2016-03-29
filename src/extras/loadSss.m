@@ -55,8 +55,6 @@ function sys = loadSss(fname,Opts)
 % See Also:
 %       sss, load
 %
-% References:
-%       TODO
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
@@ -90,45 +88,63 @@ LoadData = load(fname);
 
 if isfield(LoadData,'A') %1st order form
     if ~isfield(LoadData,'B'), 
-        error('This benchmark does not have a B matrix. Please load it manually'),
+        if ~isfield(LoadData,'b')
+           error('This benchmark does not have a B matrix. Please load it manually'),
+        else
+           LoadData.B = LoadData.b; 
+        end
     end
-    if ~isfield(LoadData,'C'), LoadData.C = LoadData.B'; end
+    if ~isfield(LoadData,'C')
+        if ~isfield(LoadData,'c')
+            LoadData.C = LoadData.B'; 
+        else
+            LoadData.C = LoadData.c;
+        end
+    end
     if ~isfield(LoadData,'D'), 
         LoadData.D = zeros(size(LoadData.C,1),size(LoadData.B,2)); 
     end
     if ~isfield(LoadData,'E'), LoadData.E = speye(size(LoadData.A)); end
     
+    sys = sss(LoadData.A,LoadData.B,LoadData.C,LoadData.D,LoadData.E);
+    
 elseif isfield(LoadData,'M') %2nd order form
 %     msgID = 'sssMOR:loadSss:2ndOrder';
     warning('The system is in 2nd order form and will be converted to 1st order.')
+    
     if ~isfield(LoadData,'D'), LoadData.D = zeros(size(LoadData.K)); end
-    switch Opts.transf2nd %create the matrix E1 multiplying velocities
-        case 'I'
-            E1 = speye(size(LoadData.K));
-        case 'K'
-            E1 = LoadData.K;
-        case '-K'
-            E1 = -LoadData.K;
-        case 'alpha'
-            % TODO: add the transformation to strictly dissipative form by
-            % Panzer
-            warning('alpha option not implemented yet, using K instead');
-            alpha = 1; 
-            E1 = alpha*LoadData.K;
+    
+    if ~isfield(LoadData,'C')
+       if isfield(LoadData,'c')
+           LoadData.C = LoadData.c;
+       end
     end
-    % generate 1st order system matrices
-    LoadData.E = blkdiag(E1,LoadData.M);
-    LoadData.A = [zeros(size(LoadData.K)), E1;
-                  -LoadData.K, -LoadData.D]; clear E1
-    LoadData.B = [zeros(size(LoadData.B)); LoadData.B];
-    LoadData.C = [zeros(size(LoadData.C)), LoadData.C];
-    LoadData.D = zeros(size(LoadData.C,1),size(LoadData.B,2)); %overwrite with feedthrough
+    
+    if ~isfield(LoadData,'B')
+       if isfield(LoadData,'b')
+          LoadData.B = LoadData.b;
+       end
+    end
+    
+    %Use the function second2first to create the system
+    
+    sys = second2first(LoadData.M,LoadData.D,LoadData.K,LoadData.B,...
+                       zeros(size(LoadData.C)),LoadData.C,Opts);
+    
 else
     error('loadSss was not able to determine the form of the given system');
 end
 
-%%  Create sss-object
-sys = sss(LoadData.A,LoadData.B,LoadData.C,LoadData.D,LoadData.E);
+%%  Set name for system
+splittedName = strsplit(fname,'\');
+    
+if length(splittedName) >= 2
+    fname = splittedName{1,end};
+end
+
+splittedName = strsplit(fname,'.');
+fname = splittedName{1,1};
+
 sys.Name = fname;
 
 %%  Store additional data into the sss object
