@@ -15,7 +15,7 @@ function sys = append(varargin)
 %
 % Examples:
 %		This code loads two benchmark models included in the toolbox
-%		and groups the models by |append|ing their inputs and outputs:
+%		and groups the models by appending their inputs and outputs:
 %
 %> load building; 
 %> sysBuilding = sss(A,B,C);
