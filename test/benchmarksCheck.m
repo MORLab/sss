@@ -128,7 +128,7 @@ matFilesInFolder = filesInFolder.mat; % cell array with names of mat-files
 %% Check if all the standard benchmarks are in the local folder
 nBenchmarks = length(benchmarksList);
 
-fprintf('\nBenchmarks source:\t%s\nBenchmarks destination:\t%s\n\n',sourcePath,destinationPath);
+fprintf('\nBenchmarks source:\t%s\nBenchmarks destination:\t%s\n',sourcePath,destinationPath);
 
 if isempty(matFilesInFolder) % if there are no mat-files in the local folder, then copy all benchmarks
     for iBenchmark = 1:nBenchmarks
@@ -142,10 +142,11 @@ else
     end
 end
 
-fprintf('\n\n\n\t----> Check complete! The following location contains all standard benchmarks:\n');
-fprintf('\t----> %s\n\n', destinationPath);
-fprintf('-------------------------------------------------------------------------\n');
-fprintf('-------------------------------------------------------------------------\n\n');
+fprintf('\n\t----> Check complete!');
+% The following location contains all standard benchmarks:\n');
+% fprintf('\t----> %s\n\n', destinationPath);
+% fprintf('-------------------------------------------------------------------------\n');
+fprintf('\n-------------------------------------------------------------------------\n\n');
 
 end
 
