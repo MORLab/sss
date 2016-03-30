@@ -76,6 +76,7 @@ else
 end
 
 Def.frd = 0; %return magnitude instead of frd object as in bult-in case 
+Def.plot = 'bode'; % plot magnitude and phase ('bode','mag')
 
 % create the options structure
 if ~exist('Opts','var') || isempty(fieldnames(Opts))
@@ -124,6 +125,8 @@ if nargout == 1 && Opts.frd
     varargout{1} = varargin{1};
 elseif nargout
     [varargout{1},varargout{2},varargout{3},varargout{4},varargout{5}] = bode(varargin{:});
+elseif strcmp(Opts.plot,'mag')
+    bodemag(varargin{:});
 else
     bode(varargin{:});
 end
