@@ -48,7 +48,7 @@ function [y,X,tx] = lsim(sys,u,Ts,method,Ts_sample)
 %------------------------------------------------------------------
 
 
-[A,B,C,D,E] = ssdata(sys);
+[A,B,C,D,E] = dssdata(sys);
 x = sys.x0;
 
 if nargin == 2

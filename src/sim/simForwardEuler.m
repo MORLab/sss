@@ -55,6 +55,7 @@ function [y,x_,tx] = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 y = zeros(size(C,1),size(u,1));
 if nargout == 1
     x_ = [];
+    m=inf;
 else
     m = round(Ts_sample/Ts);
     x_ = zeros(length(A),round(size(u,1)/m));    
@@ -84,7 +85,7 @@ for i = 2:size(u,1)
         end
     end
 end
-if ~isempty(x_) && m==inf
+if m==inf
     x_ = x;
     index = size(u,1);
 end
