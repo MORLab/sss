@@ -15,7 +15,7 @@ function [G, omega] = freqresp(varargin)
 %
 % Syntax:
 %       G = freqresp(sys, w)
-%       G = freqresp(sys, w, Opts)
+%       G = freqresp(sys, ..., Opts)
 %       [G, w] = freqresp(sys)
 %
 % Inputs:
@@ -59,7 +59,20 @@ function [G, omega] = freqresp(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-%% input parsing
+%% Parse inputs and options
+Def.maxPoints = 1500; % number of refinement points
+
+% create the options structure
+if ~isempty(varargin) && isstruct(varargin{end})
+    Opts = varargin{end};
+    varargin = varargin(1:end-1);
+end
+if ~exist('Opts','var') || isempty(Opts)
+    Opts = Def;
+else
+    Opts = parseOpts(Opts,Def);
+end
+
 sys= varargin{1};
 nOutputs=sys.p;
 nInputs=sys.m;
@@ -90,7 +103,7 @@ else
     omega=logspace(minW,maxW,qttyPoints)'; %w should be a column according to built-in MATLAB function
     [firstDerivLog,secondDerivLog,magnitude,resp]=ComputeFreqResp(sys,omega*1i,M);
     %Refine the frequency response points
-    [G,omega]=FreqRefinement(sys,omega,firstDerivLog,secondDerivLog,magnitude,resp,M);
+    [G,omega]=FreqRefinement(sys,omega,firstDerivLog,secondDerivLog,magnitude,resp,M,Opts);
     return
     else
         error('All the inputs of the system are disconnected to all outputs');
@@ -127,12 +140,12 @@ end
 
 
 
-function [resp,w]=FreqRefinement(sys,w,firstDerivLog,secondDerivLog,magnitude,resp,M)
+function [resp,w]=FreqRefinement(sys,w,firstDerivLog,secondDerivLog,magnitude,resp,M,Opts)
 nInputs=sys.m;
 nOutputs=sys.p;
 increment=w(2)/w(1);
 %Enter a loop for the refinement
-while(1)
+while(length(w)<=Opts.maxPoints)
     %Compute the currentIncrement between all the points
     currentIncrement=reshape(w(2:end)./w(1:end-1),1,1,numel(w)-1);
     currentIncrement=repmat(currentIncrement,nOutputs,nInputs,1);
@@ -169,6 +182,10 @@ while(1)
     magnitude=magnitude(:,:,Index);
     resp=cat(3,resp,respComp);
     resp=resp(:,:,Index);
+end
+if length(w)>=Opts.maxPoints
+    warning(['Maximum number of refinement points reached. Increase Opts.maxPoints '...
+        'for a better resolution.']);
 end
 end
 
