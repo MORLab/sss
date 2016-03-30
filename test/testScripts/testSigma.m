@@ -29,23 +29,17 @@ classdef testSigma < sssTest
     methods(Test)
         function testBench(testCase)
             for i=1:length(testCase.sysCell)
-                if testCase.sysCell{i}.isSiso
-                    sysSparse=testCase.sysCell{i};
-                    sys=ss(sysSparse);
-                    sigma(sysSparse);
-                    [expMag,omega]=sigma(sys);
-                    mag=sigma(sysSparse, omega');
-                    actMag=zeros(1,size(mag,3));
-                    actMag(:)=mag(1,1,:);
-                    verification(testCase, sort(actMag), sort(expMag(1,:)));
-                    close all;
-                end
+                sysSparse=testCase.sysCell{i};
+                disp(sysSparse.Name);
+                [expMag,omega]=sigma(ss(sysSparse));
+                actMag=sigma(sysSparse, omega');
+                verification(testCase, actMag, expMag);
             end
         end
     end
 end
 
 function [] = verification(testCase, actSolution, expSolution)
-verifyEqual(testCase, actSolution,  expSolution,'RelTol',1e-3,'AbsTol',1e-4,...
+verifyEqual(testCase, actSolution,  expSolution,'RelTol',1e-2,'AbsTol',0.005,...
     'Difference between actual and expected exceeds relative tolerance');
 end

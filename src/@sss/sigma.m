@@ -1,12 +1,12 @@
-function  [mag, omega] = sigma(sys, varargin)
+function  [s, omega] = sigma(sys, varargin)
 % sigma - Plots the amplitude of the frequency response of an LTI system
 % 
 % Syntax: 
-%       [mag, omega] = sigma(sys, omega)
-%       [mag, omega] = sigma(sys, omega, options)
+%       [s, omega] = sigma(sys, omega)
+%       [s, omega] = sigma(sys, omega, options)
 %
 % Description:
-%       Plots the amplitude of the frequency response of an LTI system
+%       Plots the singular values of the frequency response of an LTI system
 %
 % Input Arguments:       
 %       *Required Input Arguments*
@@ -16,19 +16,19 @@ function  [mag, omega] = sigma(sys, varargin)
 %       -options:   plot options. see <a href="matlab:help plot">PLOT</a>
 %
 % Output Arguments:      
-%       -mag:   vector of complex frequency response values
+%       -s:     vector of singular values of complex frequency response
 %       -omega: vector of complex frequencies
 %
 % Examples:
-%       The following code plots the amplitude of the frequency response of
-%       the benchmark 'CDplayer' (SSS, MIMO):
+%       The following code plots the singular values of the frequency 
+%       response of the benchmark 'CDplayer' (SSS, MIMO):
 %
 %> load CDplayer.mat
 %> sys=sss(A,B,C);
 %> sigma(sys);
 %
 % See Also:
-%       bode, freqresp
+%       bode, freqresp, magPlot
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
@@ -67,6 +67,10 @@ else
     [m, omega] = freqresp(sys);
 end
 mag = abs(m);
+s=zeros(size(mag,1),size(mag,3));
+for i=1:length(omega)
+    s(:,i)=svd(mag(:,:,i));
+end
 
 if nargout>0 %no plot
     return
@@ -77,37 +81,13 @@ if isempty(options)
     options={'Color','b'};
 end
 
-mag=mag2db(mag); %can be overwritten since it is not returned
-m = sys.m; p = sys.p;
-plot_handles=zeros(m,p);
-
-for i=1:p %for each output
-    for j=1:m %for each input
-        plot_handles(i,j)=subplot(p,m,(i-1)+j);
-        hold on
-        if j==1 && sys.m>1
-            y_lab=sprintf('To Out(%i)',ceil(i/2));
-            ylabel(y_lab)
-        end
-        if i==1 && sys.p>1
-            x_lab=sprintf('From In(%i)',j);
-            title(x_lab)
-        end
-      
-        % amplitude
-        y_plot=squeeze(mag(i,j,:));
-        plot(omega,y_plot,options{:})
-        set(gca, 'XScale', 'log');
-        set(gca, 'XLim', [min(omega) max(omega)]);
-        mx=max(y_plot); mn=min(y_plot);
-        if isinf(mx)
-            warning('System is zero.');
-            continue
-        end
-        set(gca, 'YLim', [mn-(mx-mn)/20, mx+(mx-mn)/20]);
-        ylabel('Magnitude [dB]') 
-        xlabel('Frequency [rad/sec]') 
-    end
+s=mag2db(s);
+for i=1:sys.m
+    semilogx(omega,s(i,:),options{:})
+    hold on;
 end
-
+set(gca, 'XLim', [min(omega) max(omega)]);
+xlabel('Frequency (rad/s)');
+ylabel('Singular Values (dB)')
+title('Singular Values');
 end
