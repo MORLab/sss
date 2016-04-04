@@ -104,13 +104,13 @@ spectralAbscissa = max(real(lambda));
 
 %%  Check wether the spectral abscissa is strictly less than zero
 if  spectralAbscissa < 0
-    if nargout<1, fprintf('The system is asymptotically stable\n');
+    if nargout<1, fprintf('The system is asymptotically stable.\n');
     else isstable = 1; end
         
     elseif spectralAbscissa == 0
         warning('The system has eigenvalues on the imaginary axis. It might be unstable.'); 
         isstable = NaN;
     else
-        if nargout<1, fprintf('The system is unstable.'); else isstable=0;end
+        if nargout<1, fprintf('The system is unstable.\n'); else isstable=0;end
 end
 end
