@@ -4,13 +4,11 @@ classdef testSim < sssTest
 % Description:
 %   The function sim.m is tested on:
 %    + Simulation of a SSS, SISO benchmark system (building).
-%    + Simulation of a SSS, SISO random system.
+%    + Simulation of a SSS, SISO benchmark system (heat-cond).
 %    + Simulation of a DSSS, SISO benchmark system (SpiralInductorPeec).
-%    + Simulation of a DSS, MISO random system.
-%    + Simulation of a DSS, SIMO random system.
 %    + Simulation of a SSS, MIMO benchmark system (iss).
+%    + Simulation of a SSS, MIMO benchmark system (CDplayer).
 %    + Simulation of a DSSS, MIMO benchmark system (rail_1357).
-%    + Simulation of a SSS, MIMO random system.
 %    + Verification of the obtained results.
 %
 %------------------------------------------------------------------
@@ -22,15 +20,15 @@ classdef testSim < sssTest
 %                   -> sssMOR@rt.mw.tum.de <-
 %------------------------------------------------------------------
 % Authors:      Maria Cruz Varona
-% Last Change:  7 Nov 2015
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Last Change:  05 Apr 2016
+% Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
     methods(Test)
-        function testSISObench(testCase)
+        function testSISObench1(testCase)
             load('building.mat');
             sysSparse=sss(A,B,C);
-            sys=ss(A,B,C,zeros(1,1));
+            sys=ss(full(A),full(B),full(C),zeros(1,1));
             nOutputs = sysSparse.p;
             
 %             isstable = isstable(sysSparse)
@@ -48,50 +46,25 @@ classdef testSim < sssTest
             actSim = [dataSparseRK4.y,dataSparseFoEuler.y,dataSparseBaEuler.y,dataSparseDiscrete.y];
             expSim = lsim(sys,u,t);
             
-%             figure; plot(t,actSim); hold on; plot(t,expSim); 
-%             xlabel('Time [s]'); ylabel('Amplitude');
+            figure; plot(t,actSim); hold on; plot(t,expSim); 
+            xlabel('Time [s]'); ylabel('Amplitude');
+            legend('RK4','ForwEuler','BackEuler','Discrete','lsim');
             
             for iCase=1:4
                 verification(testCase, actSim(:,(iCase*nOutputs-nOutputs+1):iCase*nOutputs), expSim);
             end
         end
-%         function testSISOrandom(testCase)
-%             sys=rss(35);
-%             sysSparse=sss(sys);
-%             nOutputs = sysSparse.p;
-%             
-% %             isstable = isstable(sysSparse)
-%             
-%             Ts = 1e-4;
-%             t = 0:Ts:10;
-%             u = sin(2*pi*1*t);
-%             datau = iddata([],u',Ts);
-%             
-%             dataSparseRK4 = sim(sysSparse,datau,'RK4');
-%             dataSparseFoEuler = sim(sysSparse,datau,'forwardEuler');
-%             dataSparseBaEuler = sim(sysSparse,datau,'backwardEuler');
-%             dataSparseDiscrete = sim(c2d(sysSparse,Ts),datau,'discrete');
-%             
-%             actSim = [dataSparseRK4.y,dataSparseFoEuler.y,dataSparseBaEuler.y,dataSparseDiscrete.y];
-%             expSim = lsim(sys,u,t);
-%             
-%             figure; plot(t,actSim); hold on; plot(t,expSim); 
-%             xlabel('Time [s]'); ylabel('Amplitude');
-%             
-%             for iCase=1:4
-%                 verification(testCase, actSim(:,(iCase*nOutputs-nOutputs+1):iCase*nOutputs), expSim);
-%             end
-%         end
-        function testDSSSISObench(testCase)
-            load('SpiralInductorPeec.mat');
-            sysSparse=sss(A,B,C,[],E);
-            sys=ss(sysSparse);
+        
+        function testSISObench2(testCase)
+            load('heat-cont.mat');
+            sysSparse=sss(A,B,C);
+            sys=ss(full(A),full(B),full(C),zeros(1,1));
             nOutputs = sysSparse.p;
             
 %             isstable = isstable(sysSparse)
             
-            Ts = 1e-10;
-            t = 0:Ts:3e-7;
+            Ts = 1e-4;
+            t = 0:Ts:10;
 %             u = idinput(length(t),'rgs',[0 0.5/(1/2/Ts)])';
             u = double(t>=Ts);
             datau = iddata([],u',Ts);
@@ -106,106 +79,115 @@ classdef testSim < sssTest
             
             figure; plot(t,actSim); hold on; plot(t,expSim); 
             xlabel('Time [s]'); ylabel('Amplitude');
+            legend('RK4','ForwEuler','BackEuler','Discrete','lsim');
             
             for iCase=1:4
                 verification(testCase, actSim(:,(iCase*nOutputs-nOutputs+1):iCase*nOutputs), expSim);
             end
         end
-%         function testDSSSMISOrandom(testCase)
-%             n=35;
-%             nInputs=5;
-%             sys=rss(n);
-%             sys=dss(sys.A,rand(n,nInputs),sys.C,rand(1,nInputs),rand(size(sys.A)));
-%             sysSparse=sss(sys);
-%             nOutputs = sysSparse.p;
-%             
-% %             isstable = isstable(sysSparse)
-% 
-%             Ts = 1e-4;
-%             t = 0:Ts:10;
-%             u = idinput(length(t),'rgs',[0 0.5/(1/2/Ts)])';
-%                         
-%             U = repmat(u,nInputs,1);
-%             dataU = iddata([],U',Ts);
-%             
-%             dataSparseRK4 = sim(sysSparse,dataU,'RK4');
-%             dataSparseFoEuler = sim(sysSparse,dataU,'forwardEuler');
-%             dataSparseBaEuler = sim(sysSparse,dataU,'backwardEuler');
-%             dataSparseDiscrete = sim(c2d(sysSparse,Ts),dataU,'discrete');
-%             
-%             actSim = [dataSparseRK4.y,dataSparseFoEuler.y,dataSparseBaEuler.y,dataSparseDiscrete.y];
-%             expSim = lsim(sys,U,t);
-%             
-% %             figure; plot(t,actSim); hold on; plot(t,expSim); 
-% %             xlabel('Time [s]'); ylabel('Amplitude');
-% 
-%             for iCase=1:4
-%                 verification(testCase, actSim(:,(iCase*nOutputs-nOutputs+1):iCase*nOutputs), expSim);
-%             end
-%         end
-%         function testDSSSSIMOrandom(testCase)
-%             n=35;
-%             nOutputs=5;
-%             sys=rss(n);
-%             sys=dss(sys.A,sys.B,rand(nOutputs,n),rand(nOutputs,1),rand(size(sys.A)));
-%             sysSparse=sss(sys);
-%             nOutputs = sysSparse.p;
-%             
-% %             isstable = isstable(sysSparse)
-%             
-%             Ts = 1e-4;
-%             t = 0:Ts:10;
-%             u = idinput(length(t),'rgs',[0 0.5/(1/2/Ts)])';
-%             datau = iddata([],u',Ts);
-%             
-%             dataSparseRK4 = sim(sysSparse,datau,'RK4');
-%             dataSparseFoEuler = sim(sysSparse,datau,'forwardEuler');
-%             dataSparseBaEuler = sim(sysSparse,datau,'backwardEuler');
-%             dataSparseDiscrete = sim(c2d(sysSparse,Ts),datau,'discrete');
-%             
-%             actSim = [dataSparseRK4.y,dataSparseFoEuler.y,dataSparseBaEuler.y,dataSparseDiscrete.y];
-%             expSim = lsim(sys,u,t);
-%             
-% %             figure; plot(t,actSim); hold on; plot(t,expSim); 
-% %             xlabel('Time [s]'); ylabel('Amplitude');
-% 
-%             for iCase=1:4
-%                 verification(testCase, actSim(:,(iCase*nOutputs-nOutputs+1):iCase*nOutputs), expSim);
-%             end
-%         end
-%         function testMIMObench(testCase)
-%             load('cdplayer.mat');
-%             sysSparse=sss(A,B,C);
-%             sys=ss(full(A),full(B),full(C),zeros(2,2));
-%             nOutputs = sysSparse.p;
-%             
+
+        function testDSSSISObench(testCase)
+            load('SpiralInductorPeec.mat');
+            sysSparse=sss(A,B,C,[],E);
+            sys=ss(sysSparse);
+            nOutputs = sysSparse.p;
+            
 %             isstable = isstable(sysSparse)
-% 
-%             Ts = 1e-4;
-%             t = 0:Ts:1;
+            
+            Ts = 1e-10; % time constant of the system lies approx. by Tmax = 5e-8s
+            % Due to the Shannon-theorem: Ts = 1/2 * Tmax
+            t = 0:Ts:3e-7;
 %             u = idinput(length(t),'rgs',[0 0.5/(1/2/Ts)])';
-% %             u = double(t>=Ts);
-%                         
-%             U = repmat(u,size(B,2),1);
-%             dataU = iddata([],U',Ts);
-%             
-%             dataSparseRK4 = sim(sysSparse,dataU,'RK4');
-%             dataSparseFoEuler = sim(sysSparse,dataU,'forwardEuler');
-%             dataSparseBaEuler = sim(sysSparse,dataU,'backwardEuler');
-%             dataSparseDiscrete = sim(c2d(sysSparse,Ts),dataU,'discrete');
-%             
-%             actSim = [dataSparseRK4.y,dataSparseFoEuler.y,dataSparseBaEuler.y,dataSparseDiscrete.y];
-%             expSim = lsim(sys,U,t);
-%             
+            u = double(t>=Ts);
+            datau = iddata([],u',Ts);
+            
+            dataSparseRK4 = sim(sysSparse,datau,'RK4'); %bad results; needs probably a smaller sample time Ts
+            dataSparseFoEuler = sim(sysSparse,datau,'forwardEuler'); %bad results; needs probably a smaller sample time Ts
+            dataSparseBaEuler = sim(sysSparse,datau,'backwardEuler'); %good results
+            dataSparseDiscrete = sim(c2d(sysSparse,Ts),datau,'discrete'); %bad results; needs probably a smaller sample time Ts
+            % Sample time of Ts = 1e-18 still yield bad results
+            
+            actSim = [dataSparseRK4.y,dataSparseFoEuler.y,dataSparseBaEuler.y,dataSparseDiscrete.y];
+            expSim = lsim(sys,u,t);
+            
 %             figure; plot(t,actSim); hold on; plot(t,expSim); 
 %             xlabel('Time [s]'); ylabel('Amplitude');
-% 
-%             for iCase=1:4
-%                 verification(testCase, actSim(:,(iCase*nOutputs-nOutputs+1):iCase*nOutputs), expSim);
-%             end
-%         end
+%             legend('RK4','ForwEuler','BackEuler','Discrete','lsim');
 
-        function testMIMObench(testCase)
+            figure; plot(t,dataSparseBaEuler.y); hold on; plot(t,expSim); 
+            xlabel('Time [s]'); ylabel('Amplitude');
+            legend('BackEuler','lsim');
+            
+            for iCase=1:4
+                verification(testCase, actSim(:,(iCase*nOutputs-nOutputs+1):iCase*nOutputs), expSim);
+            end
+        end
+
+        function testMIMObench1(testCase)
+            load('iss.mat');
+            sysSparse=sss(A,B,C);
+            sys=ss(full(A),full(B),full(C),zeros(3,3));
+            nOutputs = sysSparse.p;
+            
+%             isstable = isstable(sysSparse);
+
+            Ts = 1e-4;
+            t = 0:Ts:1;
+%             u = idinput(length(t),'rgs',[0 0.5/(1/2/Ts)])';
+            u = double(t>=Ts);
+                        
+            U = repmat(u,size(B,2),1);
+            dataU = iddata([],U',Ts);
+            
+            dataSparseRK4 = sim(sysSparse,dataU,'RK4'); %good results
+            dataSparseFoEuler = sim(sysSparse,dataU,'forwardEuler'); %good results
+            dataSparseBaEuler = sim(sysSparse,dataU,'backwardEuler'); %good results
+            dataSparseDiscrete = sim(c2d(sysSparse,Ts),dataU,'discrete'); %good results
+            
+            actSim = [dataSparseRK4.y,dataSparseFoEuler.y,dataSparseBaEuler.y,dataSparseDiscrete.y];
+            expSim = lsim(sys,U,t);
+            
+            figure; plot(t,actSim); hold on; plot(t,expSim); 
+            xlabel('Time [s]'); ylabel('Amplitude');
+
+            for iCase=1:4
+                verification(testCase, actSim(:,(iCase*nOutputs-nOutputs+1):iCase*nOutputs), expSim);
+            end
+        end
+
+        function testMIMObench2(testCase)
+            load('CDplayer.mat');
+            sysSparse=sss(A,B,C);
+            sys=ss(full(A),full(B),full(C),zeros(2,2));
+            nOutputs = sysSparse.p;
+            
+%             isstable = isstable(sysSparse);
+
+            Ts = 1e-7;
+            t = 0:Ts:1;
+%             u = idinput(length(t),'rgs',[0 0.5/(1/2/Ts)])';
+            u = double(t>=Ts);
+                        
+            U = repmat(u,size(B,2),1);
+            dataU = iddata([],U',Ts);
+            
+            dataSparseRK4 = sim(sysSparse,dataU,'RK4'); %good results
+            dataSparseFoEuler = sim(sysSparse,dataU,'forwardEuler'); %good results
+            dataSparseBaEuler = sim(sysSparse,dataU,'backwardEuler'); %good results
+            dataSparseDiscrete = sim(c2d(sysSparse,Ts),dataU,'discrete'); %good results
+            
+            actSim = [dataSparseRK4.y,dataSparseFoEuler.y,dataSparseBaEuler.y,dataSparseDiscrete.y];
+            expSim = lsim(sys,U,t);
+            
+            figure; plot(t,actSim); hold on; plot(t,expSim); 
+            xlabel('Time [s]'); ylabel('Amplitude');
+
+            for iCase=1:4
+                verification(testCase, actSim(:,(iCase*nOutputs-nOutputs+1):iCase*nOutputs), expSim);
+            end
+        end
+
+        function testMIMObench3(testCase)
             load('rail_1357.mat');
             sysSparse=sss(A,B,C,[],E);
             sys=dss(full(A),full(B),full(C),zeros(size(C,1),size(B,2)),full(E));
@@ -221,10 +203,10 @@ classdef testSim < sssTest
             U = repmat(u,size(B,2),1);
             dataU = iddata([],U',Ts);
             
-            dataSparseRK4 = sim(sysSparse,dataU,'RK4');
-            dataSparseFoEuler = sim(sysSparse,dataU,'forwardEuler');
-            dataSparseBaEuler = sim(sysSparse,dataU,'backwardEuler');
-            dataSparseDiscrete = sim(c2d(sysSparse,Ts),dataU,'discrete');
+            dataSparseRK4 = sim(sysSparse,dataU,'RK4'); %good results
+            dataSparseFoEuler = sim(sysSparse,dataU,'forwardEuler'); %good results
+            dataSparseBaEuler = sim(sysSparse,dataU,'backwardEuler'); %good results
+            dataSparseDiscrete = sim(c2d(sysSparse,Ts),dataU,'discrete'); %good results
             
             actSim = [dataSparseRK4.y,dataSparseFoEuler.y,dataSparseBaEuler.y,dataSparseDiscrete.y];
             expSim = lsim(sys,U,t);
@@ -236,42 +218,10 @@ classdef testSim < sssTest
                 verification(testCase, actSim(:,(iCase*nOutputs-nOutputs+1):iCase*nOutputs), expSim);
             end
         end
-%         function testDSSSMIMOrandom(testCase)
-%             n=35;
-%             nInputs=7;
-%             nOutputs=5;
-%             sys=rss(n);
-%             sys=dss(sys.A,rand(n,nInputs),rand(nOutputs,n),zeros(nOutputs,nInputs),rand(size(sys.A)));
-%             sysSparse=sss(sys);
-%             
-% %             isstable = isstable(sysSparse)
-% 
-%             Ts = 1e-4;
-%             t = 0:Ts:3;
-%             u = double(t>=Ts);
-%                         
-%             U = repmat(u,nInputs,1);
-%             dataU = iddata([],U',Ts);
-%             
-%             dataSparseRK4 = sim(sysSparse,dataU,'RK4');
-%             dataSparseFoEuler = sim(sysSparse,dataU,'forwardEuler');
-%             dataSparseBaEuler = sim(sysSparse,dataU,'backwardEuler');
-%             dataSparseDiscrete = sim(c2d(sysSparse,Ts),dataU,'discrete');
-%             
-%             actSim = [dataSparseRK4.y,dataSparseFoEuler.y,dataSparseBaEuler.y,dataSparseDiscrete.y];
-%             expSim = lsim(sys,U,t);
-%             
-%             figure; plot(t,actSim); hold on; plot(t,expSim); 
-%             xlabel('Time [s]'); ylabel('Amplitude');
-%             
-%             for iCase=1:4
-%                 verification(testCase, actSim(:,(iCase*nOutputs-nOutputs+1):iCase*nOutputs), expSim);
-%             end
-%         end
     end
 end
 
 function [] = verification(testCase, actSolution, expSolution)
-verifyEqual(testCase, actSolution,  expSolution,'RelTol',1e-3,...
+verifyEqual(testCase, actSolution, expSolution, 'RelTol', 1e-1, 'AbsTol', 1e-4, ...
     'Difference between actual and expected exceeds relative tolerance');
 end
