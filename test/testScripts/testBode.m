@@ -34,12 +34,11 @@ classdef testBode < sssTest
                 verifySize(testCase, actOmega, size(expOmega), 'Size not matching');
             end
         end
-        function frdFunctionality(testCase)
+        function outputFunctionality(testCase)
             % FRD-Object functionality
             % 1) return an error if more than one system was passed and
             %    output variables are defined
             % 2) return a magnitude array if no option is passed
-            % 3) return an frd-object if Opts.frd = 1
             
             for i=1:length(testCase.sysCell)
                 sys  = testCase.sysCell{i};
@@ -51,14 +50,6 @@ classdef testBode < sssTest
                 
                 mag = bode(sys,w);
                     verifyClass(testCase,mag,'double');
-                
-                Opts.frd = 1;
-                frdObj = bode(sys,w,Opts);
-                    verifyClass(testCase,frdObj,'frd');
-                    verifyEqual(testCase,mag,abs(frdObj.responseData))
-                
-                frdObj = bode(sys,Opts);
-                    verifyClass(testCase,frdObj,'frd');
                     
             end
         end

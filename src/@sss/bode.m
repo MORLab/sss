@@ -8,7 +8,6 @@ function  [varargout] = bode(varargin)
 %   BODE(sys1, sys2, ..., omega)
 %   BODE(sys1,'-r',sys2,'--k',w);
 %   [mag, phase, omega] = BODE(sys)
-%   frdData = BODE(sys,...,struct('frd',1))
 %
 % Description:
 %       This function computes the bode plot of one or several LTI systems
@@ -19,22 +18,14 @@ function  [varargout] = bode(varargin)
 %       determine it. It is also possible to pass several systems or
 %       plotting options, just like in MATLAB's built-in version.
 %
-%       It the function is called with only one ouput and the option 'frd'
-%       is specified as last input variable, than an frd object is
-%       returned.
-%
 % Input Arguments:
 %       *Required Input Arguments:*
 %       -sys:   sss-object containing the LTI system
 %       -omega: a vector of frequencies
-%       *Optional Input Arguments:*
-%       -Opts:  structure with execution parameters
-%			-.frd:  return frd object;
-%						[{0} / 1]%
+%
 % Output Arguments:
 %       - mag/phase: magnitude and phase response
 %       - omega:     frequencies corresponding to the data
-%       - frdData:   a frd object with the frequency response data
 %
 % Examples:
 %		This code loads a benchmark model included in the toolbox
@@ -45,7 +36,7 @@ function  [varargout] = bode(varargin)
 %> bode(sys);
 %
 % See Also:
-%   freqresp, sigma
+%   freqresp, sigma, bodeplot, bodemag
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
@@ -63,27 +54,9 @@ function  [varargout] = bode(varargin)
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  21 Mar 2016
+% Last Change:  06 Apr 2016
 % Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
-
-%% Parse inputs and options
-if ~isempty(varargin) && isstruct(varargin{end})
-    Opts = varargin{end};
-    varargin = varargin(1:end-1);
-else
-    Opts = struct();
-end
-
-Def.frd = 0; %return magnitude instead of frd object as in bult-in case 
-Def.plot = 'bode'; % plot magnitude and phase ('bode','mag')
-
-% create the options structure
-if ~exist('Opts','var') || isempty(fieldnames(Opts))
-    Opts = Def;
-else
-    Opts = parseOpts(Opts,Def);
-end
 
 % Make sure the function is used in a correct way before running compts.
 nSys = 0;
@@ -116,35 +89,18 @@ for i = 1:length(varargin)
     
     % Convert sss to frequency response data model
     if isa(varargin{i},'sss')
-        varargin{i} = getfrd(varargin{i}, omega);
+        if not(exist('omega','var')) || isempty(omega)
+            varargin{i} = freqresp(varargin{i},struct('frd',1));
+        else
+            varargin{i} = freqresp(varargin{i},omega, struct('frd',1));
+        end
     end
 end
 
 % Call ss/bode
-if nargout == 1 && Opts.frd
-    varargout{1} = varargin{1};
-elseif nargout
+if nargout
     [varargout{1},varargout{2},varargout{3},varargout{4},varargout{5}] = bode(varargin{:});
-elseif strcmp(Opts.plot,'mag')
-    bodemag(varargin{:});
 else
-    bode(varargin{:});
+    bodeplot(varargin{:});
 end
-end
-
-function resp = getfrd(sys, omega)
-
-if not(exist('omega','var')) || isempty(omega)
-    [m, w] = freqresp(sys);
-else
-    [m, w] = freqresp(sys,omega);
-end
-
-%  remove frequencies at infinity to create frd object
-k = find(isinf(w));
-w(k) = []; m(:,:,k) = [];
-
-resp = frd(m,w,sys.Ts,...
-    'InputName',sys.InputName,'OutputName',sys.OutputName,...
-    'Name',sys.Name);
 end

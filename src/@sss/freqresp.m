@@ -1,4 +1,4 @@
-function [G, omega] = freqresp(varargin)
+function [varargout] = freqresp(varargin)
 % FREQRESP - Evaluates complex transfer function of LTI systems
 % 
 % Description:
@@ -13,19 +13,29 @@ function [G, omega] = freqresp(varargin)
 %       the input j is connected to the output i. When it is zero, then a
 %       change in the input j doesn't influence the output i.
 %
+%       If the function is called with only one ouput and the option 'frd'
+%       is specified as last input variable, than an frd object is
+%       returned.
+%
 % Syntax:
 %       G = freqresp(sys, w)
 %       G = freqresp(sys, ..., Opts)
 %       [G, w] = freqresp(sys)
+%       frdData = freqresp(sys,..., struct('frd',1))
 %
 % Inputs:
 %       *Required Input Arguments:*
 %       -sys: an sss-object containing the LTI system
 %       -w: vector of frequencies over the imaginary axis
+%       *Optional Input Arguments:*
+%       -Opts:  structure with execution parameters
+%			-.frd:  return frd object;
+%						[{0} / 1]
 %       
 % Outputs:      
 %       -G: vector of complex frequency response values
 %       -omega: vector with the frequencies at which the response was computed
+%       - frdData:   a frd object with the frequency response data
 %
 % Examples:
 %       The following code computes the frequency response of the benchmark
@@ -37,7 +47,7 @@ function [G, omega] = freqresp(varargin)
 %> [G,omega]=freqresp(sys);
 %
 % See Also:
-%       bode, sigma     
+%       bode, sigma, bodemag, bodeplot
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
@@ -55,12 +65,13 @@ function [G, omega] = freqresp(varargin)
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  20 Dec 2015
+% Last Change:  06 Apr 2016
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
 %% Parse inputs and options
 Def.maxPoints = 1500; % number of refinement points
+Def.frd = 0; %return magnitude instead of frd object as in bult-in case 
 
 % create the options structure
 if ~isempty(varargin) && isstruct(varargin{end})
@@ -86,56 +97,63 @@ sys=sss(A(reOrder,reOrder),B(reOrder,:),C(:,reOrder),D,E(reOrder,reOrder));
 M=InputOutputRelation(sys,reOrderMatrix);
 
 omegaIndex = cellfun(@isfloat,varargin);
-if ~isempty(omegaIndex) && nnz(omegaIndex)
-    %frequency vector was specified
+if isempty(omegaIndex) || ~nnz(omegaIndex)
+    if any(any(M))
+        %Finding mininum and maximum frequencies
+        minW=findminW(sys,M);
+        maxW=findmaxW(sys,M);
+        %Compute first points of frequency response
+        qttyPoints=ceil(log(10^(maxW-minW))/log(2))+1;
+        omega=logspace(minW,maxW,qttyPoints)'; %w should be a column according to built-in MATLAB function
+        [firstDerivLog,secondDerivLog,magnitude,resp]=ComputeFreqResp(sys,omega*1i,M);
+        %Refine the frequency response points
+        [G,omega]=FreqRefinement(sys,omega,firstDerivLog,secondDerivLog,magnitude,resp,M,Opts);
+    else
+        error('All the inputs of the system are disconnected to all outputs');
+    end
+else
+    %%  Compute the value of the transfer function at selected freq.
     omega = varargin{omegaIndex};
     %make sure it's a column vector
     if size(omega,2)>size(omega,1), omega = omega.'; end
     
-    varargin(omegaIndex)=[];
-else
-    if any(any(M))
-    %Finding mininum and maximum frequencies
-    minW=findminW(sys,M);
-    maxW=findmaxW(sys,M);
-    %Compute first points of frequency response
-    qttyPoints=ceil(log(10^(maxW-minW))/log(2))+1;
-    omega=logspace(minW,maxW,qttyPoints)'; %w should be a column according to built-in MATLAB function
-    [firstDerivLog,secondDerivLog,magnitude,resp]=ComputeFreqResp(sys,omega*1i,M);
-    %Refine the frequency response points
-    [G,omega]=FreqRefinement(sys,omega,firstDerivLog,secondDerivLog,magnitude,resp,M,Opts);
-    return
+    if (sys.Ts==0) % Convert frequency to either laplace or z variable
+        %{
+        % if omega is a real vector, then make it imaginary for the transfer
+        % function evaluations. If it is purely imaginary, complex or mixed,
+        % than just use the values passed.
+        % NOTE: this is in line with the built-in case. However, if one desired
+        % to evaluate the transfer function ONLY on the real axis, this implementation does not allow it. 
+        % In this case, we recommend evaluating the transfer function manually
+        % or add an imaginary frequency which can be disregarded afterwards
+        %}
+        if isreal(omega)
+            s = 1i* omega;
+        else
+            s = omega;
+        end
     else
-        error('All the inputs of the system are disconnected to all outputs');
+        if isreal(omega)
+            s = exp(1i* omega*sys.Ts);
+        else
+            s = omega;
+        end
     end
-end
 
-%%  Compute the value of the transfer function at selected freq.
-if (sys.Ts==0) % Convert frequency to either laplace or z variable
-    %{
-    % if omega is a real vector, then make it imaginary for the transfer
-    % function evaluations. If it is purely imaginary, complex or mixed,
-    % than just use the values passed.
-    % NOTE: this is in line with the built-in case. However, if one desired
-    % to evaluate the transfer function ONLY on the real axis, this implementation does not allow it. 
-    % In this case, we recommend evaluating the transfer function manually
-    % or add an imaginary frequency which can be disregarded afterwards
-    %}
-    if isreal(omega)
-        s = 1i* omega;
-    else
-        s = omega;
-    end
-else
-    if isreal(omega)
-        s = exp(1i* omega*sys.Ts);
-    else
-        s = omega;
-    end
-end
     G=zeros(nOutputs,nInputs,numel(s));
     [~,~,~,resp]=ComputeFreqResp(sys,s,M);
     G(1:nOutputs,1:nInputs,:) = resp;
+end
+
+if nargout==1 && Opts.frd
+    varargout{1}=getfrd(sys, G, omega);
+elseif nargout==1
+    varargout{1}=G;
+else
+    varargout{1}=G;
+    varargout{2}=omega;
+end
+
 end
 
 
@@ -373,4 +391,15 @@ while(1)
     
 end
 maxWFinal=floor(log10(maxW(end)*10));
+end
+
+function resp = getfrd(sys, G, omega)
+
+%  remove frequencies at infinity to create frd object
+k = find(isinf(omega));
+omega(k) = []; G(:,:,k) = [];
+
+resp = frd(G,omega,sys.Ts,...
+    'InputName',sys.InputName,'OutputName',sys.OutputName,...
+    'Name',sys.Name);
 end

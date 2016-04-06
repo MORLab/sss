@@ -62,6 +62,24 @@ classdef testFreqresp < sssTest
                 verifySize(testCase, actOmega, size(expOmega), 'Size not matching');
             end
         end
+        function testFrd(testCase)
+            for i=1:length(testCase.sysCell)
+                sys_sss=testCase.sysCell{i};
+                sys_ss=ss(sys_sss);
+                
+                [expSolution, ~, omega]=bode(sys_ss);
+                
+                Opts.frd=1;
+                frd=freqresp(sys_sss,omega,Opts);
+                actSolution=abs(frd.responseData);
+                
+                verification(testCase, actSolution, expSolution);
+                verifyInstanceOf(testCase, frd, 'frd', 'Instances not matching');
+                
+                frd=freqresp(sys_sss,Opts);
+                verifyInstanceOf(testCase, frd, 'frd', 'Instances not matching');
+            end
+        end
     end
 end
     
