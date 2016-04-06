@@ -1,8 +1,9 @@
 function  [s, omega] = sigma(sys, varargin)
-% sigma - Plots the amplitude of the frequency response of an LTI system
+% sigma - Plots the singular values of the frequency response of an LTI system
 % 
 % Syntax: 
-%       [s, omega] = sigma(sys, omega)
+%       s = sigma(sys, omega)
+%       [s, omega] = sigma(sys)
 %       [s, omega] = sigma(sys, omega, options)
 %
 % Description:
@@ -28,7 +29,7 @@ function  [s, omega] = sigma(sys, varargin)
 %> sigma(sys);
 %
 % See Also:
-%       bode, freqresp, magPlot
+%       bode, freqresp, bodemag, bodeplot
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
@@ -46,48 +47,32 @@ function  [s, omega] = sigma(sys, varargin)
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  07 Nov 2015
+% Last Change:  06 Apr 2016
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
 options = {};
 
 %% Evaluate options
-if nargin>1, options = varargin;
+if nargin>1 
+    options = varargin;
     if isa(varargin{1}, 'double')
-        omega = varargin{1}; options(1) = [];
+        omega = varargin{1}; 
+        options(1) = [];
     end
 end
-%% Calculate frequency response
-if exist('omega', 'var') && ~isempty(omega)
-    % frequency values given
-    m = freqresp(sys, omega);
+
+%% Get frd object
+if ~exist('omega','var') || isempty(omega)
+    frdObj = freqresp(sys, struct('frd',1));
 else
-    % frequency values need to be chosen
-    [m, omega] = freqresp(sys);
-end
-mag = abs(m);
-s=zeros(size(mag,1),size(mag,3));
-for i=1:length(omega)
-    s(:,i)=svd(mag(:,:,i));
+    frdObj = freqresp(sys, omega, struct('frd',1));
 end
 
+%% Call ss/sigma
 if nargout>0 %no plot
+    [s, omega]=sigma(frdObj);
     return
-end
-
-%% Plot
-if isempty(options)
-    options={'Color','b'};
-end
-
-s=mag2db(s);
-for i=1:sys.m
-    semilogx(omega,s(i,:),options{:})
-    hold on;
-end
-set(gca, 'XLim', [min(omega) max(omega)]);
-xlabel('Frequency (rad/s)');
-ylabel('Singular Values (dB)')
-title('Singular Values');
+else
+    sigma(frdObj, options{:});
 end
