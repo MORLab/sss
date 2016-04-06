@@ -52,30 +52,31 @@ end
 % Available tests:
 suite1=TestSuite.fromFile('testAppend.m');
 suite2=TestSuite.fromFile('testBode.m');
-suite3=TestSuite.fromFile('testConnect.m');
-suite4=TestSuite.fromFile('testConnectSss.m');
-suite5=TestSuite.fromFile('testDecayTime.m');
-suite6=TestSuite.fromFile('testDiag.m');
-suite7=TestSuite.fromFile('testEig.m');
-suite8=TestSuite.fromFile('testEigs.m');
-suite9=TestSuite.fromFile('testFreqresp.m');
-suite10=TestSuite.fromFile('testImpulse.m');
-suite11=TestSuite.fromFile('testIsH2opt.m');
-suite12=TestSuite.fromFile('testIssd.m');
-suite13=TestSuite.fromFile('testIsstable.m');
-suite14=TestSuite.fromFile('testMtimes.m');
-suite15=TestSuite.fromFile('testNorm.m');
-suite16=TestSuite.fromFile('testPlus.m');
-suite17=TestSuite.fromFile('testPzmap.m');
-suite18=TestSuite.fromFile('testResidue.m');
-suite19=TestSuite.fromFile('testSigma.m');
-% suite20=TestSuite.fromFile('testSim.m');
-suite21=TestSuite.fromFile('testSs.m');
-suite22=TestSuite.fromFile('testStep.m');
+suite3=TestSuite.fromFile('testBodemag.m');
+suite4=TestSuite.fromFile('testBodeplot.m');
+suite5=TestSuite.fromFile('testConnect.m');
+suite6=TestSuite.fromFile('testConnectSss.m');
+suite7=TestSuite.fromFile('testDecayTime.m');
+suite8=TestSuite.fromFile('testDiag.m');
+suite9=TestSuite.fromFile('testEig.m');
+suite10=TestSuite.fromFile('testEigs.m');
+suite11=TestSuite.fromFile('testFreqresp.m');
+suite12=TestSuite.fromFile('testImpulse.m');
+suite13=TestSuite.fromFile('testIssd.m');
+suite14=TestSuite.fromFile('testIsstable.m');
+suite15=TestSuite.fromFile('testMtimes.m');
+suite16=TestSuite.fromFile('testNorm.m');
+suite17=TestSuite.fromFile('testPlus.m');
+suite18=TestSuite.fromFile('testPzmap.m');
+suite19=TestSuite.fromFile('testResidue.m');
+suite20=TestSuite.fromFile('testSigma.m');
+% suite21=TestSuite.fromFile('testSim.m');
+suite22=TestSuite.fromFile('testSs.m');
+suite23=TestSuite.fromFile('testStep.m');
 
 suiteSss=[suite1,suite2,suite3,suite4,suite5,suite6,suite7,suite8,suite9,suite10,...
 suite11,suite12,suite13,suite14,suite15,suite16,suite17,suite18,suite19,...
-suite21, suite22];
+suite20, suite22, suite23];
 
 %% Run and show results
 result = run(suiteSss);
