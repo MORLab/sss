@@ -495,7 +495,7 @@ for i = 1:max_it+1       % The iteration itself
     nrmF_rec(stcf) = nrmF_V_2/nrmF_Z_2; 
     if ~(is_compl && is_first) && i>stcf && all(nrmF_rec < min_in)
       adi.min_iter=i;
-      if opts.adi.min_end==0
+      if opts.adi.min_in_no_break==false
         flag = 'N';
         break;
       end
