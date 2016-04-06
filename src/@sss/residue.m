@@ -118,14 +118,13 @@ C=sys.C*T;
 d=sys.D;
 
 % calculate residues
-r = cell(1,sys.n);
-for i=1:sys.n
-    r{i} = full(C(:,i)*B(i,:));
-end
-
-% return the residual directions instead of the residuals
 if strcmp(Opts.rType,'dir')
-    clear r  
+    % return the residual directions instead of the residuals
     r = {C, B};  
+else
+    % return the residuals
+    r = cell(1,sys.n);
+    for i=1:sys.n
+        r{i} = full(C(:,i)*B(i,:));
+    end
 end
-return
