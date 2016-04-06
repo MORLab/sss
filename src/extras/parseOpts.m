@@ -5,7 +5,9 @@ function Opts = parseOpts(Opts,Def)
 %       Opts = PARSEOPTS(Opts,Def)
 %
 % Description:
-%       TODO
+%       Returns a structure containing all fields defined in Def. If the 
+%       value of such a field is defined in Opts, then it is passed to the
+%       output stucture, otherwise the default value of Def is used.
 %
 % Input Arguments:
 %       *Required Input Arguments:*
@@ -16,13 +18,12 @@ function Opts = parseOpts(Opts,Def)
 %       -Opts: struct containing the optional arguments after the parsing
 %
 % Examples:
-%       TODO
+%       The following code parses the fields of the Opts and Def
+%       structures:
 %
-% See Also:
-%       TODO
-%
-% References:
-%       TODO
+%> Opts=struct('field1','value1Opts');
+%> Def=struct('field1','value1Def',field2','value2Def');
+%> Opts=parseOpts(Opts,Def);
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
