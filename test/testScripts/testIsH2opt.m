@@ -23,7 +23,7 @@ classdef testIsH2opt < sssTest
         function testIsH2opt1(testCase)
             %local H2-optimal
             load('building.mat');
-            opts=struct('epsilon',0.0005,'maxiter',300,'type','stab','stopCrit','s0');
+            opts=struct('tol',0.0005,'maxiter',300,'type','stab','stopCrit','s0');
 
             s0=[0,0,50,100,Inf, Inf, 1+5i,1-5i,14-0.2i,14+0.2i];
             sys=sss(A,B,C);
