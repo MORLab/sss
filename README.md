@@ -58,7 +58,7 @@ The functions to publish the documentation are not included in the git repositor
 
 ### When should a method be added within the ``sss`` constructor or within the @sss folder?
 
-Following functions/methods shuld be included in the class definition (constructor)
+Following functions/methods should be included in the class definition (constructor)
 - set and get 
 - everthing that is small enough to fit in 5 lines (e.g. one if else end section plus assigments)
 
