@@ -1,4 +1,4 @@
-function  [temp,t] = impulse(sys, varargin)
+function  varargout = impulse(varargin)
 % IMPULSE - Computes and/or plots the impulse response of a sparse LTI system
 %
 % Syntax:
@@ -50,8 +50,60 @@ function  [temp,t] = impulse(sys, varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
+% final Time
+t = [];
+tIndex = cellfun(@isfloat,varargin);
+if ~isempty(tIndex) && nnz(tIndex)
+    t = varargin{tIndex};
+    varargin(tIndex)=[];
+end
+
+Tfinal = 0;
+for i = 1:length(varargin)
+    % Set name to input variable name if not specified
+    if isprop(varargin{i},'Name')
+        if isempty(varargin{i}.Name) % Cascaded if is necessary && does not work
+            varargin{i}.Name = inputname(i);
+        end
+    end
+    
+    % Convert sss to frequency response data model
+    if isa(varargin{i},'sss')
+        [varargin{i},t] = gettf(varargin{i}, t);
+    end
+    Tfinal = max(t(end),Tfinal);
+end
+
+% Call ss/impulse
+if nargout == 1 && Opts.frd
+    varargout{1} = varargin{1};
+elseif nargout
+    [varargout{1},varargout{2},varargout{3},varargout{4}] = impulse(varargin{:},Tfinal);
+else
+    impulse(varargin{:},Tfinal);
+end
+
+function [TF,ti] = gettf(sys, t)
+
+[h,t] = impulseLocal(sys, t);
+ti = linspace(t(1),t(end),length(t));
+
+Ts = min(diff(ti));
+h_ = cell([size(h,2) size(h,3)]);
+for i = 1:size(h,2)
+    for j = 1:size(h,3)
+        h_{i,j} = interp1(t,h(:,i,j),ti)*Ts;        
+    end
+end
+
+TF = filt(h_,1,Ts,...
+    'InputName',sys.InputName,'OutputName',sys.OutputName,...
+    'Name',sys.Name);
+
+function [temp,t] = impulseLocal(sys, t)
+
 [res,p]=residue(sys);
-builtinMATLAB=0;
+builtinMATLAB=1;
 if condest(sys.E)>1/(100*eps) %Verify if E is singular
     warning('Matrix E is close to singular or badly scaled: running the MATLAB built-in function step');
     builtinMATLAB=1;
@@ -71,27 +123,8 @@ if not(builtinMATLAB)
     end
 end
 
-options=varargin;
-if nargin>1 && isa(options{1},'double')
-    t=varargin{1};
-    options(1)=[];
-end
-
-
-if builtinMATLAB %running the MATLAB built-in function step
-    if exist('t','var')
-        if nargout>0
-            [temp,t]=impulse(ss(sys),t);
-        else
-            impulse(ss(sys),t);
-        end
-    else
-        if nargout>0
-            [temp,t]=impulse(ss(sys),t);
-        else
-            impulse(ss(sys),t);
-        end
-    end
+if builtinMATLAB %running the MATLAB built-in function step            
+    [temp,t]=impulse(ss(sys),t);
 else %compute the impulse response with the help of the residue function
     % Change the format of res to work with the following code
     %   original: res = {res1, res2,... resN} where resK = res(p(k)) is the
@@ -109,7 +142,7 @@ else %compute the impulse response with the help of the residue function
     end
     
     % is time vector given?
-    if exist('t', 'var') && ~isempty(t)
+    if ~isempty(t) && length(t)>1
         % Change the format of res to work with the following code
         
         if size(t,1)>1 && size(t,2)==1
@@ -125,8 +158,11 @@ else %compute the impulse response with the help of the residue function
     else
         % no, retrieve time values automatically
         
-        
-        tmax = decayTime(sys);
+        if isempty(t)
+            tmax = decayTime(sys);
+        else
+            tmax = t;
+        end
         if isnan(tmax)||isinf(tmax)
             tmax=100;
         end
@@ -167,65 +203,18 @@ else %compute the impulse response with the help of the residue function
                 break
             end
             ex=ex+1;
-            if ex==5
+            if ex==2
                 break
             end
         end
     end
     
-    if nargout>0
-        temp=zeros(length(t),sys.p,sys.m);
-        for i=1:sys.p
-            for j=1:sys.m
-                temp(:,i,j)=h{i,j}';
-            end
-        end
-        
-        
-        %varargout{1}=temp;
-        %varargout{2}=t;
-        t=t';
-        return
-    end
-    
-    % --------------- PLOT ---------------
-    %Defining axis limits
-    maxOutput=max(cellfun(@max,h),[],2);
-    minOutput=min(cellfun(@min,h),[],2);
-    deltaOutput=0.1*(maxOutput-minOutput);
-    orderMagnitude=floor(log10(deltaOutput))-1;
-    
-    heightAxis=round(deltaOutput.*10.^(-orderMagnitude)).*10.^orderMagnitude;
-    minOutputAxis=minOutput-heightAxis/2;
-    maxOutputAxis=maxOutput+heightAxis/2;
-    
-    minOutputAxis(minOutput>0&minOutputAxis<=0)=0;
-    maxOutputAxis(maxOutput<0&maxOutputAxis>=0)=0;
-    %Generating figure to plot
-    graphic=stepplot(ss(zeros(1,1),zeros(1,sys.m),zeros(sys.p,1),zeros(sys.p,sys.m)),[-2,-1]);
-    opt=getoptions(graphic);
-    opt.Title.String='Impulse Response';
-    setoptions(graphic,opt);
-    
-    fig_handle=gcf;
-    % set random color if figure is not empty
-    if isempty(options)
-        if ~isempty(get(fig_handle, 'Children'))
-            c=rand(3,1); c=c/norm(c);
-            options = {'Color', c};
+    temp=zeros(length(t),sys.p,sys.m);
+    for i=1:sys.p
+        for j=1:sys.m
+            temp(:,i,j)=h{i,j}';
         end
     end
-    
-    for jIn=1:sys.m
-        for iOut=1:sys.p
-            ax=fig_handle.Children(sys.p*sys.m+1-(jIn-1)*sys.p-(iOut-1));
-            ax.NextPlot='add';
-            
-            plot(ax,t, h{iOut,jIn}, options{:});
-            set(ax, 'XLim', [0 max(t)], 'YLim', [minOutputAxis(iOut),maxOutputAxis(iOut)]);
-        end
-    end
-    % avoid output
-    clear temp h t
+    t=t';
     
 end
