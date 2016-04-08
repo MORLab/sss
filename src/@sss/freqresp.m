@@ -84,6 +84,14 @@ else
     Opts = parseOpts(Opts,Def);
 end
 
+% Frequency vector
+omega = [];
+omegaIndex = cellfun(@isfloat,varargin);
+if ~isempty(omegaIndex) && nnz(omegaIndex)
+    omega = varargin{omegaIndex};
+    varargin(omegaIndex)=[];
+end
+
 sys= varargin{1};
 nOutputs=sys.p;
 nInputs=sys.m;
@@ -92,12 +100,14 @@ nInputs=sys.m;
 reOrderMatrix=abs(A)+abs(E); %abs is used to guarantee that any terms will be cancelled in this combination of A and E
 reOrder=symrcm(reOrderMatrix);
 reOrderMatrix=reOrderMatrix(reOrder,reOrder);
-sys=sss(A(reOrder,reOrder),B(reOrder,:),C(:,reOrder),D,E(reOrder,reOrder));
+sys.A = A(reOrder,reOrder);
+sys.B = B(reOrder,:);
+sys.C = C(:,reOrder);
+sys.E = E(reOrder,reOrder);
 %Verifying relation between Inputs and Outputs
 M=InputOutputRelation(sys,reOrderMatrix);
 
-omegaIndex = cellfun(@isfloat,varargin);
-if isempty(omegaIndex) || ~nnz(omegaIndex)
+if not(exist('omega','var')) || isempty(omega)
     if any(any(M))
         %Finding mininum and maximum frequencies
         minW=findminW(sys,M);
@@ -146,7 +156,7 @@ else
 end
 
 if nargout==1 && Opts.frd
-    varargout{1}=getfrd(sys, G, omega);
+    varargout{1} = getfrd(sys, G, omega);
 elseif nargout==1
     varargout{1}=G;
 else
