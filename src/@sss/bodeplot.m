@@ -1,5 +1,5 @@
 function  h = bodeplot(sys, varargin)
-% bodemag - Bode plot of an LTI system
+% bodeplot - Bode plot of an LTI system
 % 
 % Syntax: 
 %       bodeplot(sys)
