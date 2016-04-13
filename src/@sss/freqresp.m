@@ -123,7 +123,6 @@ if not(exist('omega','var')) || isempty(omega)
     end
 else
     %%  Compute the value of the transfer function at selected freq.
-    omega = varargin{omegaIndex};
     %make sure it's a column vector
     if size(omega,2)>size(omega,1), omega = omega.'; end
     
