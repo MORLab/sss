@@ -50,6 +50,25 @@ function  varargout = impulse(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
+%% Parse inputs and options
+Def.odeset = odeset;
+Def.tolOutput = 1e-3; % Terminate if norm(y_-yFinal)/norm(yFinal)<tolOutput with yFinal = C*xFinal+D;
+Def.tolState = 1e-3; % Terminate if norm(x-xFinal)/norm(xFinal)<tolState with xFinal = -(A\B);
+Def.tf = 0; %return [h, t] instead of tf object as in bult-in case
+Def.ode = 'ode45';
+Def.nMin = 1000;
+
+% create the options structure
+if ~isempty(varargin) && isstruct(varargin{end})
+    Opts = varargin{end};
+    varargin = varargin(1:end-1);
+end
+if ~exist('Opts','var') || isempty(Opts)
+    Opts = Def;
+else
+    Opts = parseOpts(Opts,Def);
+end
+
 % final Time
 t = [];
 tIndex = cellfun(@isfloat,varargin);
@@ -69,152 +88,28 @@ for i = 1:length(varargin)
     
     % Convert sss to frequency response data model
     if isa(varargin{i},'sss')
-        [varargin{i},t] = gettf(varargin{i}, t);
+        [TF_] = gettf(varargin{i}, t,Opts);
+        varargin{i} = TF_;
+        % get length of impulse response
+        tMax_ = max(cellfun(@length,TF_.num(:)))*TF_.Ts;
+        Tfinal = max(tMax_,Tfinal);
     end
-    Tfinal = max(t(end),Tfinal);
+    
 end
 
 % Call ss/impulse
-if nargout == 1 && Opts.frd
-    varargout{1} = varargin{1};
+if nargout==1 && Opts.tf
+    varargout{1} = TF_;
 elseif nargout
-    [varargout{1},varargout{2},varargout{3},varargout{4}] = impulse(varargin{:},Tfinal);
+    [varargout{1},varargout{2},varargout{3},varargout{4}] = impulse(varargin{:},Tfinal);   
 else
     impulse(varargin{:},Tfinal);
 end
 
-function [TF,ti] = gettf(sys, t)
+function TF = gettf(sys, t, Opts)
+Opts.tf = 1;
+TF = step(sys,t,Opts);
 
-[h,t] = impulseLocal(sys, t);
-ti = linspace(t(1),t(end),length(t));
+TF.Ts
 
-Ts = min(diff(ti));
-h_ = cell([size(h,2) size(h,3)]);
-for i = 1:size(h,2)
-    for j = 1:size(h,3)
-        h_{i,j} = interp1(t,h(:,i,j),ti)*Ts;        
-    end
-end
 
-TF = filt(h_,1,Ts,...
-    'InputName',sys.InputName,'OutputName',sys.OutputName,...
-    'Name',sys.Name);
-
-function [temp,t] = impulseLocal(sys, t)
-
-[res,p]=residue(sys);
-builtinMATLAB=1;
-if condest(sys.E)>1/(100*eps) %Verify if E is singular
-    warning('Matrix E is close to singular or badly scaled: running the MATLAB built-in function step');
-    builtinMATLAB=1;
-end
-if not(builtinMATLAB)
-    for i=1:numel(p) %Verify if the poles are repeated
-        if p(i)~=0
-            numberOfRepeatedPoles=sum(abs((p-p(i))/p(i))<100*eps);
-        else
-            numberOfRepeatedPoles=sum(abs(p-p(i))<100*eps);
-        end
-        if numberOfRepeatedPoles>1
-            builtinMATLAB=1;
-            warning('System is not diagnoalizable because of repetition of eigenvalues: running the MATLAB built-in function step');
-            break;
-        end
-    end
-end
-
-if builtinMATLAB %running the MATLAB built-in function step            
-    [temp,t]=impulse(ss(sys),t);
-else %compute the impulse response with the help of the residue function
-    % Change the format of res to work with the following code
-    %   original: res = {res1, res2,... resN} where resK = res(p(k)) is the
-    %           (possibly matrix-valued) residual to p(k)
-    %   new     : res = cell(sys.p,sys.m), where res{i,j} is a vector of
-    %           scalar residual: res{i,j} = [res{i,j}1, ..., res{i,j}N]
-    resOld = res; clear res; res = cell(sys.p,sys.m);
-    for iOut = 1:sys.p
-        for jIn = 1:sys.m
-            res{iOut,jIn} = [];
-            for kPole = 1:length(p)
-                res{iOut,jIn} = [res{iOut,jIn}, resOld{kPole}(iOut,jIn)];
-            end
-        end
-    end
-    
-    % is time vector given?
-    if ~isempty(t) && length(t)>1
-        % Change the format of res to work with the following code
-        
-        if size(t,1)>1 && size(t,2)==1
-            t=t';
-        elseif size(t,1)>1 && size(t,2)>1
-            error('t must be a vector.');
-        end
-        
-        % calculate impulse response
-        h=cellfun(@(x) sum((diag(x)*conj(exp(t'*p))'),1),res,'UniformOutput',false);
-        h=cellfun(@real,h,'UniformOutput',false);
-        
-    else
-        % no, retrieve time values automatically
-        
-        if isempty(t)
-            tmax = decayTime(sys);
-        else
-            tmax = t;
-        end
-        if isnan(tmax)||isinf(tmax)
-            tmax=100;
-        end
-        delta = tmax/999;
-        t = 0:delta:tmax;
-        
-        h=cellfun(@(x)   sum(diag(x)*transpose(exp(t'*p)),1),res,'UniformOutput',false);
-        h=cellfun(@real,h,'UniformOutput',false);
-        
-        % increase resolution as long as rel. step size is too large
-        ex=1;
-        while 1
-            refine=0;
-            for iOut=1:sys.p
-                for jIn=1:sys.m
-                    m=h{iOut,jIn};
-                    for k=2:length(m)-1
-                        if abs(abs(m(k)) - abs(m(k+1)))/(abs(m(k)) + abs(m(k+1))) > 0.5
-                            delta=delta/2;
-                            t=0:delta:tmax;
-                            t_temp=t(2:2:end);
-                            temp=cellfun(@(x) sum((diag(x)*conj(exp(t_temp'*p))'),1),res,'UniformOutput',false);
-                            temp=cellfun(@real,temp,'UniformOutput',false);
-                            h=cellfun(@(x,y) [reshape([x(1:length(x)-1); y],1,2*length(x)-2),x(end)],h,temp,'UniformOutput',false);
-                            refine=1;
-                            break
-                        end
-                    end
-                    if refine
-                        break
-                    end
-                end
-                if refine
-                    break
-                end
-            end
-            if ~refine
-                break
-            end
-            ex=ex+1;
-            if ex==2
-                break
-            end
-        end
-    end
-    
-    temp=zeros(length(t),sys.p,sys.m);
-    for i=1:sys.p
-        for j=1:sys.m
-            temp(:,i,j)=h{i,j}';
-        end
-    end
-    t=t';
-    
-end
