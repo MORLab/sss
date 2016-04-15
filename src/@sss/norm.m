@@ -25,6 +25,8 @@ function [nrm, varargout] = norm(sys, varargin)
 %       -Opts:              a structure containing following options
 %           -.adi:          try only solution by adi or lyapunov equation
 %                           [{'0'} / 'adi' / 'lyap']
+%           -.lse:          solve linear system of equations (only for adi)
+%                           [{'gauss'} / 'luChol']
 %
 % Output Arguments:
 %       -nrm:             value of norm
@@ -57,15 +59,16 @@ function [nrm, varargout] = norm(sys, varargin)
 %
 %------------------------------------------------------------------
 % Authors:      Jorge Luiz Moreira Silva, Heiko Panzer, Sylvia Cremer, Rudy Eid
-%               Alessandro Castagnotto, Maria Cruz Varona
+%               Alessandro Castagnotto, Maria Cruz Varona, Lisa Jeschek
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  11 Mar 2016
+% Last Change:  15 Apr 2016
 % Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 %%  Define execution parameters
 Def.adi= 0; %use only adi or lyapunov equation ('0','adi','lyap')
+Def.lse= 'gauss'; %lse (used only for adi)
 
 p=2;    % default: H_2
 if nargin>1
@@ -112,59 +115,54 @@ elseif p==2
                 if isempty(sys.ObsGram)
                     % No, it is not. Solve Lyapunov equation.
                     if ~sys.isDae
-                        % Lyapack opts for Adi
-                        lyaOpts.l0=20;
-                        lyaOpts.kp=50;
-                        lyaOpts.km=25;
-                        lyaOpts.method='heur';
-                        lyaOpts.zk='Z';
-                        lyaOpts.rc='C';
-                        lyaOpts.adi=struct('type','B','max_it', 100,'min_res',0,'with_rs','N',...
-                            'min_in',1e-12,'min_end',0,'info',0,'cc_upd',0,'cc_tol',0);
-                    end
-                    if sys.isDescriptor
-                        try
-                            if strcmp(Opts.adi,'lyap') || sys.n<100 || sys.isDae
-                                error('lyap');
-                            end
-                            if isstable(sys)~=1
-                                warning('System appears to be unstable. The norm will be set to Inf.');
-                                nrm=Inf;
-                                return;
-                            end
-                            if sys.isSym
-                                 lyaOpts.usfs=struct('s','msns_s','m','msns_m');
-                                [M0,MU0,N0,B0,C0]=msns_pre(sys.E,sys.A,sys.B,sys.C);
-                                msns_m_i(M0,MU0,N0); 
-                                msns_l_i;
-                                p=lp_para(msns,[],[],lyaOpts,ones(length(B0),1));
-                                lyaOpts.p=p.p;
-                                msns_s_i(lyaOpts.p);
-                            else
-                                lyaOpts.usfs=struct('s','munu_s','m','munu_m');
-                                [M0,ML0,MU0,N0,B0,C0]=munu_pre(sys.E,sys.A,sys.B,sys.C);
-                                munu_m_i(M0,ML0,MU0,N0); 
-                                munu_l_i;
-                                p=lp_para(munu,[],[],lyaOpts,ones(length(B0),1));
-                                lyaOpts.p=p.p;
-                                munu_s_i(lyaOpts.p);
-                            end
+                        % options for mess
+                        % eqn struct: system data
+                        eqn=struct('A_',sys.A,'E_',sys.E,'B',sys.B,'C',sys.C,'type','N','haveE',sys.isDescriptor);
 
-                            R=lp_lradi([],[],B0,lyaOpts); %ADI solution of lyapunov equation
-                            nrm=norm(R'*C0','fro');
-                            munu_m_d;
-                            munu_l_d;
-                            munu_s_d(p.p);
-                        catch ex
-                            if strcmp(Opts.adi,'adi')
-                                if strcmp(ex.message,'lyap')
-                                    error('ADI failed. System may be too small or DAE.');
-                                else
-                                    error(ex.message);
-                                end
-                            elseif  ~strcmp(ex.message,'lyap');
-                                warning([ex.message,' Trying without ADI...']);
-                            end                                 
+                        % opts struct: mess options
+                        messOpts.adi=struct('shifts',struct('l0',20,'kp',50,'km',25,'b0',ones(sys.n,1),...
+                            'info',0),'maxiter',300,'restol',0,'rctol',1e-12,...
+                            'info',0,'norm','fro');
+                        
+                        % user functions: default
+                        if strcmp(Opts.lse,'gauss')
+                            oper = operatormanager('default');
+                        elseif strcmp(Opts.lse,'luChol')
+                            if sys.isSym
+                                oper = operatormanager('chol');
+                            else
+                                oper = operatormanager('lu');
+                            end
+                        end
+                    end
+                    try
+                        if strcmp(Opts.adi,'lyap') || sys.n<100 || sys.isDae
+                            error('lyap');
+                        end
+                        if isstable(sys)~=1
+                            warning('System appears to be unstable. The norm will be set to Inf.');
+                            nrm=Inf;
+                            return;
+                        end
+
+                        % get adi shifts
+                        [messOpts.adi.shifts.p, eqn]=mess_para(eqn,messOpts,oper);
+
+                        % low rank adi
+                        [R,~,eqn]=mess_lradi(eqn,messOpts,oper);
+
+                        nrm=norm(R'*eqn.C','fro');
+                    catch ex
+                        if strcmp(Opts.adi,'adi')
+                            if strcmp(ex.message,'lyap')
+                                error('ADI failed. System may be too small or DAE.');
+                            else
+                                error(ex.message);
+                            end
+                        elseif  ~strcmp(ex.message,'lyap');
+                            warning([ex.message,' Trying without ADI...']);
+                        end
+                        if sys.isDescriptor
                             try
                                 try
                                     sys.ConGramChol = lyapchol(sys.A,sys.B,sys.E); % P=S'*S3
@@ -196,50 +194,7 @@ elseif p==2
                                     nrm=sqrt(trace(sys.C*X*sys.C'));
                                 end
                             end
-                        end
-                    else
-                        try
-                            if strcmp(Opts.adi,'lyap') || sys.n<100
-                                error('lyap');
-                            end
-                            if isstable(sys)~=1
-                                warning('System appears to be unstable. The norm will be set to Inf.');
-                                nrm=Inf;
-                                return;
-                            end
-                            if sys.isSym
-                                lyaOpts.usfs=struct('s','as_s','m','as_m');
-                                [A0,B0,C0]=as_pre(sys.A,sys.B,sys.C);
-                                as_m_i(A0);
-                                as_l_i;
-                                p=lp_para(as,[],[],lyaOpts, ones(length(B0),1));
-                                lyaOpts.p=p.p;
-                                as_s_i(lyaOpts.p);
-                            else
-                                lyaOpts.usfs=struct('s','au_s','m','au_m');
-                                [A0,B0,C0]=au_pre(sys.A,sys.B,sys.C);
-                                au_m_i(A0);
-                                au_l_i;
-                                p=lp_para(au,[],[],lyaOpts, ones(length(B0),1));
-                                lyaOpts.p=p.p;
-                                au_s_i(lyaOpts.p);
-                            end
-
-                            R=lp_lradi([],[],B0,lyaOpts); %ADI solution of lyapunov equation
-                            nrm=norm(R'*C0','fro');
-                            au_m_d;
-                            au_l_d;
-                            au_s_d(p.p);
-                        catch ex
-                            if strcmp(Opts.adi,'adi')
-                                if strcmp(ex.message,'lyap')
-                                    error('ADI failed. System may be too small.');
-                                else
-                                    error(ex.message);
-                                end
-                            elseif  ~strcmp(ex.message,'lyap');
-                                warning([ex.message,' Trying without ADI...']);
-                            end   
+                        else
                             try
                                 sys.ConGramChol = lyapchol(sys.A,sys.B);
                                 nrm=norm(sys.ConGramChol*sys.C','fro');
