@@ -21,7 +21,7 @@ function  [varargout] = bode(varargin)
 % Input Arguments:
 %       *Required Input Arguments:*
 %       -sys:   sss-object containing the LTI system
-%       -omega: a vector of frequencies
+%       -omega: vector of frequencies or cell with {wmin,wmax}
 %
 % Output Arguments:
 %       - mag/phase: magnitude and phase response
@@ -63,7 +63,9 @@ nSys = 0;
 for iInp = 1:length(varargin)
     if isa(varargin{iInp},'sss')
         nSys = nSys+1;
-    end   
+    elseif isa(varargin{iInp},'double') || isa(varargin{iInp},'cell')
+        omegaIndex=iInp;
+    end
 end
 if nSys > 1 && nargout
     error('sss:bode:RequiresSingleModelWithOutputArgs',...
@@ -71,13 +73,10 @@ if nSys > 1 && nargout
 end
 
 % Frequency vector
-omega = [];
-omegaIndex = cellfun(@isfloat,varargin);
-if ~isempty(omegaIndex) && nnz(omegaIndex)
+if exist('omegaIndex','var') && nnz(omegaIndex)
     omega = varargin{omegaIndex};
     varargin(omegaIndex)=[];
 end
-
 
 for i = 1:length(varargin)
     % Set name to input variable name if not specified

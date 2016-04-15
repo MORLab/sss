@@ -26,7 +26,7 @@ function [varargout] = freqresp(varargin)
 % Inputs:
 %       *Required Input Arguments:*
 %       -sys: an sss-object containing the LTI system
-%       -w: vector of frequencies over the imaginary axis
+%       -w: vector of frequencies or cell with {wmin,wmax}
 %       *Optional Input Arguments:*
 %       -Opts:  structure with execution parameters
 %			-.frd:  return frd object;
@@ -87,9 +87,14 @@ end
 % Frequency vector
 omega = [];
 omegaIndex = cellfun(@isfloat,varargin);
+omegaCellIndex = cellfun(@iscell, varargin);
 if ~isempty(omegaIndex) && nnz(omegaIndex)
     omega = varargin{omegaIndex};
     varargin(omegaIndex)=[];
+elseif ~isempty(omegaCellIndex) && nnz(omegaCellIndex)
+    minW=log10(varargin{omegaCellIndex}{1});
+    maxW=log10(varargin{omegaCellIndex}{2});
+    varargin(omegaCellIndex)=[];
 end
 
 sys= varargin{1};
@@ -110,8 +115,10 @@ M=InputOutputRelation(sys,reOrderMatrix);
 if not(exist('omega','var')) || isempty(omega)
     if any(any(M))
         %Finding mininum and maximum frequencies
-        minW=findminW(sys,M);
-        maxW=findmaxW(sys,M);
+        if isempty(omegaCellIndex) || ~nnz(omegaCellIndex)
+            minW=findminW(sys,M);
+            maxW=findmaxW(sys,M);
+        end
         %Compute first points of frequency response
         qttyPoints=ceil(log(10^(maxW-minW))/log(2))+1;
         omega=logspace(minW,maxW,qttyPoints)'; %w should be a column according to built-in MATLAB function

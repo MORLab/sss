@@ -4,9 +4,10 @@ classdef testBodeplot < sssTest
         function testBodeplot1(testCase)
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
-                h=bodeplot(sys,1:1000,'r--');
+                h=bodeplot(sys,1:100,'r--');
                 setoptions(h,'PhaseVisible','off');
                 verifyInstanceOf(testCase, h, 'handle','Instances not matching');
+                bodeplot(sys,{10,100});
             end
         end
     end
