@@ -1,23 +1,24 @@
 classdef sssTest < matlab.unittest.TestCase
     
     properties 
-        pwdPath
         sysCell
         deleteBenchmarks
         testPath
     end
     
     methods
-        function testCase=sssTest()
-            testCase.pwdPath=pwd;
-            if exist('benchmarksSysCell.mat','file')
+        function testCase=sssTest()            
+            p = mfilename('fullpath'); k = strfind(p, fullfile(filesep,'test')); 
+            testCase.testPath = [p(1:k(end)-1), fullfile(filesep,'testScripts')];
+            
+            if exist(fullfile(testCase.testPath,'benchmarksSysCell.mat'),'file')
                 testCase.deleteBenchmarks=0;
             else
                 testCase.testPath=loadBenchmarks;
                 testCase.deleteBenchmarks=1;
             end
             
-            temp=load('benchmarksSysCell.mat');
+            temp=load(fullfile(testCase.testPath,'benchmarksSysCell.mat'));
             testCase.sysCell=temp.benchmarksSysCell;
             if isempty(testCase.sysCell)
                 error('No benchmarks loaded.');
@@ -28,10 +29,8 @@ classdef sssTest < matlab.unittest.TestCase
     methods(TestClassTeardown)
         function deleteBench(testCase)
             if testCase.deleteBenchmarks
-                cd(testCase.testPath);
-                delete('benchmarksSysCell.mat');
+                delete(fullfile(testCase.testPath,'benchmarksSysCell.mat'));
             end
-            cd(testCase.pwdPath);
         end
     end
 end
