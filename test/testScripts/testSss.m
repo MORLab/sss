@@ -23,9 +23,6 @@ function result = testSss(Opts)
 
 import matlab.unittest.TestSuite;
 
-%%  Change to testScripts folder
-testCase.Path = pwd; %original
-
 %% Choose benchmarks
 % Default benchmarks
 Def.cond = 'good'; % condition of benchmarks: 'good','bad','all'
@@ -43,47 +40,48 @@ else
     Opts = parseOpts(Opts,Def);
 end
 
-% load benchmarks and change to folder 'testScripts'
+% load benchmarks
 if Opts.loadBench==1
-    loadBenchmarks(Opts);
+    testPath=loadBenchmarks(Opts);
+else
+    p = mfilename('fullpath'); k = strfind(p, fullfile(filesep,'test')); 
+	testPath = p(1:k(end)-1);
 end
 
 %% Test specific unittest-files
 % Available tests:
-suite1=TestSuite.fromFile('testAppend.m');
-suite2=TestSuite.fromFile('testBode.m');
-suite3=TestSuite.fromFile('testBodemag.m');
-suite4=TestSuite.fromFile('testBodeplot.m');
-suite5=TestSuite.fromFile('testConnect.m');
-suite6=TestSuite.fromFile('testConnectSss.m');
-suite7=TestSuite.fromFile('testDecayTime.m');
-suite8=TestSuite.fromFile('testDiag.m');
-suite9=TestSuite.fromFile('testEig.m');
-suite10=TestSuite.fromFile('testEigs.m');
-suite11=TestSuite.fromFile('testFreqresp.m');
-suite12=TestSuite.fromFile('testImpulse.m');
-suite13=TestSuite.fromFile('testIssd.m');
-suite14=TestSuite.fromFile('testIsstable.m');
-suite15=TestSuite.fromFile('testMtimes.m');
-suite16=TestSuite.fromFile('testNorm.m');
-suite17=TestSuite.fromFile('testPlus.m');
-suite18=TestSuite.fromFile('testPzmap.m');
-suite19=TestSuite.fromFile('testResidue.m');
-suite20=TestSuite.fromFile('testSigma.m');
-% suite21=TestSuite.fromFile('testSim.m');
-suite22=TestSuite.fromFile('testSs.m');
-suite23=TestSuite.fromFile('testStep.m');
+suite1=TestSuite.fromFile(fullfile(testPath,'testAppend.m'));
+suite2=TestSuite.fromFile(fullfile(testPath,'testBode.m'));
+suite3=TestSuite.fromFile(fullfile(testPath,'testBodemag.m'));
+suite4=TestSuite.fromFile(fullfile(testPath,'testBodeplot.m'));
+suite5=TestSuite.fromFile(fullfile(testPath,'testConnect.m'));
+suite6=TestSuite.fromFile(fullfile(testPath,'testConnectSss.m'));
+suite7=TestSuite.fromFile(fullfile(testPath,'testDecayTime.m'));
+suite8=TestSuite.fromFile(fullfile(testPaht,'testDemoSss.m'));
+suite9=TestSuite.fromFile(fullfile(testPath,'testDiag.m'));
+suite10=TestSuite.fromFile(fullfile(testPath,'testEig.m'));
+suite11=TestSuite.fromFile(fullfile(testPath,'testEigs.m'));
+suite12=TestSuite.fromFile(fullfile(testPath,'testFreqresp.m'));
+suite13=TestSuite.fromFile(fullfile(testPath,'testImpulse.m'));
+suite14=TestSuite.fromFile(fullfile(testPath,'testIssd.m'));
+suite15=TestSuite.fromFile(fullfile(testPath,'testIsstable.m'));
+suite16=TestSuite.fromFile(fullfile(testPath,'testMtimes.m'));
+suite17=TestSuite.fromFile(fullfile(testPath,'testNorm.m'));
+suite18=TestSuite.fromFile(fullfile(testPath,'testPlus.m'));
+suite19=TestSuite.fromFile(fullfile(testPath,'testPzmap.m'));
+suite20=TestSuite.fromFile(fullfile(testPath,'testResidue.m'));
+suite21=TestSuite.fromFile(fullfile(testPath,'testSigma.m'));
+% suite22=TestSuite.fromFile(fullfile(testPath,'testSim.m'));
+suite23=TestSuite.fromFile(fullfile(testPath,'testSs.m'));
+suite24=TestSuite.fromFile(fullfile(testPath,'testStep.m'));
 
 suiteSss=[suite1,suite2,suite3,suite4,suite5,suite6,suite7,suite8,suite9,suite10,...
 suite11,suite12,suite13,suite14,suite15,suite16,suite17,suite18,suite19,...
-suite20, suite22, suite23];
+suite20, suite21, suite23, suite24];
 
 %% Run and show results
 result = run(suiteSss);
 disp(result);
 if Opts.loadBench==1
-    delete('benchmarksSysCell.mat');
+    delete(fullfile(testPath,'benchmarksSysCell.mat'));
 end
-
-%% Go back to original folder
-cd(testCase.Path);
