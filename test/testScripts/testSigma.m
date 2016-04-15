@@ -36,6 +36,18 @@ classdef testSigma < sssTest
                 verification(testCase, actMag, expMag);
             end
         end
+        function inputFunctionality(testCase)
+            % input of frequnecy range
+            
+            for i=1:length(testCase.sysCell)
+                sys  = testCase.sysCell{i};
+                w = {10,100};
+
+                [~,omega] = sigma(sys,w);
+                verifyEqual(testCase,omega(1),w{1},  'Wrong frequency returned');
+                verifyEqual(testCase,omega(end),w{2},'Wrong frequency returned');
+            end
+        end
     end
 end
 

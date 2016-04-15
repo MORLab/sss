@@ -15,7 +15,7 @@ function  h = bodeplot(sys, varargin)
 %       *Required Input Arguments*
 %       -sys: an sss-object containing the LTI system
 %       *Optional Input Arguments*
-%       -omega:     vector of imaginary frequencies to plot at
+%       -omega:     vector of frequencies or cell with {wmin,wmax}
 %       -options:   plot options. see <a href="matlab:help plot">PLOT</a>
 %
 % Output Arguments:      
@@ -56,7 +56,7 @@ options = {};
 %% Evaluate options
 if nargin>1 
     options = varargin;
-    if isa(varargin{1}, 'double')
+    if isa(varargin{1}, 'double') || isa(varargin{1},'cell')
         omega = varargin{1}; 
         options(1) = [];
     end
