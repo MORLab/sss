@@ -27,21 +27,65 @@ classdef testStep < sssTest
     % ------------------------------------------------------------------
     
     methods(Test)
-        function testBench(testCase)
-            for i=1:length(testCase.sysCell)
-                sysSparse=testCase.sysCell{i};
-                sys=ss(sysSparse);
-                [exph,t]=step(sys);
-                acth=step(sysSparse,t');
-                verification(testCase,acth,exph);
-                step(sysSparse);
-                close all;
+        function testStep1(testCase)
+            filePath = fileparts(mfilename('fullpath'));
+            toolPath = fileparts(filePath);
+            load([toolPath '/../benchmarks/iss.mat'])
+            
+            sys = ss(full(A),full(B),full(C),[]);
+            [sys,g] = balreal(sys);
+            sys = modred(ss(sys),g<1e-3)+1;
+            sysSss = sss(sys);
+            sysSssE = sss(sys.A*2,sys.B*2,sys.C,sysSss.D,eye(size(sys.A))*2);                       
+            sysSss = sysSss;
+            sysSssE = sysSssE;
+            
+            tFinal = 15;
+            [actH,actT]=step(ss(sysSss),tFinal);
+            expH = {}; expT = {};
+            ODEset = odeset;
+            ODEset.AbsTol = 1e-7;
+            ODEset.RelTol = 1e-7;
+            [expH{end+1},expT{end+1}]=step(sysSss,actT,struct('nMin',0,'odeset',ODEset));
+            [expH{end+1},expT{end+1}]=step(sysSss,actT,struct('nMin',0,'ode','ode113','odeset',ODEset));
+            [expH{end+1},expT{end+1}]=step(sysSss,actT,struct('nMin',0,'ode','ode15s','odeset',ODEset));
+            [expH{end+1},expT{end+1}]=step(sysSss,actT,struct('nMin',0,'ode','ode23','odeset',ODEset));
+            [expH{end+1},expT{end+1}]=step(sysSss,actT,struct('nMin',0,'ode','ode45','odeset',ODEset));
+            [expH{end+1},expT{end+1}]=step(sysSssE,actT,struct('nMin',0));            
+            
+            actSolution={actH,actT};
+            for i = 1:length(expH)
+                expSolution={expH{i},expT{i}};
+                
+                verification (testCase, actSolution, expSolution);
+                verifyInstanceOf(testCase, actH, 'double', 'Instances not matching');
+                verifyInstanceOf(testCase, actT , 'double', 'Instances not matching');
+                verifySize(testCase, actH, size(expH{i}), 'Size not matching');
+                verifySize(testCase, actT, size(expT{i}), 'Size not matching');
             end
+        end
+        function testStepPlot(testCase)
+            filePath = fileparts(mfilename('fullpath'));
+            toolPath = fileparts(filePath);
+            load([toolPath '/../benchmarks/iss.mat'])
+            
+            sys = ss(full(A),full(B),full(C),[]);
+            [sys,g] = balreal(sys);
+            sys = modred(ss(sys),g<1e-3)+1;
+            sysSss = sss(sys);
+            sysSssE = sss(sys.A*2,sys.B*2,sys.C,sysSss.D,eye(size(sys.A))*2);                       
+            sys.InputName = {'u1';'u2';'u3';};
+            sys.OutputName = {'y1';'y2';'y3';};
+            sys1_1 = sys(1,1);
+            sys12_3 = sys(1:2,3);
+            sysSS = ss(sys);
+            tFinal = 15;
+            step(sysSss,sysSssE,sys1_1,sys12_3,sysSS,tFinal)
         end
     end
 end
 
 function [] = verification(testCase, actSolution, expSolution)
-verifyEqual(testCase, actSolution,  expSolution,'RelTol',0.1e-6,...
+verifyEqual(testCase, actSolution,  expSolution,'RelTol',0.1e-3,...
     'Difference between actual and expected exceeds relative tolerance');
 end

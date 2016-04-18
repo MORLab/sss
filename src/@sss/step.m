@@ -109,22 +109,28 @@ for i = 1:length(varargin)
     
     % Convert sss to frequency response data model
     if isa(varargin{i},'sss')
-        [TF_,t] = gettf(varargin{i}, t, Opts);
+        [TF_,t_] = gettf(varargin{i}, t, Opts);
         varargin{i} = TF_;
     else
         varargin{i} = ss(varargin{i});
     end
-    Tfinal = max(t(end),Tfinal);
+    Tfinal = max(t_(end),Tfinal);
 end
-
+    
 % Call ss/step
 if nargout==1 && Opts.tf
     varargout{1} = TF_;
 elseif nargout
     [varargout{1},varargout{2},varargout{3},varargout{4}] = step(varargin{:},Tfinal);
+    if ~isempty(t)        
+        varargout{1} = interp1(varargout{2},varargout{1},t,'spline');
+        varargout{2} = t;
+    end
 else
     step(varargin{:},Tfinal);
 end
+
+
 end
 function [TF,ti] = gettf(sys, t, Opts)
 
@@ -137,14 +143,12 @@ if sys.n > Opts.nMin
         [h_,th{i}] = stepLocal(sys_, t, Opts);
         h = [h h_];
     end
-    if isempty(t)
-        tMin = max(cellfun(@min,th));
-        tMax = min(cellfun(@max,th));
-        tN = max(cellfun(@length,th));
-        ti = linspace(tMin,tMax,tN)';
-    else
-        ti = t;
-    end
+    
+    tMin = max(cellfun(@min,th));
+    tMax = min(cellfun(@max,th));
+    tN = max(cellfun(@length,th));
+    ti = linspace(tMin,tMax,tN)';
+   
     for i = 1:size(h,1)
         for j = 1:size(h,2)
             h{i,j} = interp1(th{j},h{i,j},ti');
@@ -170,7 +174,7 @@ end
 function [h,te] = stepLocal(sys, t, Opts)
 x0 = zeros(size(sys.x0));
 optODE = Opts.odeset;
-[A,B,C,D,E] = ssdata(sys);
+[A,B,C,D,E,~] = dssdata(sys);
 
 if ~sys.isDescriptor
     odeFun = @(t,x) A*x+B;
