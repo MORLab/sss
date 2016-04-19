@@ -1,4 +1,4 @@
-function [p, z] = pzmap(sys, varargin)
+function [varargout] = pzmap(varargin)
 % PZMAP - Pole-zero plot of sparse state-space system
 %
 % Syntax:
@@ -67,114 +67,22 @@ function [p, z] = pzmap(sys, varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
-% no, they are not. solve for eigenvalues of system
-p = eig(sys);
+for i = 1:length(varargin)
+    % Set name to input variable name if not specified
+    if isprop(varargin{i},'Name')
+        if isempty(varargin{i}.Name) % Cascaded if is necessary && does not work
+            varargin{i}.Name = inputname(i);
+        end
+    end
     
-% ensure column vector
-if size(p,1)<size(p,2)
-    p=transpose(p);
-end
-
-
-if sys.m==sys.p
-        z=eig(full([sys.A,sys.B;sys.C,sys.D]), ...
-                   [full(sys.E),zeros(sys.n,sys.m);zeros(sys.p,sys.n),zeros(sys.p,sys.m)]);
-else
-    z=zeros(0,1);
-end
-
-% remove zeros at infinity
-z=z(real(-z)<1e11);
-z=z(~isinf(z));
-
-if nargout>0
-    return
-end
-
-% --------------- PLOT ---------------
-
-options=varargin;
-fig_handle=gcf; %generate figure
-
-% set random color if figure is not empty
-if isempty(options)
-    if ~isempty(get(fig_handle, 'Children'))
-        c=rand(3,1); c=c/norm(c);
-        options = {'Color', c};
+    % Convert sss to frequency response data model
+    if isa(varargin{i},'sss')
+        varargin{i} = zpkData(varargin{i}, 8, struct('zpk',true));
     end
 end
-        axes_handle=subplot(1,1,1);
-        box on
-        
-        % plot o for zeros
-        plot_handle=plot(real(z), imag(z), options{:}); 
-        set(plot_handle, 'Marker', 'o', 'LineStyle', 'none');
-        hold on
-        % plot x for poles, remove legend entry
-        plot_handle=plot(real(p), imag(p), options{:});
-        set(plot_handle, 'Marker', 'x', 'LineStyle', 'none');
-        hAnnotation = get(plot_handle,'Annotation');
-        hLegendEntry = get(hAnnotation','LegendInformation');
-        set(hLegendEntry,'IconDisplayStyle','off')
 
-        % determine x and y boundary
-        mni=min(imag([p;z])); mxi=max(imag([p;z]));
-        limy=[mni*1.05,mxi*1.05];
-        if mni*mxi<0 
-            limy = [mni-(mxi-mni)/20 mxi+(mxi-mni)/20];
-        elseif mni*mxi>0 
-            limy = sort([0 1.05*max(abs([mni mxi]))]*sign(mni));
-        elseif mni==0 && mxi==0
-            limy = [-1 1];
-        end
-        if sys.Ts ~= 0 %adjust the y-axis so that the unitary circle is visible
-            if limy(1)>-1
-                limy(1) = -1;
-            end
-            if limy(2)<1
-                limy(2) = 1;
-            end
-        end
-
-        mnr=min(real([p;z])); mxr=max(real([p;z]));
-        limx=[mnr*1.05,mxr*1.05];
-        if mnr*mxr<0 
-            limx = [mnr-(mxr-mnr)/20 mxr+(mxr-mnr)/20];
-        elseif mnr*mxr>0
-            limx = sort([0 1.05*max(abs([mnr mxr]))]*sign(mnr));
-        elseif mnr==0 && mxr==0
-            limx = [-1 1];
-        end 
-        if sys.Ts ~= 0 %adjust the x-axis so that the unitary circle is visible
-            if limx(1)>-1
-                limx(1) = -1;
-            end
-            if limx(2)<1
-                limx(2) = 1;
-            end
-        end
-        % plot dashed axes through origin, remove legend entry
-        plot_handle=plot([0 0],limy,':k');
-        hAnnotation = get(plot_handle,'Annotation');
-        hLegendEntry = get(hAnnotation','LegendInformation');
-        set(hLegendEntry,'IconDisplayStyle','off')
-        plot_handle=plot(limx,[0 0],':k');
-        hAnnotation = get(plot_handle,'Annotation');
-        hLegendEntry = get(hAnnotation','LegendInformation');
-        set(hLegendEntry,'IconDisplayStyle','off')
-        set(axes_handle(1,1), 'XLim', limx, 'YLim', limy);
-        xlabel('Real Axis (seconds^{-1})');
-        ylabel('Imaginary Axis (seconds^{-1}');
-        title('Pole-Zero Map');
-        
-        if sys.Ts ~= 0 %plot unitary circle in case of discrete system
-            r=1; %radius
-            circlePoints=0:0.01:2*pi;
-            plot_handle=plot(r*cos(circlePoints),r*sin(circlePoints),':k');
-        end
-
-% make subplots content of the figure
-set(fig_handle,'UserData',axes_handle)
-
-% avoid output
-clear p z
+if nargout
+    [varargout{1}, varargout{2}]=pzmap(varargin{:});
+else
+    pzmap(varargin{:});
+end
