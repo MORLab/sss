@@ -67,6 +67,13 @@ function [varargout] = pzmap(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
+if isa(varargin{end},'double')
+    k=varargin{end};
+    varargin=varargin(1:end-1);
+else
+    k=6;
+end
+
 for i = 1:length(varargin)
     % Set name to input variable name if not specified
     if isprop(varargin{i},'Name')
@@ -77,7 +84,7 @@ for i = 1:length(varargin)
     
     % Convert sss to frequency response data model
     if isa(varargin{i},'sss')
-        varargin{i} = zpkData(varargin{i}, 8, struct('zpk',true));
+        varargin{i} = zpkData(varargin{i}, k, struct('zpk',true));
     end
 end
 
@@ -85,4 +92,68 @@ if nargout
     [varargout{1}, varargout{2}]=pzmap(varargin{:});
 else
     pzmap(varargin{:});
+end
+end
+
+function [varargout] = zpkData(sys,varargin)
+% Compute largest poles and zeros or zpk object of an LTI system
+
+%% Parse inputs and options
+Def.zpk = false; %return zpk object instead of p and z
+Def.typeZ = 'lm'; %eigs type for zeros
+Def.typeP = 'lm'; %eigs type for poles
+
+for i=1:length(varargin)
+    if isa(varargin{i},'double')
+        k=varargin{i};
+    elseif isa(varargin{i},'struct')
+        Opts=varargin{i};
+    end
+end
+
+% create the options structure
+if ~exist('Opts','var') || isempty(Opts)
+    Opts = Def;
+else
+    Opts = parseOpts(Opts,Def);
+end
+
+if exist('k','var')
+    p=poles(sys,k,struct('type',Opts.typeP));
+    z=zeros(sys,k,struct('type',Opts.typeZ));
+else
+    p=poles(sys,struct('type',Opts.typeP));
+    z=zeros(sys,struct('type',Opts.typeZ));
+end
+
+if Opts.zpk
+    % remove single complex element
+    if ~any(isreal(z))
+        z(abs(imag(z)-imag(sum(z)))<1e-16)=[];
+        p(abs(imag(p)-imag(sum(p)))<1e-16)=[];
+
+        % make sure z and p have the same length
+        z=z(1:min(length(z),length(p)));
+        p=p(1:length(z));
+
+        if length(z)~=k
+            warning(['Because of not complex conjugated values, only ',...
+                num2str(length(p)),' zeros and poles are used in the further computation.']);
+        end
+    end
+    
+    % k is the first nonzero markov parameter
+    if sys.isDae
+        error('Does not work for DAE systems yet.');
+    else
+        k=moments(sys,Inf,2);
+        k=k(:,:,2);
+    end    
+    
+    % create zpk object
+    varargout{1}=zpk(z,p,k);
+else
+    varargout{1}=p;
+    varargout{2}=z;
+end
 end
