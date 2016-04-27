@@ -1,16 +1,5 @@
 classdef testStep < sssTest
-    % testStep - testing of step.m
-    %
-    % Description:
-    %   The function step.m is tested (3 tests) on:
-    %    + Norm of a SISO benchmark system.
-    %    + Norm of a SISO random system.
-    %    + Norm of a MISO random system.
-    %    + Norm of a SIMO random system.
-    %    + Norm of MIMO benchmark system.
-    %    + Norm of a MIMO random system.
-    %    + Verifies for every case the following inputs/outputs (step(sys),
-    %       [h,t]=step(sys)
+    % testStep - testing of step.m   
     %
     % ------------------------------------------------------------------
     %   This file is part of sssMOR, a Sparse State Space, Model Order
@@ -21,8 +10,8 @@ classdef testStep < sssTest
     %                     -> sssMOR@rt.mw.tum.de <-
     % ------------------------------------------------------------------
     % Authors:      Alessandro Castagnotto, Maria Cruz Varona
-    %               Jorge Luiz Moreira Silva
-    % Last Change:  05 Nov 2015
+    %               Jorge Luiz Moreira Silva, Stefan Jaensch
+    % Last Change:  18 Apr 2016
     % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
     % ------------------------------------------------------------------
     
@@ -36,9 +25,7 @@ classdef testStep < sssTest
             [sys,g] = balreal(sys);
             sys = modred(ss(sys),g<1e-3)+1;
             sysSss = sss(sys);
-            sysSssE = sss(sys.A*2,sys.B*2,sys.C,sysSss.D,eye(size(sys.A))*2);                       
-            sysSss = sysSss;
-            sysSssE = sysSssE;
+            sysSssE = sss(sys.A*2,sys.B*2,sys.C,sysSss.D,eye(size(sys.A))*2);                                   
             
             tFinal = 15;
             [actH,actT]=step(ss(sysSss),tFinal);
@@ -46,7 +33,7 @@ classdef testStep < sssTest
             ODEset = odeset;
             ODEset.AbsTol = 1e-7;
             ODEset.RelTol = 1e-7;
-            [expH{end+1},expT{end+1}]=step(sysSss,actT,struct('nMin',0,'odeset',ODEset));
+            [expH{end+1},expT{end+1}]=step(sysSss,actT);
             [expH{end+1},expT{end+1}]=step(sysSss,actT,struct('nMin',0,'ode','ode113','odeset',ODEset));
             [expH{end+1},expT{end+1}]=step(sysSss,actT,struct('nMin',0,'ode','ode15s','odeset',ODEset));
             [expH{end+1},expT{end+1}]=step(sysSss,actT,struct('nMin',0,'ode','ode23','odeset',ODEset));
@@ -72,15 +59,18 @@ classdef testStep < sssTest
             sys = ss(full(A),full(B),full(C),[]);
             [sys,g] = balreal(sys);
             sys = modred(ss(sys),g<1e-3)+1;
-            sysSss = sss(sys);
-            sysSssE = sss(sys.A*2,sys.B*2,sys.C,sysSss.D,eye(size(sys.A))*2);                       
             sys.InputName = {'u1';'u2';'u3';};
             sys.OutputName = {'y1';'y2';'y3';};
+            sys = sss(sys);
+            sysSss = sys;
+            sysSssE = sss(sys.A*2,sys.B*2,sys.C,sysSss.D,eye(size(sys.A))*2);                                   
             sys1_1 = sys(1,1);
             sys12_3 = sys(1:2,3);
             sysSS = ss(sys);
             tFinal = 15;
+            figure            
             step(sysSss,sysSssE,sys1_1,sys12_3,sysSS,tFinal)
+            title('testStepPlot');
         end
     end
 end

@@ -2,8 +2,12 @@ function  varargout = impulse(varargin)
 % IMPULSE - Computes and/or plots the impulse response of a sparse LTI system
 %
 % Syntax:
-%       [h, t] = impulse(sys,t)
-%       [h, t] = impulse(sys,t,opts)
+%   IMPULSE(sys)
+%   IMPULSE(sys,t)
+%   IMPULSE(sys1, sys2, ..., t)
+%   IMPULSE(sys1,'-r',sys2,'--k',t);
+%   [h, t] = IMPULSE(sys,t)
+%   [h, t] = IMPULSE(sys,t,opts)
 %
 % Description:
 %       Computes and/or plots the impulse response of a sparse LTI system
@@ -13,7 +17,16 @@ function  varargout = impulse(varargin)
 %       -sys: an sss-object containing the LTI system
 %       *Optional Input Arguments:*
 %       -t:     vector of time values to plot at
-%       -opts:  plot options. see <a href="matlab:help plot">PLOT</a>
+%       -Opts:  structure with execution parameters
+%			-.odeset:  odeset Settings of ODE solver
+%           -.tolOutput: Terminate if norm(y_-yFinal)/norm(yFinal)<tolOutput with yFinal = C*xFinal+D;
+%						[1e-3]
+%           -.tolState: Terminate if norm(x-xFinal)/norm(xFinal)<tolState with xFinal = -(A\B);
+%						[1e-3]
+%           -.tf: % return [h, t] instead of tf object as in bult-in case
+%                       [0]
+%           -.ode: ode solver;
+%                       [{'ode45'},'ode113','ode15s','ode23'] 
 %
 % Outputs:
 %       -h, t: vectors containing impulse response and time vector
@@ -50,13 +63,30 @@ function  varargout = impulse(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
+
+% Make sure the function is used in a correct way before running compts.
+nSys = 0;
+for iInp = 1:length(varargin)
+    if isa(varargin{iInp},'sss') || isa(varargin{iInp},'ss')  ...
+            || isa(varargin{iInp},'tf') || isa(varargin{iInp},'zpk') ...
+            || isa(varargin{iInp},'frd') || isa(varargin{iInp},'idtf')...
+            || isa(varargin{iInp},'idpoly') || isa(varargin{iInp},'idfrd') ...
+            || isa(varargin{iInp},'idss')
+        nSys = nSys+1;
+    end
+end
+if nSys > 1 && nargout
+    error('sss:impulse:RequiresSingleModelWithOutputArgs',...
+        'The "impulse" command operates on a single model when used with output arguments.');
+end
+
 %% Parse inputs and options
-Def.odeset = odeset;
+Def.odeset = odeset; % Settings of ODE solver
 Def.tolOutput = 1e-3; % Terminate if norm(y_-yFinal)/norm(yFinal)<tolOutput with yFinal = C*xFinal+D;
 Def.tolState = 1e-3; % Terminate if norm(x-xFinal)/norm(xFinal)<tolState with xFinal = -(A\B);
-Def.tf = 0; %return [h, t] instead of tf object as in bult-in case
+Def.tf = 0; % return [h, t] instead of tf object as in bult-in case
 Def.ode = 'ode45';
-Def.nMin = 1000;
+Def.nMin = 1000; % impulse responses for models with n<nMin are calculated with the build in Matlab function
 
 % create the options structure
 if ~isempty(varargin) && isstruct(varargin{end})
@@ -102,14 +132,21 @@ if nargout==1 && Opts.tf
     varargout{1} = TF_;
 elseif nargout
     [varargout{1},varargout{2},varargout{3},varargout{4}] = impulse(varargin{:},Tfinal);   
+    if ~isempty(t)
+        if length(t)==1
+           t = linspace(0,Tfinal,length(varargout{2})); 
+        end
+        varargout{1} = interp1(varargout{2},varargout{1},t,'spline');
+        varargout{2} = t;
+    end
 else
     impulse(varargin{:},Tfinal);
 end
 
 function TF = gettf(sys, t, Opts)
 Opts.tf = 1;
+sys.d = zeros(size(sys.d));
 TF = step(sys,t,Opts);
 
-TF.Ts
 
 
