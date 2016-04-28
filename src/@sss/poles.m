@@ -75,10 +75,14 @@ else
     Opts = parseOpts(Opts,Def);
 end
 
-if exist('k','var')
+if ~exist('k','var')
+    k=6;
+end
+
+if ~sys.isDae
     p = eigs(sys.A,sys.E,k,Opts.type);
 else
-    p = eigs(sys.A,sys.E,6,Opts.type);
+    error('Poles does not work with DAE systems yet.');
 end
 
 % ensure column vector

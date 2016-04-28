@@ -84,6 +84,9 @@ for i = 1:length(varargin)
     
     % Convert sss to frequency response data model
     if isa(varargin{i},'sss')
+        if varargin{i}.isDae
+            error('pzmap does not work with DAE systems yet.');
+        end
         varargin{i} = zpkData(varargin{i}, k, struct('zpk',true));
     end
 end
@@ -118,40 +121,40 @@ else
     Opts = parseOpts(Opts,Def);
 end
 
-if exist('k','var')
-    p=poles(sys,k,struct('type',Opts.typeP));
-    z=zeros(sys,k,struct('type',Opts.typeZ));
-else
-    p=poles(sys,struct('type',Opts.typeP));
-    z=zeros(sys,struct('type',Opts.typeZ));
+if ~exist('k','var')
+    k=6;
 end
 
-if Opts.zpk
-    % remove single complex element
-    if ~any(isreal(z))
-        z(abs(imag(z)-imag(sum(z)))<1e-16)=[];
-        p(abs(imag(p)-imag(sum(p)))<1e-16)=[];
+pTemp=poles(sys,k,struct('type',Opts.typeP));
 
-        % make sure z and p have the same length
-        z=z(1:min(length(z),length(p)));
-        p=p(1:length(z));
 
-        if length(z)~=k
-            warning(['Because of not complex conjugated values, only ',...
-                num2str(length(p)),' zeros and poles are used in the further computation.']);
+p=cell(sys.m,sys.p);
+z=cell(sys.m,sys.p);
+c=zeros(sys.m,sys.p);
+
+for i=1:sys.m
+    for j=1:sys.p
+        % call zeros and moments for each siso transfer function
+        tempSys=sss(sys.A,sys.B(:,j),sys.C(i,:),sys.D(i,j),sys.E);
+        zTemp=zeros(tempSys,k,struct('type',Opts.typeZ));
+
+        % remove single complex element
+        if ~any(isreal(zTemp))
+            zTemp(abs(imag(zTemp)-imag(sum(zTemp)))<1e-16)=[];
+            pTemp(abs(imag(pTemp)-imag(sum(pTemp)))<1e-16)=[];
         end
+
+        p{i,j}=pTemp;
+        z{i,j}=zTemp;
+
+        % gain c is the first nonzero markov parameter
+        ctemp=moments(tempSys,Inf,2);
+        c(i,j)=ctemp(:,:,2);
     end
-    
-    % k is the first nonzero markov parameter
-    if sys.isDae
-        error('Does not work for DAE systems yet.');
-    else
-        k=moments(sys,Inf,2);
-        k=k(:,:,2);
-    end    
-    
-    % create zpk object
-    varargout{1}=zpk(z,p,k);
+end
+
+if Opts.zpk    
+    varargout{1}=zpk(z,p,c);
 else
     varargout{1}=p;
     varargout{2}=z;

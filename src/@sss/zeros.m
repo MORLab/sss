@@ -80,39 +80,50 @@ else
     Opts = parseOpts(Opts,Def);
 end
 
+limit=1e5;
+
+if sys.isDae
+    error('Zeros does not work with DAE systems yet.');
+elseif ~sys.isSiso
+    error('Zeros works only with SISO systems yet.');
+end
+
 % zero function
-if sys.m==sys.p
-%         z=eigs([sys.A,sys.B;sys.C,sys.D],[sys.E,zeros(sys.n,sys.m);zeros(sys.p,sys.n),zeros(sys.p,sys.m)],k,Opts.type);
-    z=eig(full([sys.A,sys.B;sys.C,sys.D]),[full(sys.E),zeros(sys.n,sys.m);zeros(sys.p,sys.n),zeros(sys.p,sys.m)]);
-    tbl=table(-abs(z),z);
-    tbl=sortrows(tbl);
-    z=tbl.z;
-    % remove zeros at infinity
-    z=z(real(-z)<1e11);
-    z=z(~isinf(z));
-    if exist('k','var')
-        switch(Opts.type)
-            case 'lm'
-                z=z(1:k);
-            case 'la'
-                z=z(1:k);
-            case 'sm'
-                z=z(end-k+1:end);
-            case 'sa'
-                z=z(end-k+1:end);
-        end
-    else 
-        switch(Opts.type)
-            case 'lm'
-                z=z(1:6);
-            case 'la'
-                z=z(1:6);
-            case 'sm'
-                z=z(end-6+1:end);
-            case 'sa'
-                z=z(end-6+1:end);
-        end
+if sys.m==sys.p    
+    if ~exist('k','var')
+        k=6;
     end
+    z=eigs([sys.A,sys.B;sys.C,sys.D],[sys.E,zeros(sys.n,sys.m);zeros(sys.p,sys.n),1e-16],k,Opts.type);
+    
+    % remove zeros at infinity
+    z=z(real(z)>-limit);
+    z=z(real(z)<limit);
+    
+    % compare results of eig and eigs
+    zEig=eig(full([sys.A,sys.B;sys.C,sys.D]),[full(sys.E),zeros(sys.n,sys.m);zeros(sys.p,sys.n),zeros(sys.p,sys.m)]);
+    
+    % remove zeros at infinity
+    zEig=zEig(real(zEig)>-limit);
+    zEig=zEig(real(zEig)<limit);
+    
+    z=sort(z,'descend');
+    zEig=sort(zEig,'descend');
+    disp(norm(zEig(1:length(z))-z))
+    
+%     abs(sort(z1(3:k),'descend')-sort(z(3:end),'descend'));
+%     tbl=table(-abs(z),z);
+%     tbl=sortrows(tbl);
+%     z=tbl.z;
+%     switch(Opts.type)
+%         case 'lm'
+%             z=z(1:k);
+%         case 'la'
+%             z=z(1:k);
+%         case 'sm'
+%             z=z(end-k+1:end);
+%         case 'sa'
+%             z=z(end-k+1:end);
+%     end
 else
     z=zeros(0,1);
 end
