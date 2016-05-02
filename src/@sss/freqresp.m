@@ -231,7 +231,11 @@ nOutputs=sys.p;
 resp=zeros(nOutputs,nInputs,numel(wEval));
 respp=zeros(nOutputs,nInputs,numel(wEval));
 resppp=zeros(nOutputs,nInputs,numel(wEval));
-M=repmat(not(M),1,1,numel(wEval));
+if length(M)==1 && M~=0
+    M=zeros(1,1,numel(wEval));
+else
+    M=repmat(not(M),1,1,numel(wEval));
+end
 for i=1:numel(wEval)
     w=wEval(i);
     if isinf(w)
@@ -283,8 +287,10 @@ firstDerivLog(:,:,w)=(0.5*Deriv1(:,:,w)./magnitude(:,:,w)./magnitude(:,:,w));
 secondDerivLog(:,:,w)=0.5*(Deriv2(:,:,w).*magnitude(:,:,w).*magnitude(:,:,w)-Deriv1(:,:,w).^2)./magnitude(:,:,w)./magnitude(:,:,w)./magnitude(:,:,w)./magnitude(:,:,w); 
 
 %The derivatives of transfer functions of inputs and outputs not connected must be zero
-firstDerivLog(M)=0;
-secondDerivLog(M)=0; 
+if nnz(M)
+    firstDerivLog(M)=0;
+    secondDerivLog(M)=0; 
+end
 %Warning to guarantee that any Derivative will get to infinity. 
 if any(any(any(isinf(firstDerivLog)))) || any(any(any(isinf(secondDerivLog))))
     warning('The magnitude values of your transfer function got too small and the results might not be precise');
