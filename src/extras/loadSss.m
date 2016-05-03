@@ -2,12 +2,15 @@ function sys = loadSss(fname,Opts)
 % LOADSSS - Creates an sss-object from .mat file data
 %
 % Syntax:
-%       ssy = LOADSSS(fname,Opts)
+%       sys = LOADSSS(fname,Opts)
 %
 % Description:
 %       loadSss lets you define the path to a .mat file in which 
 %       the system matrices are stored, either in the form (A,B,C,D,E) - 1st
 %       order - or (M,Da,K,B,C) - 2nd order.
+%
+%       If the .mat file already contains a state space model, then loadSss
+%       will load this model to the workspace.
 %
 %       If not all of the matrices are found in the .mat file, following
 %       assumptions will be applied:
@@ -83,56 +86,76 @@ else
     Opts = parseOpts(Opts,Def);
 end
 
-%%  Load information from the .mat file and transform to 1st order
+%%  Load information from the .mat file
 LoadData = load(fname);
 
-if isfield(LoadData,'A') %1st order form
-    if ~isfield(LoadData,'B'), 
-        if ~isfield(LoadData,'b')
-           error('This benchmark does not have a B matrix. Please load it manually'),
-        else
-           LoadData.B = LoadData.b; 
+
+%% Check if the .mat file already contains a sss- or ss- object
+names = fieldnames(LoadData);
+containsSystem = 0;
+for i = 1:size(names,1)
+   objectTemp = getfield(LoadData,names{i,1});
+   if isa(objectTemp,'sss')
+       sys = objectTemp;
+       containsSystem = 1;
+       break;
+   elseif isa(objectTemp,'ss') 
+       sys = sss(objectTemp);
+       containsSystem = 1;
+       break;
+   end
+end
+
+%% Compose and transform the system to first order form
+if containsSystem == 0
+    if isfield(LoadData,'A') %1st order form
+        if ~isfield(LoadData,'B'), 
+            if ~isfield(LoadData,'b')
+               error('This benchmark does not have a B matrix. Please load it manually'),
+            else
+               LoadData.B = LoadData.b; 
+            end
         end
-    end
-    if ~isfield(LoadData,'C')
-        if ~isfield(LoadData,'c')
-            LoadData.C = LoadData.B'; 
-        else
-            LoadData.C = LoadData.c;
+        if ~isfield(LoadData,'C')
+            if ~isfield(LoadData,'c')
+                LoadData.C = LoadData.B'; 
+            else
+                LoadData.C = LoadData.c;
+            end
         end
+        if ~isfield(LoadData,'D'), 
+            LoadData.D = zeros(size(LoadData.C,1),size(LoadData.B,2)); 
+        end
+        if ~isfield(LoadData,'E'), LoadData.E = speye(size(LoadData.A)); end
+
+        sys = sss(LoadData.A,LoadData.B,LoadData.C,LoadData.D,LoadData.E);
+
+    elseif isfield(LoadData,'M') %2nd order form
+    %     msgID = 'sssMOR:loadSss:2ndOrder';
+        warning('The system is in 2nd order form and will be converted to 1st order.')
+
+        if ~isfield(LoadData,'D'), LoadData.D = zeros(size(LoadData.K)); end
+
+        if ~isfield(LoadData,'C')
+           if isfield(LoadData,'c')
+               LoadData.C = LoadData.c;
+           end
+        end
+
+        if ~isfield(LoadData,'B')
+           if isfield(LoadData,'b')
+              LoadData.B = LoadData.b;
+           end
+        end
+
+        %Use the function second2first to create the system
+
+        sys = second2first(LoadData.M,LoadData.D,LoadData.K,LoadData.B,...
+                           zeros(size(LoadData.C)),LoadData.C,Opts);
+
+    else
+        error('loadSss was not able to determine the form of the given system');
     end
-    if ~isfield(LoadData,'D'), 
-        LoadData.D = zeros(size(LoadData.C,1),size(LoadData.B,2)); 
-    end
-    if ~isfield(LoadData,'E'), LoadData.E = speye(size(LoadData.A)); end
-    
-    sys = sss(LoadData.A,LoadData.B,LoadData.C,LoadData.D,LoadData.E);
-    
-elseif isfield(LoadData,'M') %2nd order form
-%     msgID = 'sssMOR:loadSss:2ndOrder';
-    warning('The system is in 2nd order form and will be converted to 1st order.')
-    
-    if ~isfield(LoadData,'D'), LoadData.D = zeros(size(LoadData.K)); end
-    
-    if ~isfield(LoadData,'C')
-       if isfield(LoadData,'c')
-           LoadData.C = LoadData.c;
-       end
-    end
-    
-    if ~isfield(LoadData,'B')
-       if isfield(LoadData,'b')
-          LoadData.B = LoadData.b;
-       end
-    end
-    
-    %Use the function second2first to create the system
-    
-    sys = second2first(LoadData.M,LoadData.D,LoadData.K,LoadData.B,...
-                       zeros(size(LoadData.C)),LoadData.C,Opts);
-    
-else
-    error('loadSss was not able to determine the form of the given system');
 end
 
 %%  Set name for system
@@ -167,5 +190,3 @@ sys.Name = fname;
 %         end
 %     end
 % end
-
-    
