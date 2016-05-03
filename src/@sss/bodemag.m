@@ -66,4 +66,4 @@ else
 end
 
 %% Call ss/bodemag
-sigma(frdObj, options{:});
+bodemag(frdObj, options{:});
