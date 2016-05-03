@@ -271,7 +271,7 @@ end
 end
 
 function init_demo
-    sys = sss(-1,1,1,0,0);
+    sys = sss(-1,1,1);
     norm(sys);
     [init1,init2] = step(sys);
     [init1,init2,init3] = bode(sys,0);
