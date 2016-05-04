@@ -98,6 +98,11 @@ elseif ~isempty(omegaCellIndex) && nnz(omegaCellIndex)
 end
 
 sys= varargin{1};
+
+if sys.isDae == true && isempty(omega)
+    error('freqresp and bode only support DAEs, if a single frequency or a frequency vector omega is parsed to the functions');
+end
+
 nOutputs=sys.p;
 nInputs=sys.m;
 [A,B,C,D,E]=dssdata(sys);

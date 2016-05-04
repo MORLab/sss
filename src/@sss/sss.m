@@ -67,7 +67,6 @@ classdef sss
 %> p = sys.p %get the number of outputs
 %> isMimo = sys.isMimo %get if the system is MIMO
 %> isDae = sys.isDae %get if the system is DAE
-%> sys.bode %call the function bode
 %
 % See Also: 
 %        ss, dss
