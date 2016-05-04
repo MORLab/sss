@@ -48,8 +48,9 @@ end
 
 %%  Initialization
 clearvars -except Opts 
-clc
+
 warning('off','all');
+fprintf('\n\n\n'); 
 fprintf('Starting demo execution: sss_gettingStarted...\n\n'); 
 
 init_demo;
