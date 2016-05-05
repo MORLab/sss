@@ -83,9 +83,13 @@ else
     z=zeros(0,1);
 end
 
-% remove zeros at infinity
-z=z(real(-z)<1e11);
+% remove zeros and poles at infinity
 z=z(~isinf(z));
+z=z(abs(real(z))<1e6);
+
+p=p(~isinf(p));
+p=p(abs(real(p))<1e6);
+
 
 if nargout>0
     return
