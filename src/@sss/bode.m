@@ -59,23 +59,21 @@ function  [varargout] = bode(varargin)
 % ------------------------------------------------------------------
 
 % Make sure the function is used in a correct way before running compts.
-nSys = 0;
 for iInp = 1:length(varargin)
-    if isa(varargin{iInp},'sss')
-        nSys = nSys+1;
-    elseif isa(varargin{iInp},'double') || isa(varargin{iInp},'cell')
+    if isa(varargin{iInp},'double') || isa(varargin{iInp},'cell')
         omegaIndex=iInp;
     end
-end
-if nSys > 1 && nargout
-    error('sss:bode:RequiresSingleModelWithOutputArgs',...
-        'The "bode" command operates on a single model when used with output arguments.');
 end
 
 % Frequency vector
 if exist('omegaIndex','var') && nnz(omegaIndex)
     omega = varargin{omegaIndex};
     varargin(omegaIndex)=[];
+end
+
+if length(varargin) > 1 && nargout
+    error('sss:bode:RequiresSingleModelWithOutputArgs',...
+        'The "bode" command operates on a single model when used with output arguments.');
 end
 
 for i = 1:length(varargin)
