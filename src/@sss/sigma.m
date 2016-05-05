@@ -83,5 +83,5 @@ end
 if nargout>0 %no plot
     [s, omega]=sigma(varargin{1});
 else
-    sigma(frdObj, varargin{:});
+    sigma(varargin{:});
 end
