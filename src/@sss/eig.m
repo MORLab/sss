@@ -92,8 +92,4 @@ else
     end
 end
 
-for i = 1:nargout
-    varargout{i} = varargout{i};
-end
-
 end

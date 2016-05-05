@@ -68,7 +68,7 @@ function varargout = eigs(sys, varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-if any(any(sys.E-speye(size(sys.E))))
+if sys.isDescriptor
     if nargout==1||nargout==0
         [varargout{1}] = eigs(sys.a, sys.e, varargin{:});
     else
@@ -80,13 +80,6 @@ else
     else
         [varargout{1}, varargout{2}, varargout{3}]  = eigs(sys.a, varargin{:});
     end
-end
-
-% Store poles for future computations
-if nargout>1
-    sys.poles = varargout{2};
-else
-    sys.poles = varargout{1};
 end
 
 end
