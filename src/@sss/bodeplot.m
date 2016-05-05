@@ -5,7 +5,7 @@ function  h = bodeplot(varargin)
 %       bodeplot(sys)
 %       bodeplot(sys, omega)
 %       H = bodeplot(sys)
-%       bodemag(sys1, sys2, ..., omega, options)
+%       bodeplot(sys1, sys2, ..., omega, options)
 %
 % Description:
 %       Bode plot of one or several LTI systems. If an output is defined, a handle to
@@ -16,7 +16,7 @@ function  h = bodeplot(varargin)
 %       -sys: an sss-object containing the LTI system
 %       *Optional Input Arguments*
 %       -omega:     vector of frequencies or cell with {wmin,wmax}
-%       -options:   plot options. see <a href="matlab:help plot">PLOT</a>
+%       -options:   plot options. see <a href="matlab:doc plot">PLOT</a>
 %
 % Output Arguments:      
 %       -h:     plot handle
@@ -26,7 +26,7 @@ function  h = bodeplot(varargin)
 %
 %> load CDplayer.mat
 %> sys=sss(A,B,C);
-%> bodemag(sys);
+%> bodeplot(sys);
 %
 % See Also:
 %       bode, freqresp, sigma, bodemag
