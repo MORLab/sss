@@ -122,8 +122,6 @@ for i = 1:length(varargin)
     if isa(varargin{i},'sss')
         [TF_,t_] = gettf(varargin{i}, t, Opts);
         varargin{i} = TF_;
-    else
-        varargin{i} = ss(varargin{i});
     end
     Tfinal = max(t_(end),Tfinal);
 end
