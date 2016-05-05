@@ -31,11 +31,13 @@ function [varargout] = freqresp(varargin)
 %       -Opts:  structure with execution parameters
 %			-.frd:  return frd object;
 %						[{0} / 1]
+%           -.maxPoints: Maximum number of refinement points
+%                       [{1500} / positive integer]
 %       
 % Outputs:      
 %       -G: vector of complex frequency response values
 %       -omega: vector with the frequencies at which the response was computed
-%       - frdData:   a frd object with the frequency response data
+%       -frdData:   a frd object with the frequency response data
 %
 % Examples:
 %       The following code computes the frequency response of the benchmark
@@ -70,7 +72,7 @@ function [varargout] = freqresp(varargin)
 %------------------------------------------------------------------
 
 %% Parse inputs and options
-Def.maxPoints = 1500; % number of refinement points
+Def.maxPoints = 1500; % maximum number of refinement points
 Def.frd = 0; %return magnitude instead of frd object as in bult-in case 
 
 % create the options structure
