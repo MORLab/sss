@@ -33,10 +33,29 @@ classdef testPzmap < sssTest
                 sysSparse=testCase.sysCell{i};
                 sys=ss(sysSparse);
                 [actP,actZ]=pzmap(sysSparse);
-                actPZ={sort(actP),sort(actZ)};
+                
+                % sort with abs values (cplxpair sorts with real values 
+                % -> test of peec fails due to sorting)
+                tbl=table(abs(actP),actP);
+                tbl=sortrows(tbl);
+                actP=tbl.Var1;
+                tbl=table(abs(actZ),actZ);
+                tbl=sortrows(tbl);
+                actZ=tbl.Var1;
+                actPZ={actP,actZ};
+                
+                % call without output arguments
                 pzmap(sysSparse);
+                
+                % built-in
                 [expP,expZ]=pzmap(sys);
-                expPZ={sort(expP),sort(expZ)};
+                tbl=table(abs(expP),expP);
+                tbl=sortrows(tbl);
+                expP=tbl.Var1;
+                tbl=table(abs(expZ),expZ);
+                tbl=sortrows(tbl);
+                expZ=tbl.Var1;
+                expPZ={expP,expZ};
                 verification(testCase, actPZ, expPZ);
                 close all
             end
@@ -45,6 +64,6 @@ classdef testPzmap < sssTest
 end
 
 function [] = verification(testCase, actSolution, expSolution)
-verifyEqual(testCase, actSolution,  expSolution,'RelTol',0.1e-6,...
+verifyEqual(testCase, actSolution,  expSolution,'RelTol',1e-6,'AbsTol',1e-6,...
     'Difference between actual and expected exceeds relative tolerance');
 end
