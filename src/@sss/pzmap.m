@@ -168,7 +168,7 @@ end
         set(hLegendEntry,'IconDisplayStyle','off')
         set(axes_handle(1,1), 'XLim', limx, 'YLim', limy);
         xlabel('Real Axis (seconds^{-1})');
-        ylabel('Imaginary Axis (seconds^{-1}');
+        ylabel('Imaginary Axis (seconds^{-1})');
         title('Pole-Zero Map');
         
         if sys.Ts ~= 0 %plot unitary circle in case of discrete system
