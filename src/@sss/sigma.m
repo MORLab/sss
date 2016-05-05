@@ -1,13 +1,14 @@
-function  [s, omega] = sigma(sys, varargin)
+function  [s, omega] = sigma(varargin)
 % sigma - Plots the singular values of the frequency response of an LTI system
 % 
 % Syntax: 
 %       s = sigma(sys, omega)
 %       [s, omega] = sigma(sys)
-%       [s, omega] = sigma(sys, omega, options)
+%       [s, omega] = sigma(sys1, sys2, ..., omega, options)
 %
 % Description:
-%       Plots the singular values of the frequency response of an LTI system
+%       Plots the singular values of the frequency response of one or 
+%       several  LTI systems
 %
 % Input Arguments:       
 %       *Required Input Arguments*
@@ -51,28 +52,36 @@ function  [s, omega] = sigma(sys, varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-options = {};
-
 %% Evaluate options
-if nargin>1 
-    options = varargin;
-    if isa(varargin{1}, 'double') || isa(varargin{1},'cell')
-        omega = varargin{1}; 
-        options(1) = [];
+omegaIndex=0;
+for i=1:length(varargin)
+    if isa(varargin{i}, 'double')|| isa(varargin{i},'cell')
+        omegaIndex = i;
+        break
     end
 end
 
-%% Get frd object
-if ~exist('omega','var') || isempty(omega)
-    frdObj = freqresp(sys, struct('frd',1));
+if omegaIndex>0
+	omega=varargin{omegaIndex};
+    varargin(omegaIndex)=[];
 else
-    frdObj = freqresp(sys, omega, struct('frd',1));
+    omega=[];
+end
+
+if nargout>0 && length(varargin)>1
+    error('The "sigma" command operates on a single model when used with output arguments.');
+end
+
+%% Get frd object
+for i=1:length(varargin)
+    if isa(varargin{i},'sss')
+        varargin{i} = freqresp(varargin{i}, omega, struct('frd',1));
+    end
 end
 
 %% Call ss/sigma
 if nargout>0 %no plot
-    [s, omega]=sigma(frdObj);
-    return
+    [s, omega]=sigma(varargin{1});
 else
-    sigma(frdObj, options{:});
+    sigma(frdObj, varargin{:});
 end

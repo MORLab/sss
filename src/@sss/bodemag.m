@@ -1,13 +1,13 @@
-function  bodemag(sys, varargin)
+function  bodemag(varargin)
 % bodemag - Bode magnitude plot of an LTI system
 % 
 % Syntax: 
 %       bodemag(sys)
 %       bodemag(sys, omega)
-%       bodemag(sys, omega, options)
+%       bodemag(sys1, sys2, ..., omega, options)
 %
 % Description:
-%       Bode magnitude plot of an LTI system
+%       Bode magnitude plot of one or several LTI systems.
 %
 % Input Arguments:       
 %       *Required Input Arguments*
@@ -47,23 +47,29 @@ function  bodemag(sys, varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-options = {};
 
 %% Evaluate options
-if nargin>1 
-    options = varargin;
-    if isa(varargin{1}, 'double')|| isa(varargin{1},'cell')
-        omega = varargin{1}; 
-        options(1) = [];
+omegaIndex=0;
+for i=1:length(varargin)
+    if isa(varargin{i}, 'double')|| isa(varargin{i},'cell')
+        omegaIndex = i;
+        break
     end
 end
 
-%% Get frd object
-if ~exist('omega','var') || isempty(omega)
-    frdObj = freqresp(sys, struct('frd',1));
+if omegaIndex>0
+	omega=varargin{omegaIndex};
+    varargin(omegaIndex)=[];
 else
-    frdObj = freqresp(sys, omega, struct('frd',1));
+    omega=[];
+end
+
+%% Get frd object
+for i=1:length(varargin)
+    if isa(varargin{i},'sss')
+        varargin{i} = freqresp(varargin{i}, omega, struct('frd',1));
+    end
 end
 
 %% Call ss/bodemag
-bodemag(frdObj, options{:});
+bodemag(varargin{:});
