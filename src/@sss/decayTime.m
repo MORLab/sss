@@ -57,10 +57,10 @@ function tmax = decayTime(sys)
 [res,p]=residue(sys);
 
 % is system stable?
-if any(real(p)>0)
+if any(real(p)>0 & real(p)<1e6) % larger than 0 but, smaller than infinity-threshold
     % no -> tmax=NaN
     tmax=NaN;
-    warning('The system is not stable. The decay time is set to tmax=NaN.');
+    warning('sss:decayTime:UnstableSys','The system is not stable. The decay time is set to tmax=NaN.');
     return
 end
 
