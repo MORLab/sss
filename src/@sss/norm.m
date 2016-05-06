@@ -136,7 +136,7 @@ elseif p==2
                         end
                     end
                     try
-                        if strcmp(Opts.adi,'lyap') || sys.n<100 || sys.isDae
+                        if strcmp(Opts.adi,'lyap') || sys.n<100 || sys.isDae || (~strcmp(Opts.adi,'adi') && sys.n<500)
                             error('lyap');
                         end
                         if isstable(sys)~=1
