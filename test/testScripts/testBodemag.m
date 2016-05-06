@@ -4,8 +4,10 @@ classdef testBodemag < sssTest
         function testCall(testCase)
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
-                bodemag(sys,1:100,'r--');
-                bodemag(sys,{10,100});
+                if ~sys.isDae
+                    bodemag(sys,1:100,'r--');
+                    bodemag(sys,{10,100});
+                end
             end
         end
     end

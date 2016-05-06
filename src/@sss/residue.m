@@ -111,7 +111,7 @@ else
     rcondNumber=rcond(T);
 end
 if rcondNumber<eps
-    warning('Matrix of eigenvectors is close to singular or badly scaled. Results may be inaccurate. RCOND =',num2str(rcondNumber));
+    warning(['Matrix of eigenvectors is close to singular or badly scaled. Results may be inaccurate. RCOND =',num2str(rcondNumber)]);
 end
 B=(sys.E*T)\sys.B;
 C=sys.C*T;

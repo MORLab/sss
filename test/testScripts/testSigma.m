@@ -30,10 +30,11 @@ classdef testSigma < sssTest
         function testBench(testCase)
             for i=1:length(testCase.sysCell)
                 sysSparse=testCase.sysCell{i};
-                disp(sysSparse.Name);
-                [expMag,omega]=sigma(ss(sysSparse));
-                actMag=sigma(sysSparse, omega');
-                verification(testCase, actMag, expMag);
+                if ~sysSparse.isDae
+                    [expMag,omega]=sigma(ss(sysSparse));
+                    actMag=sigma(sysSparse, omega');
+                    verification(testCase, actMag, expMag);
+                end
             end
         end
         function inputFunctionality(testCase)
@@ -41,11 +42,13 @@ classdef testSigma < sssTest
             
             for i=1:length(testCase.sysCell)
                 sys  = testCase.sysCell{i};
-                w = {10,100};
+                if ~sys.isDae
+                    w = {10,100};
 
-                [~,omega] = sigma(sys,w);
-                verifyEqual(testCase,omega(1),w{1},  'Wrong frequency returned');
-                verifyEqual(testCase,omega(end),w{2},'Wrong frequency returned');
+                    [~,omega] = sigma(sys,w);
+                    verifyEqual(testCase,omega(1),w{1},  'Wrong frequency returned');
+                    verifyEqual(testCase,omega(end),w{2},'Wrong frequency returned');
+                end
             end
         end
     end
