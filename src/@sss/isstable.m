@@ -78,7 +78,6 @@ function [isstable,spectralAbscissa] = isstable(sys)
 if sys.n < 100
     %%  For small systems, compute the eigenvalue decomposition directy
     lambda = eig(sys);
-    lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
 else       
     %%  Compute the eigenvalue with largest real part
     try
@@ -89,17 +88,17 @@ else
             try
                 lambda=eigs(sys,1,'lr',struct('tol',1e-4','v0',sys.b));
             catch
-                warning('eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
+                warning('sss:isstable:EigsFailed','eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
                 lambda = eig(sys);
-                lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
             end
         else
-            warning('eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
+            warning('sss:isstable:EigsFailed','eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
             lambda = eig(sys);
-            lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
         end
     end
 end
+lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
+lambda = lambda(abs(real(lambda))<1e6); % infinity-threshold
 spectralAbscissa = max(real(lambda));
 
 %%  Check wether the spectral abscissa is strictly less than zero

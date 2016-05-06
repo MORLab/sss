@@ -5,6 +5,8 @@ classdef testIsstable < sssTest
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
                 
+                warning('off','sss:isstable:EigsFailed');
+                
                 [actB] = isstable(sys);
                 [expB]=isstable(ss(sys));
                 
