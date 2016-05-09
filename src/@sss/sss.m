@@ -377,7 +377,9 @@ classdef sss
             if isequal(sys.isSym,0) || isequal(sys.isSym,1)
                 isSym = sys.isSym;
             else
-                if issymmetric(sys.A) && issymmetric(sys.E)
+%                 if issymmetric(sys.A) && issymmetric(sys.E)
+%                 if norm(sys.A-sys.A.','fro')<1e-6 && norm(sys.E-sys.E.','fro')<1e-6
+                if full(max(max(sys.A-sys.A.')))<1e-6 && full(max(max(sys.E-sys.E.')))<1e-6
                     isSym = 1;
                 else
                     isSym = 0;
