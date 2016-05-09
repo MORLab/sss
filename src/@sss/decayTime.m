@@ -28,11 +28,6 @@ function tmax = decayTime(sys)
 %> sys = sss(A,B,C);
 %> tmax = decayTime(sys)
 %
-%       For an unstable system one gets tmax=NaN:
-%
-%> sys = sss(1,1,1);
-%> tmax = decayTime(sys)
-%
 % See Also:
 %       residue, step, impulse
 %
