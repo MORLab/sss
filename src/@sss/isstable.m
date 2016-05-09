@@ -35,18 +35,18 @@ function [isstable,spectralAbscissa] = isstable(sys)
 %       -spectralAbscissa: i.e. the largest real part of the eigenvalues.
 %
 % Examples:
-%       The following code checks if the benchmark 'CDplayer' is
+%       The following code checks if the benchmark 'building' is
 %       asymptotically stable:
 %
-%> load CDplayer.mat
+%> load building.mat
 %> sys=sss(A,B,C);
 %> [isstab, spectralAbscissa]=isstable(sys)
 %
-%       Another example, this time using the benchmark 'rail_5177' (DSSS,
+%       Another example, this time using the benchmark 'CDplayer' (SSS,
 %       MIMO):
 %
-%> load rail_5177.mat
-%> sys=sss(A,B,C,[],E);
+%> load CDplayer.mat
+%> sys=sss(A,B,C);
 %> isstable(sys)
 %
 % See Also:
