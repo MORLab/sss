@@ -80,5 +80,5 @@ benchmarksSysCell(nLoaded:end)=[];
 warning('on');
 
 % save loaded systems
-save([fullfile(testpath),'\benchmarksSysCell.mat']);
+save(fullfile(fullfile(testpath),'benchmarksSysCell.mat'));
 end
