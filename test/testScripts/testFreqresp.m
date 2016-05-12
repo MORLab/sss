@@ -102,6 +102,17 @@ classdef testFreqresp < sssTest
                 end
             end
         end
+        function testStaticGain(testCase)
+            % test a static gain model
+            sys1=sss([],[],[],5);
+            [actSolution1,omega]=freqresp(sys1);
+            expSolution1=freqresp(ss(sys1),omega);
+            
+            sys2=sss(-speye(3),zeros(3,2),zeros(3),[1,2;3,4;5,6]);
+            [actSolution2,omega]=freqresp(sys2);
+            expSolution2=freqresp(ss(sys2),omega);
+            verification(testCase,{actSolution1,actSolution2},{expSolution1,expSolution2});
+        end
     end
 end
     
