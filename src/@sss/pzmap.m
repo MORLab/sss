@@ -87,7 +87,7 @@ for i = 1:length(varargin)
         if varargin{i}.isDae
             error('pzmap does not work with DAE systems yet.');
         end
-        varargin{i} = zpkData(varargin{i}, k, struct('zpk',true));
+        varargin{i} = zpk(varargin{i}, k, struct('zpk',true));
     end
 end
 
@@ -98,65 +98,4 @@ else
 end
 end
 
-function [varargout] = zpkData(sys,varargin)
-% Compute largest poles and zeros or zpk object of an LTI system
 
-%% Parse inputs and options
-Def.zpk = false; %return zpk object instead of p and z
-Def.typeZ = 'lm'; %eigs type for zeros
-Def.typeP = 'lm'; %eigs type for poles
-
-for i=1:length(varargin)
-    if isa(varargin{i},'double')
-        k=varargin{i};
-    elseif isa(varargin{i},'struct')
-        Opts=varargin{i};
-    end
-end
-
-% create the options structure
-if ~exist('Opts','var') || isempty(Opts)
-    Opts = Def;
-else
-    Opts = parseOpts(Opts,Def);
-end
-
-if ~exist('k','var')
-    k=6;
-end
-
-pTemp=poles(sys,k,struct('type',Opts.typeP));
-
-
-p=cell(sys.m,sys.p);
-z=cell(sys.m,sys.p);
-c=zeros(sys.m,sys.p);
-
-for i=1:sys.m
-    for j=1:sys.p
-        % call zeros and moments for each siso transfer function
-        tempSys=sss(sys.A,sys.B(:,j),sys.C(i,:),sys.D(i,j),sys.E);
-        zTemp=zeros(tempSys,k,struct('type',Opts.typeZ));
-
-        % remove single complex element
-        if ~any(isreal(zTemp))
-            zTemp(abs(imag(zTemp)-imag(sum(zTemp)))<1e-16)=[];
-            pTemp(abs(imag(pTemp)-imag(sum(pTemp)))<1e-16)=[];
-        end
-
-        p{i,j}=pTemp;
-        z{i,j}=zTemp;
-
-        % gain c is the first nonzero markov parameter
-        ctemp=moments(tempSys,Inf,2);
-        c(i,j)=ctemp(:,:,2);
-    end
-end
-
-if Opts.zpk    
-    varargout{1}=zpk(z,p,c);
-else
-    varargout{1}=p;
-    varargout{2}=z;
-end
-end

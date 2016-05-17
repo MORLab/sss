@@ -80,8 +80,6 @@ else
     Opts = parseOpts(Opts,Def);
 end
 
-limit=1e5;
-
 if sys.isDae
     error('Zeros does not work with DAE systems yet.');
 elseif ~sys.isSiso
@@ -93,37 +91,57 @@ if sys.m==sys.p
     if ~exist('k','var')
         k=6;
     end
-    z=eigs([sys.A,sys.B;sys.C,sys.D],[sys.E,zeros(sys.n,sys.m);zeros(sys.p,sys.n),1e-16],k,Opts.type);
     
+    if strcmp(Opts.type,'sm')
+        Opts.type=1e-2;
+        E22=0;
+    elseif strcmp(Opts.type,'lm')
+        E22=1e-16;
+    else %sigma
+        E22=0;
+    end
+    
+    z=eigs([sys.A,sys.B;sys.C,sys.D],[sys.E,zeros(sys.n,sys.m);zeros(sys.p,sys.n),E22],k,Opts.type);
+
     % remove zeros at infinity
-    z=z(real(z)>-limit);
-    z=z(real(z)<limit);
+    z=z(abs(real(z))<1e6);
     
     % compare results of eig and eigs
     zEig=eig(full([sys.A,sys.B;sys.C,sys.D]),[full(sys.E),zeros(sys.n,sys.m);zeros(sys.p,sys.n),zeros(sys.p,sys.m)]);
     
     % remove zeros at infinity
-    zEig=zEig(real(zEig)>-limit);
-    zEig=zEig(real(zEig)<limit);
+    zEig=zEig(abs(real(zEig))<1e6);
     
-    z=sort(z,'descend');
-    zEig=sort(zEig,'descend');
-    disp(norm(zEig(1:length(z))-z))
+    if strcmp(Opts.type,'lm')
+        tbl=table(-abs(z),z);
+        tbl=sortrows(tbl);
+        z=tbl.z;
+        tbl=table(-abs(zEig),zEig);
+        tbl=sortrows(tbl);
+        zEig=tbl.zEig;
+    else
+        tbl=table(abs(z),z);
+        tbl=sortrows(tbl);
+        z=tbl.z;
+        tbl=table(abs(zEig),zEig);
+        tbl=sortrows(tbl);
+        zEig=tbl.zEig;
+    end
     
-%     abs(sort(z1(3:k),'descend')-sort(z(3:end),'descend'));
-%     tbl=table(-abs(z),z);
-%     tbl=sortrows(tbl);
-%     z=tbl.z;
-%     switch(Opts.type)
-%         case 'lm'
-%             z=z(1:k);
-%         case 'la'
-%             z=z(1:k);
-%         case 'sm'
-%             z=z(end-k+1:end);
-%         case 'sa'
-%             z=z(end-k+1:end);
-%     end
+    % remove single complex element (for comparison)
+    if abs(imag(sum(z)))>1e-12
+       z(abs(imag(z)-imag(sum(z)))<1e-16)=[];
+    end
+
+    % display all values if difference is big
+    if norm(zEig(1:size(z,1))-z)>1
+        disp([z,zEig(1:size(z,1))]);
+    end
+    
+    % display difference
+    disp('norm(z_eig-z_eigs):');
+    disp(norm(zEig(1:size(z,1))-z))
+    
 else
     z=zeros(0,1);
 end
