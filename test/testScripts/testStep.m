@@ -72,10 +72,61 @@ classdef testStep < sssTest
             step(sysSss,sysSssE,sys1_1,sys12_3,sysSS,tFinal)
             title('testStepPlot');
         end
+        function testStepBasic(testCase)
+            for i=1:length(testCase.sysCell)
+                sys=testCase.sysCell{i};
+                if sys.isSiso && ~sys.isDae
+                    ODEset = odeset;
+                    ODEset.AbsTol = 1e-10;
+                    ODEset.RelTol = 1e-10;
+                    [actSolution,t]=step(sys,struct('nMin',0,'odeset',ODEset));
+                    expSolution=step(ss(sys),t);
+                    verification(testCase,actSolution,expSolution);
+                end
+            end
+        end
+        function testStepTime(testCase)
+            for i=1:length(testCase.sysCell)
+                sys=testCase.sysCell{i};
+                if sys.isSiso && ~sys.isDae
+                    
+                    ODEset = odeset;
+                    ODEset.AbsTol = 1e-10;
+                    ODEset.RelTol = 1e-10;
+                    
+                    % time vector
+                    t=0.1:0.1:0.5;
+                    [actSolution]=step(sys,t,struct('nMin',0,'odeset',ODEset));
+                    expSolution=step(ss(sys),t);
+                    verification(testCase,actSolution,expSolution);
+
+                    % final time
+                    Tfinal=1;
+                    [~,t]=step(sys,Tfinal,struct('nMin',0,'odeset',ODEset));
+                    verifyEqual(testCase,t(end),Tfinal,'AbsTol',0.05);
+                end
+            end
+        end
+        function testStepMultiSys(testCase)
+            for i=1:length(testCase.sysCell)
+                sys=testCase.sysCell{i};
+                if sys.isSiso && ~sys.isDae
+                    sys2=loadSss('building');
+                    t=0.1:0.1:1;
+                    Tfinal=1;
+                    
+                    % test different calls
+                    step(sys,sys2,t,struct('nMin',0));
+                    step(sys,ss(sys2),Tfinal,struct('nMin',0));
+                    step(sys,sys2,struct('nMin',0));
+                    step(sys,'b-',sys2,'r--',struct('nMin',0));
+                end
+            end
+        end
     end
 end
 
 function [] = verification(testCase, actSolution, expSolution)
-verifyEqual(testCase, actSolution,  expSolution,'RelTol',0.1e-3,...
+verifyEqual(testCase, actSolution,  expSolution,'RelTol',1.1e-3,'AbsTol',1e-3,...
     'Difference between actual and expected exceeds relative tolerance');
 end

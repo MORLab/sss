@@ -72,10 +72,73 @@ classdef testImpulse < sssTest
             impulse(sysSss,sysSssE,sys1_1,sys12_3,sysSS,tFinal)
             title('testImpulsePlot');
         end
+        function testImpulseBasic(testCase)
+            for i=1:length(testCase.sysCell)
+                sys=testCase.sysCell{i};
+                if ~sys.isDae
+                    ODEset = odeset;
+                    ODEset.AbsTol = 1e-12;
+                    ODEset.RelTol = 1e-12;
+                    [actSolution,t]=impulse(sys,struct('nMin',0,'odeset',ODEset));
+
+                    expSolution=impulse(ss(sys),t);
+                    
+                    % impulse response oscillates strongly, so a few
+                    % failing indices are expected (RelTol 0.05, AbsTol
+                    % 1e-4)
+                    failIndices=zeros(size(actSolution,1),1);
+                    for j=1:size(actSolution,1)
+                        for k=1:size(actSolution,2)
+                            for l=1:size(actSolution,3)
+                                if abs(actSolution(j,k,l)-expSolution(j,k,l))/abs(expSolution(j,k,l)) > 0.05 && abs(actSolution(j,k,l)-expSolution(j,k,l))>1e-4
+                                    failIndices(j)=1;
+                                end
+                            end
+                        end
+                    end
+                    verifyLessThanOrEqual(testCase,nnz(failIndices)/size(actSolution,1),0.16);
+                end
+            end
+        end
+        function testImpulseTime(testCase)
+            for i=1:length(testCase.sysCell)
+                sys=testCase.sysCell{i};
+                if ~sys.isDae
+                    
+                    ODEset = odeset;
+                    ODEset.AbsTol = 1e-10;
+                    ODEset.RelTol = 1e-10;
+                    
+                    % time vector
+                    t=0.1:0.1:0.5;
+                    [actSolution]=impulse(sys,t,struct('nMin',0,'odeset',ODEset));
+                    expSolution=impulse(ss(sys),t);
+                    verification(testCase,actSolution(2:end-1,:),expSolution(2:end-1,:));
+
+                    % final time
+                    Tfinal=1;
+                    [~,t]=impulse(sys,Tfinal,struct('nMin',0,'odeset',ODEset));
+                    verifyEqual(testCase,t(end),Tfinal,'AbsTol',0.06);
+                end
+            end
+        end
+        function testImpulseMultiSys(testCase)
+            for i=1:length(testCase.sysCell)
+                sys=testCase.sysCell{i};
+                if ~sys.isDae
+                    sys2=loadSss('building');
+                    sys3=loadSss('CDplayer');
+                    Tfinal=0.5;
+                    
+                    % test call
+                    impulse(sys,'b-',ss(sys2),'r--',sys3,'g:',Tfinal,struct('nMin',0));
+                end
+            end
+        end
     end
 end
 
 function [] = verification(testCase, actSolution, expSolution)
-verifyEqual(testCase, actSolution,  expSolution,'RelTol',0.6e-2,...
+verifyEqual(testCase, actSolution,  expSolution,'RelTol',0.16,'AbsTol',5e-3,...
     'Difference between actual and expected exceeds relative tolerance');
 end
