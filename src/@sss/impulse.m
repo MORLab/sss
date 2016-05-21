@@ -138,9 +138,52 @@ elseif nargout
         end
         varargout{1} = interp1(varargout{2},varargout{1},t,'spline');
         varargout{2} = t;
-    end
+        
+        % output uniform with built-in
+        if length(size(varargout{1}))==2
+            varargout{1}=varargout{1}';
+        end
+        if size(varargout{2},1)<size(varargout{2},2)
+            varargout{2} = varargout{2}';
+        end
+    end 
 else
-    impulse(varargin{:},Tfinal);
+    if ~isempty(t) && ~isscalar(t)
+        % all systems have different Ts (due to ode): plot all systems separately from t(1):sys.Ts:t(end) with impulse-built-in & hold on
+        tfindex=zeros(length(varargin),1);
+        for i=1:length(varargin)
+            if isa(varargin{i},'ss')  ...
+                || isa(varargin{i},'tf') || isa(varargin{i},'zpk') ...
+                || isa(varargin{i},'frd') || isa(varargin{i},'idtf')...
+                || isa(varargin{i},'idpoly') || isa(varargin{i},'idfrd') ...
+                || isa(varargin{i},'idss')
+                tfindex(i)=1;
+            end
+        end
+        
+        for l=1:length(varargin)
+            % find indices of the next two systems
+            i=find(tfindex,1);
+            tfindex(i)=0;
+            if ~isempty(i)
+                ii=find(tfindex,1);
+                if isa(varargin{i},'tf')
+                    ti=round(t(1)/varargin{i}.Ts)*varargin{i}.Ts:varargin{i}.Ts:t(end);
+                else
+                    ti=t;
+                end
+                if isempty(ii)
+                    impulse(varargin{i:end},ti);
+                else
+                    impulse(varargin{i:ii-1},ti);
+                end
+            end
+            hold on;
+        end
+        hold off;
+    else
+        impulse(varargin{:},Tfinal);
+    end 
 end
 
 function TF = gettf(sys, t, Opts)

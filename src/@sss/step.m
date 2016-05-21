@@ -109,6 +109,15 @@ if ~isempty(tIndex) && nnz(tIndex)
     varargin(tIndex)=[];
 end
 
+if ~isempty(t) && isscalar(t)
+    t_=t;
+elseif ~isempty(t)
+    Ts = min(diff(t));
+    t_=0:Ts:t(end);
+else
+    t_=[];
+end
+
 Tfinal = 0;
 for i = 1:length(varargin)
     % Set name to input variable name if not specified
@@ -120,7 +129,7 @@ for i = 1:length(varargin)
     
     % Convert sss to frequency response data model
     if isa(varargin{i},'sss')
-        [TF_,t_] = gettf(varargin{i}, t, Opts);
+        [TF_,t_] = gettf(varargin{i}, t_, Opts);
         varargin{i} = TF_;
     end
     Tfinal = max(t_(end),Tfinal);
@@ -137,9 +146,52 @@ elseif nargout
         end
         varargout{1} = interp1(varargout{2},varargout{1},t,'spline');
         varargout{2} = t;
+        
+        % output uniform with built-in
+        if length(size(varargout{1}))==2
+            varargout{1}=varargout{1}';
+        end
+        if size(varargout{2},1)<size(varargout{2},2)
+            varargout{2} = varargout{2}';
+        end
     end    
 else
-    step(varargin{:},Tfinal);
+    if ~isempty(t) && ~isscalar(t)
+        % all tf systems have different Ts (due to ode): plot all systems separately from t(1):sys.Ts:t(end) with impulse-built-in & hold on
+        tfindex=zeros(length(varargin),1);
+        for i=1:length(varargin)
+            if isa(varargin{i},'ss')  ...
+                || isa(varargin{i},'tf') || isa(varargin{i},'zpk') ...
+                || isa(varargin{i},'frd') || isa(varargin{i},'idtf')...
+                || isa(varargin{i},'idpoly') || isa(varargin{i},'idfrd') ...
+                || isa(varargin{i},'idss')
+                tfindex(i)=1;
+            end
+        end
+        
+        for l=1:length(varargin)
+            % find indices of the next two systems
+            i=find(tfindex,1);
+            tfindex(i)=0;
+            if ~isempty(i)
+                ii=find(tfindex,1);
+                if isa(varargin{i},'tf')
+                    ti=round(t(1)/varargin{i}.Ts)*varargin{i}.Ts:varargin{i}.Ts:t(end);
+                else
+                    ti=t;
+                end
+                if isempty(ii)
+                    step(varargin{i:end},ti);
+                else
+                    step(varargin{i:ii-1},ti);
+                end
+            end
+            hold on;
+        end
+        hold off;
+    else
+        step(varargin{:},Tfinal);
+    end 
 end
 
 
@@ -196,7 +248,7 @@ end
 if ~isempty(t)
     xFinal = [];
     yFinal = [];
-    tSim = [t(1),mean(t),t(end)];
+    tSim = [0,t(end)];
 else
     xFinal = -(A\B);
     yFinal = C*xFinal+D;
