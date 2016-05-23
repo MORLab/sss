@@ -105,43 +105,6 @@ if sys.m==sys.p
 
     % remove zeros at infinity
     z=z(abs(real(z))<1e6);
-    
-    % compare results of eig and eigs
-    zEig=eig(full([sys.A,sys.B;sys.C,sys.D]),[full(sys.E),zeros(sys.n,sys.m);zeros(sys.p,sys.n),zeros(sys.p,sys.m)]);
-    
-    % remove zeros at infinity
-    zEig=zEig(abs(real(zEig))<1e6);
-    
-    if strcmp(Opts.type,'lm')
-        tbl=table(-abs(z),z);
-        tbl=sortrows(tbl);
-        z=tbl.z;
-        tbl=table(-abs(zEig),zEig);
-        tbl=sortrows(tbl);
-        zEig=tbl.zEig;
-    else
-        tbl=table(abs(z),z);
-        tbl=sortrows(tbl);
-        z=tbl.z;
-        tbl=table(abs(zEig),zEig);
-        tbl=sortrows(tbl);
-        zEig=tbl.zEig;
-    end
-    
-    % remove single complex element (for comparison)
-    if abs(imag(sum(z)))>1e-12
-       z(abs(imag(z)-imag(sum(z)))<1e-16)=[];
-    end
-
-    % display all values if difference is big
-    if norm(zEig(1:size(z,1))-z)>1
-        disp([z,zEig(1:size(z,1))]);
-    end
-    
-    % display difference
-    disp('norm(z_eig-z_eigs):');
-    disp(norm(zEig(1:size(z,1))-z))
-    
 else
     z=zeros(0,1);
 end
