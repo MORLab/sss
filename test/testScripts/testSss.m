@@ -56,28 +56,30 @@ suite3=TestSuite.fromFile(fullfile(testPath,'testBodemag.m'));
 suite4=TestSuite.fromFile(fullfile(testPath,'testBodeplot.m'));
 suite5=TestSuite.fromFile(fullfile(testPath,'testConnect.m'));
 suite6=TestSuite.fromFile(fullfile(testPath,'testConnectSss.m'));
-suite7=TestSuite.fromFile(fullfile(testPath,'testDecayTime.m'));
-suite8=TestSuite.fromFile(fullfile(testPath,'testDemoSss.m'));
-suite9=TestSuite.fromFile(fullfile(testPath,'testDiag.m'));
-suite10=TestSuite.fromFile(fullfile(testPath,'testEig.m'));
-suite11=TestSuite.fromFile(fullfile(testPath,'testEigs.m'));
-suite12=TestSuite.fromFile(fullfile(testPath,'testFreqresp.m'));
-suite13=TestSuite.fromFile(fullfile(testPath,'testImpulse.m'));
-suite14=TestSuite.fromFile(fullfile(testPath,'testIssd.m'));
-suite15=TestSuite.fromFile(fullfile(testPath,'testIsstable.m'));
-suite16=TestSuite.fromFile(fullfile(testPath,'testMtimes.m'));
-suite17=TestSuite.fromFile(fullfile(testPath,'testNorm.m'));
-suite18=TestSuite.fromFile(fullfile(testPath,'testPlus.m'));
-suite19=TestSuite.fromFile(fullfile(testPath,'testPzmap.m'));
-suite20=TestSuite.fromFile(fullfile(testPath,'testResidue.m'));
-suite21=TestSuite.fromFile(fullfile(testPath,'testSigma.m'));
-% suite22=TestSuite.fromFile(fullfile(testPath,'testSim.m'));
-suite23=TestSuite.fromFile(fullfile(testPath,'testSs.m'));
-suite24=TestSuite.fromFile(fullfile(testPath,'testStep.m'));
+suite7=TestSuite.fromFile(fullfile(testPath,'testDcGain.m'));
+suite8=TestSuite.fromFile(fullfile(testPath,'testDecayTime.m'));
+suite9=TestSuite.fromFile(fullfile(testPath,'testDemoSss.m'));
+suite10=TestSuite.fromFile(fullfile(testPath,'testDiag.m'));
+suite11=TestSuite.fromFile(fullfile(testPath,'testEig.m'));
+suite12=TestSuite.fromFile(fullfile(testPath,'testEigs.m'));
+suite13=TestSuite.fromFile(fullfile(testPath,'testFreqresp.m'));
+suite14=TestSuite.fromFile(fullfile(testPath,'testImpulse.m'));
+suite15=TestSuite.fromFile(fullfile(testPath,'testIssd.m'));
+suite16=TestSuite.fromFile(fullfile(testPath,'testIsstable.m'));
+suite17=TestSuite.fromFile(fullfile(testPath,'testMtimes.m'));
+suite18=TestSuite.fromFile(fullfile(testPath,'testNorm.m'));
+suite19=TestSuite.fromFile(fullfile(testPath,'testPlus.m'));
+suite20=TestSuite.fromFile(fullfile(testPath,'testPzmap.m'));
+suite21=TestSuite.fromFile(fullfile(testPath,'testResidue.m'));
+suite22=TestSuite.fromFile(fullfile(testPath,'testSigma.m'));
+% suite23=TestSuite.fromFile(fullfile(testPath,'testSim.m'));
+suite24=TestSuite.fromFile(fullfile(testPath,'testSs.m'));
+suite25=TestSuite.fromFile(fullfile(testPath,'testStep.m'));
+
 
 suiteSss=[suite1,suite2,suite3,suite4,suite5,suite6,suite7,suite8,suite9,suite10,...
 suite11,suite12,suite13,suite14,suite15,suite16,suite17,suite18,suite19,...
-suite20, suite21, suite23, suite24];
+suite20, suite21, suite22, suite24, suite25];
 
 %% Run and show results
 result = run(suiteSss);
