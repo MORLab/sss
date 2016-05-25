@@ -82,31 +82,62 @@ end
 
 if sys.isDae
     error('Zeros does not work with DAE systems yet.');
-elseif ~sys.isSiso
-    error('Zeros works only with SISO systems yet.');
+end
+
+if ~exist('k','var')
+    k=6;
+end
+
+if strcmp(Opts.type,'sm')
+    Opts.type=1e-2;
 end
 
 % zero function
-if sys.m==sys.p    
-    if ~exist('k','var')
-        k=6;
-    end
-    
-    if strcmp(Opts.type,'sm')
-        Opts.type=1e-2;
-        E22=0;
-    elseif strcmp(Opts.type,'lm')
-        E22=1e-16;
-    else %sigma
-        E22=0;
-    end
-    
-    z=eigs([sys.A,sys.B;sys.C,sys.D],[sys.E,zeros(sys.n,sys.m);zeros(sys.p,sys.n),E22],k,Opts.type);
+if ~sys.isSiso
+    zTemp=cell(sys.m,sys.p);
+end
 
-    % remove zeros at infinity
-    z=z(abs(real(z))<1e6);
-else
-    z=zeros(0,1);
+for i=1:sys.m
+    for j=1:sys.p
+        % call zeros and moments for each siso transfer function
+
+        if strcmp(Opts.type,'lm')
+            try
+                % sigma & E22=0, does not work with all systems,
+                % result does not contain wrong values, but some values may
+                % not be included
+                temp=eigs(sys,1,'lm'); %sigma = max magnitude pole
+                if abs(temp)<1e6 % not infinity
+                    z=eigs([sys.A,sys.B(:,j);sys.C(i,:),sys.D(i,j)],[sys.E,zeros(sys.n,1);zeros(1,sys.n),0],k,temp);
+                    if ~isreal(temp);
+                        % finds all values with the same sign of the
+                        % imaginary part like temp, add conjugated values to
+                        % result vector
+                        z=[z;conj(z)];
+                    end
+                else % infinity
+                    % eigs fails with Inf or very big values, try infinity
+                    % threshold of 1e6 instead
+                    z=eigs([sys.A,sys.B(:,j);sys.C(i,:),sys.D(i,j)],[sys.E,zeros(sys.n,1);zeros(1,sys.n),0],k,-1e6);
+                end
+            catch
+                % 1e-16 instead of E22, works for all not-dae system, but
+                % result may contain wrong values
+                z=eigs([sys.A,sys.B(:,j);sys.C(i,:),sys.D(i,j)],[sys.E,zeros(sys.n,1);zeros(1,sys.n),1e-16],k,Opts.type);
+            end
+        else
+            z=eigs([sys.A,sys.B(:,j);sys.C(i,:),sys.D(i,j)],[sys.E,zeros(sys.n,1);zeros(1,sys.n),0],k,Opts.type);
+        end
+
+        % remove zeros at infinity
+        z=z(abs(real(z))<1e6); 
+        if ~sys.isSiso
+            zTemp{i,j}=z;
+        end
+    end
+end
+if ~sys.isSiso
+    z=zTemp;
 end
 
 end
