@@ -75,7 +75,7 @@ classdef testStep < sssTest
         function testStepBasic(testCase)
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
-                if sys.isSiso && ~sys.isDae
+                if ~sys.isDae
                     ODEset = odeset;
                     ODEset.AbsTol = 1e-10;
                     ODEset.RelTol = 1e-10;
@@ -88,7 +88,7 @@ classdef testStep < sssTest
         function testStepTime(testCase)
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
-                if sys.isSiso && ~sys.isDae
+                if ~sys.isDae
                     
                     ODEset = odeset;
                     ODEset.AbsTol = 1e-10;
@@ -110,7 +110,7 @@ classdef testStep < sssTest
         function testStepMultiSys(testCase)
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
-                if sys.isSiso && ~sys.isDae
+                if ~sys.isDae
                     sys2=loadSss('building');
                     t=0.1:0.1:1;
                     Tfinal=1;

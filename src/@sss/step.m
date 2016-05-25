@@ -252,7 +252,7 @@ if ~isempty(t)
 else
     xFinal = -(A\B);
     yFinal = C*xFinal+D;
-    tSim = [0,inf];
+    tSim = [0,decayTime(sys)];
     optODE.OutputFcn = @(t,x,flag) outputFcn(t,x,flag,C,D,xFinal...
         ,yFinal,Opts.tolOutput,Opts.tolState);
 end
