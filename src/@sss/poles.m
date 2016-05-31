@@ -80,7 +80,16 @@ if ~exist('k','var')
 end
 
 if ~sys.isDae
-    p = eigs(sys.A,sys.E,k,Opts.type);
+    try
+        [~,p,flag] = eigs(sys.A,sys.E,k,Opts.type);
+        if flag~=0
+            error('Not all eigenvalues converged');
+        end
+        p=diag(p);
+    catch
+        opts.p=4*k; %double number of lanczos vectors (default: 2*k)
+        p = eigs(sys.A,sys.E,k,Opts.type,opts);
+    end
 else
     error('Poles does not work with DAE systems yet.');
 end

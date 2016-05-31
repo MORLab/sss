@@ -5,8 +5,8 @@ classdef testZeros < sssTest
         function testLM(testCase)
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
+
                 if ~sys.isDae
-                    disp([10,sys.Name]);
                     Opts.type='lm';
                     k=20;
                     zAll=zeros(sys,k,Opts);
@@ -39,6 +39,8 @@ classdef testZeros < sssTest
                                 tbl=sortrows(tbl);
                                 zEig=tbl.zEig;
                             end
+                            
+                            %disp([z,zEig(1:size(z,1)),abs(z),abs(zEig(1:size(z,1)))]);
 
                             % remove elements not contained in z from zEig (but all
                             % elements of z must be in zEig)
@@ -57,8 +59,6 @@ classdef testZeros < sssTest
                                     break
                                 end
                             end
-                            
-                           
 
                             disp(['Elements not contained in z: ',num2str(nRemoved)]);
 
@@ -67,7 +67,7 @@ classdef testZeros < sssTest
                                z(abs(imag(z)-imag(sum(z)))<1e-16)=[];
                             end
 
-                            verifyLessThanOrEqual(testCase, nRemoved,4);
+                            verifyLessThanOrEqual(testCase, nRemoved,10);
                             verification(testCase, z,zEig(1:size(z,1)));
                         end
                     end
@@ -78,7 +78,6 @@ classdef testZeros < sssTest
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
                 if ~sys.isDae
-                    disp([10,sys.Name]);
                     Opts.type='sm';
                     k=20;
                     zAll=zeros(sys,k,Opts);

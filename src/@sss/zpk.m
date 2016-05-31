@@ -2,26 +2,25 @@ function [varargout] = zpk(sys,varargin)
 % ZPKDATA - Compute largest poles and zeros or zpk object of an LTI system
 %
 % Syntax:
-%       [p,z] = ZPKDATA(sys)
-%       [p,z] = ZPKDATA(sys,k)
-%       zpkData = ZPKDATA(sys,Opts)
-%       zpkData = ZPKDATA(sys,k,Opts)
+%       [p,z] = ZPK(sys)
+%       [p,z] = ZPK(sys,k)
+%       zpkData = ZPK(sys,Opts)
+%       zpkData = ZPK(sys,k,Opts)
 %
 % Description:
-%       [p,z] = zpkData(sys) returns the 6 system poles and invariant zeros 
+%       [p,z] = zpk(sys) returns the 6 system poles and invariant zeros 
 %       with largest magnitude of in the column vectors p and z of the 
 %       continuous- or discrete-time dynamic system model sys. The type of 
 %       the computed poles and zeros can be specified with the options 
 %       'typeP' and 'typeZ'.
 %
-%       [p,z] = zpkData(sys,k) returns the first k poles and zeros of the system.
+%       [p,z] = zpk(sys,k) returns the first k poles and zeros of the system.
 %       
 %       If the option 'zpk' is true, a zpk-object is returned instead of
 %       the poles and zeros.
 %
-%//Note: The calculation of the invariant zeros is only defined for systems
-%       with the same number of inputs and outputs (m=p). That means that if
-%       zpk is called with a system with m~=p, then z = [ ].
+%//Note: If the system is MIMO, the zeros are computed for all combination
+%       of inputs and outputs and z is returned in a cell array.
 %
 % Input Arguments:
 %       -sys:      an sss-object containing the LTI system
@@ -37,7 +36,7 @@ function [varargout] = zpk(sys,varargin)
 %
 % Output Arguments:
 %       -p: vector containing poles 
-%       -z: vector containing invariant zeros
+%       -z: vector/cell array containing invariant zeros
 %
 % Examples:
 %       Create a random descriptor model (DSSS, SISO) and compute the poles
@@ -109,6 +108,13 @@ p=cell(sys.m,sys.p);
 z=cell(sys.m,sys.p);
 c=zeros(sys.m,sys.p);
 
+if strcmp(Opts.typeZ,'lm')
+    Opts.typeZ=max(pTemp);
+end
+
+% remove single complex element
+pTemp(abs(imag(pTemp)-imag(sum(pTemp)))<1e-16)=[];
+
 for i=1:sys.m
     for j=1:sys.p
         % call zeros and moments for each siso transfer function
@@ -118,7 +124,16 @@ for i=1:sys.m
         % remove single complex element
         if ~any(isreal(zTemp))
             zTemp(abs(imag(zTemp)-imag(sum(zTemp)))<1e-16)=[];
-            pTemp(abs(imag(pTemp)-imag(sum(pTemp)))<1e-16)=[];
+        end
+        
+        if Opts.zpk
+            % remove not converged eigenvalues
+            pTemp(isnan(pTemp))=[];
+            zTemp(isnan(zTemp))=[];
+
+            % avoid infinity
+            pTemp(abs(pTemp)>1e6)=1e6*sign(real(pTemp(abs(pTemp)>1e6)));
+            zTemp(abs(zTemp)>1e6)=1e6*sign(real(zTemp(abs(zTemp)>1e6)));
         end
 
         p{i,j}=pTemp;
@@ -132,6 +147,9 @@ end
 
 if Opts.zpk    
     varargout{1}=zpk(z,p,c);
+elseif sys.isSiso
+    varargout{1}=p{1,1};
+    varargout{2}=z{1,1};
 else
     varargout{1}=p;
     varargout{2}=z;
