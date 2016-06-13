@@ -88,6 +88,7 @@ Def.tolState = 1e-3; % Terminate if norm(x-xFinal)/norm(xFinal)<tolState with xF
 Def.tf = 0; % return [h, t] instead of tf object as in bult-in case
 Def.ode = 'ode45';
 Def.nMin = 1000; % impulse responses for models with n<nMin are calculated with the build in Matlab function
+Def.tsMin = 0;
 
 % create the options structure
 if ~isempty(varargin) && isstruct(varargin{end})
@@ -103,22 +104,13 @@ end
 
 % final Time
 t = [];
+Tfinal=[];
 tIndex = cellfun(@isfloat,varargin);
 if ~isempty(tIndex) && nnz(tIndex)
     t = varargin{tIndex};
     varargin(tIndex)=[];
 end
 
-if ~isempty(t) && isscalar(t)
-    t_=t;
-elseif ~isempty(t)
-    Ts = min(diff(t));
-    t_=0:Ts:t(end);
-else
-    t_=[];
-end
-
-Tfinal = 0;
 for i = 1:length(varargin)
     % Set name to input variable name if not specified
     if isprop(varargin{i},'Name')
@@ -129,113 +121,80 @@ for i = 1:length(varargin)
     
     % Convert sss to frequency response data model
     if isa(varargin{i},'sss')
-        [TF_,t_] = gettf(varargin{i}, t_, Opts);
-        varargin{i} = TF_;
+        [varargin{i},Tmax] = gettf(varargin{i}, t, Opts);
+        Tfinal=max([Tmax,Tfinal]);
     end
-    Tfinal = max(t_(end),Tfinal);
+    
+end
+
+if isempty(t)
+    t=Tfinal;
 end
     
 % Call ss/step
 if nargout==1 && Opts.tf
-    varargout{1} = TF_;
+    varargout{1} = varargin{1};
 elseif nargout
-    [varargout{1},varargout{2},varargout{3},varargout{4}] = step(varargin{:},Tfinal);
-    if ~isempty(t)
-        if length(t)==1
-            t = linspace(0,Tfinal,length(varargout{2}));
-        end
-        varargout{1} = interp1(varargout{2},varargout{1},t,'spline');
-        varargout{2} = t;
-        
-        % output uniform with built-in
-        if length(size(varargout{1}))==2
-            varargout{1}=varargout{1}';
-        end
-        if size(varargout{2},1)<size(varargout{2},2)
-            varargout{2} = varargout{2}';
-        end
-    end    
+    [varargout{1},varargout{2},varargout{3},varargout{4}] = step(varargin{:},t);
 else
-    if ~isempty(t) && ~isscalar(t)
-        % all tf systems have different Ts (due to ode): plot all systems separately from t(1):sys.Ts:t(end) with impulse-built-in & hold on
-        tfindex=zeros(length(varargin),1);
-        for i=1:length(varargin)
-            if isa(varargin{i},'ss')  ...
-                || isa(varargin{i},'tf') || isa(varargin{i},'zpk') ...
-                || isa(varargin{i},'frd') || isa(varargin{i},'idtf')...
-                || isa(varargin{i},'idpoly') || isa(varargin{i},'idfrd') ...
-                || isa(varargin{i},'idss')
-                tfindex(i)=1;
-            end
-        end
-        
-        for l=1:length(varargin)
-            % find indices of the next two systems
-            i=find(tfindex,1);
-            tfindex(i)=0;
-            if ~isempty(i)
-                ii=find(tfindex,1);
-                if isa(varargin{i},'tf')
-                    ti=round(t(1)/varargin{i}.Ts)*varargin{i}.Ts:varargin{i}.Ts:t(end);
-                else
-                    ti=t;
-                end
-                if isempty(ii)
-                    step(varargin{i:end},ti);
-                else
-                    step(varargin{i:ii-1},ti);
-                end
-            end
-            hold on;
-        end
-        hold off;
-    else
-        step(varargin{:},Tfinal);
-    end 
+    step(varargin{:},t);
 end
 
 
 end
-function [TF,ti] = gettf(sys, t, Opts)
-
+function [TF,Tmax] = gettf(sys, t, Opts)
 t = t(:);
+Ts=[];
+Tmax=[];
 if sys.n > Opts.nMin
-    h = [];
-    th = {};
-    for i = 1:sys.m
-        sys_ = truncate(sys,1:sys.p,i);
-        [h_,th{i}] = stepLocal(sys_, t, Opts);
-        h = [h h_];
+    h = cell(sys.p,sys.m);
+    th = cell(sys.p,sys.m);
+    for i = 1:sys.p
+        for j=1:sys.m
+            [h{i,j},th{i,j}] = stepLocal(truncate(sys,i,j), t, Opts);
+        end
     end
-    
-    tMin = max(cellfun(@min,th));
-    tMax = min(cellfun(@max,th));
-    tN = max(cellfun(@length,th));
-    ti = linspace(tMin,tMax,tN)';
-   
-    for i = 1:size(h,1)
-        for j = 1:size(h,2)
-            h{i,j} = interp1(th{j},h{i,j},ti');
+    for k = 1:sys.p
+        for j=1:sys.m
+            Ts = min([diff(th{k,j}),Ts]);
+            Tmax = max([th{k,j},Tmax]);
+        end
+    end
+
+    if ~isscalar(t) && ~isempty(t)
+        Ts=min(diff(t));
+        tSol=0:Ts:t(end);
+    else
+        if Ts<Opts.tsMin
+            Ts=Opts.tsMin;
+        end
+        tSol=0:Ts:Tmax;
+    end
+    for k = 1:sys.p
+        for j=1:sys.m
+            h{k,j} = interp1(th{k,j}, h{k,j}, tSol,'spline');
         end
     end
 else
-    [h_,ti] = step(ss(sys),t);
-    h = {};
-    for i = 1:size(h_,2)
+    [h_,t] = step(ss(sys),t);
+    h = cell(size(h_,2),size(h_,3));
+    for k = 1:size(h_,2)
         for j = 1:size(h_,3)
-            h{i,j} = squeeze(h_(:,i,j))';
+            h{k,j} = squeeze(h_(:,k,j))';
         end
     end
+    Ts = min(diff(t));
+    Tmax=t(end);
 end
 
-Ts = min(diff(ti));
+% create tf object
 h = cellfun(@(x) [x(1) diff(x)],h,'UniformOutput',false);
-
 TF = filt(h,1,Ts,...
     'InputName',sys.InputName,'OutputName',sys.OutputName,...
     'Name',sys.Name);
 end
-function [h,te] = stepLocal(sys, t, Opts)
+
+function [h,te] = stepLocal(sys, t_, Opts)
 x0 = zeros(size(sys.x0));
 optODE = Opts.odeset;
 [A,B,C,D,E,~] = dssdata(sys);
@@ -245,10 +204,8 @@ if ~sys.isDescriptor
 else
     odeFun = @(t,x) E\(A*x+B);
 end
-if ~isempty(t)
-    xFinal = [];
-    yFinal = [];
-    tSim = [0,t(end)];
+if ~isempty(t_)
+    tSim = [0,t_(end)];
 else
     xFinal = -(A\B);
     yFinal = C*xFinal+D;
@@ -273,16 +230,13 @@ switch Opts.ode
             'Implemented solvers are: ode113, ode15s, ode23, ode45'])
 end
 
-
-h = mat2cell(h,size(h,1),ones(1,size(h,2)));
-h = h';
     function [value,isterminal,direction]  = eventsFcnT(t,x,C,D)
         value = 1;
         isterminal = 0;
         direction = [];
         y_ = full(C*x+D);
-        h = [h; y_'];
-        te = [te; t];
+        h = [h, y_'];
+        te = [te, t];
     end
 end
 function status = outputFcn(t,x,flag,C,D,xFinal,yFinal,tolOutput,tolState)
@@ -301,4 +255,3 @@ if ~isempty(xFinal)
     end
 end
 end
-

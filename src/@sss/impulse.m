@@ -87,6 +87,7 @@ Def.tolState = 1e-3; % Terminate if norm(x-xFinal)/norm(xFinal)<tolState with xF
 Def.tf = 0; % return [h, t] instead of tf object as in bult-in case
 Def.ode = 'ode45';
 Def.nMin = 1000; % impulse responses for models with n<nMin are calculated with the build in Matlab function
+Def.tsMin = 0; 
 
 % create the options structure
 if ~isempty(varargin) && isstruct(varargin{end})
@@ -101,13 +102,13 @@ end
 
 % final Time
 t = [];
+Tfinal=[];
 tIndex = cellfun(@isfloat,varargin);
 if ~isempty(tIndex) && nnz(tIndex)
     t = varargin{tIndex};
     varargin(tIndex)=[];
 end
 
-Tfinal = 0;
 for i = 1:length(varargin)
     % Set name to input variable name if not specified
     if isprop(varargin{i},'Name')
@@ -117,24 +118,38 @@ for i = 1:length(varargin)
     end
     
     % Convert sss to frequency response data model
-    if isa(varargin{i},'sss')
-        [TF_] = gettf(varargin{i}, t,Opts);
-        varargin{i} = TF_;
-        % get length of impulse response
-        tMax_ = max(cellfun(@length,TF_.num(:)))*TF_.Ts;
-        Tfinal = max(tMax_,Tfinal);
+    if isa(varargin{i},'sss')        
+        if isempty(t) || isscalar(t)
+            [varargin{i},Tmax] = gettf(varargin{i}, t, Opts);
+            Tfinal=max([Tmax,Tfinal]);
+        else
+            Ts=min(diff(t));
+            [h,th] = getht(varargin{i}, t(end),Opts);
+            g=cell(varargin{i}.p,varargin{i}.m);
+            for k=1:varargin{i}.p
+                for j=1:varargin{i}.m
+                    g{k,j}=Ts*interp1(th,[h(1,k,j),diff(h(:,k,j)')]/(th(2)-th(1)),0:Ts:t(end));
+                    g{k,j}(isnan(g{k,j}))=[];
+                end
+            end
+            varargin{i}=filt(g,1,Ts);
+        end
     end
     
+end
+
+if isempty(t)
+    t=Tfinal;
 end
 
 % Call ss/impulse
 if nargout==1 && Opts.tf
     varargout{1} = TF_;
 elseif nargout
-    [varargout{1},varargout{2},varargout{3},varargout{4}] = impulse(varargin{:},Tfinal);   
+    [varargout{1},varargout{2},varargout{3},varargout{4}] = impulse(varargin{:},t(end));   
     if ~isempty(t)
         if length(t)==1
-           t = linspace(0,Tfinal,length(varargout{2})); 
+           t = linspace(0,t(end),length(varargout{2})); 
         end
         varargout{1} = interp1(varargout{2},varargout{1},t,'spline');
         varargout{2} = t;
@@ -148,48 +163,19 @@ elseif nargout
         end
     end 
 else
-    if ~isempty(t) && ~isscalar(t)
-        % all systems have different Ts (due to ode): plot all systems separately from t(1):sys.Ts:t(end) with impulse-built-in & hold on
-        tfindex=zeros(length(varargin),1);
-        for i=1:length(varargin)
-            if isa(varargin{i},'ss')  ...
-                || isa(varargin{i},'tf') || isa(varargin{i},'zpk') ...
-                || isa(varargin{i},'frd') || isa(varargin{i},'idtf')...
-                || isa(varargin{i},'idpoly') || isa(varargin{i},'idfrd') ...
-                || isa(varargin{i},'idss')
-                tfindex(i)=1;
-            end
-        end
-        
-        for l=1:length(varargin)
-            % find indices of the next two systems
-            i=find(tfindex,1);
-            tfindex(i)=0;
-            if ~isempty(i)
-                ii=find(tfindex,1);
-                if isa(varargin{i},'tf')
-                    ti=round(t(1)/varargin{i}.Ts)*varargin{i}.Ts:varargin{i}.Ts:t(end);
-                else
-                    ti=t;
-                end
-                if isempty(ii)
-                    impulse(varargin{i:end},ti);
-                else
-                    impulse(varargin{i:ii-1},ti);
-                end
-            end
-            hold on;
-        end
-        hold off;
-    else
-        impulse(varargin{:},Tfinal);
-    end 
+    impulse(varargin{:},t);
 end
 
-function TF = gettf(sys, t, Opts)
+function [TF,tMax] = gettf(sys, t, Opts)
 Opts.tf = 1;
 sys.d = zeros(size(sys.d));
 TF = step(sys,t,Opts);
+tMax = max(cellfun(@length,TF.num(:)))*TF.Ts;
+
+function [h,t] = getht(sys, te, Opts)
+Opts.tf = 0;
+sys.d = zeros(size(sys.d));
+[h,t] = step(sys,te,Opts);
 
 
 

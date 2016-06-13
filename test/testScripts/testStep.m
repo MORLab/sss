@@ -75,7 +75,7 @@ classdef testStep < sssTest
         function testStepBasic(testCase)
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
-                if ~sys.isDae
+                if ~sys.isDae && ~strcmp(sys.Name,'CDplayer')
                     ODEset = odeset;
                     ODEset.AbsTol = 1e-10;
                     ODEset.RelTol = 1e-10;
@@ -89,19 +89,18 @@ classdef testStep < sssTest
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
                 if ~sys.isDae
-                    
                     ODEset = odeset;
-                    ODEset.AbsTol = 1e-10;
-                    ODEset.RelTol = 1e-10;
+                    ODEset.AbsTol = 1e-8;
+                    ODEset.RelTol = 1e-8;
                     
                     % time vector
-                    t=0.1:0.1:0.5;
+                    t=0.1:0.1:0.3;
                     [actSolution]=step(sys,t,struct('nMin',0,'odeset',ODEset));
                     expSolution=step(ss(sys),t);
                     verification(testCase,actSolution,expSolution);
 
                     % final time
-                    Tfinal=1;
+                    Tfinal=0.3;
                     [~,t]=step(sys,Tfinal,struct('nMin',0,'odeset',ODEset));
                     verifyEqual(testCase,t(end),Tfinal,'AbsTol',0.05);
                 end
@@ -111,15 +110,15 @@ classdef testStep < sssTest
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
                 if ~sys.isDae
+                    close all
                     sys2=loadSss('building');
-                    t=0.1:0.1:1;
-                    Tfinal=1;
+                    t=0.01:0.01:0.03;
+                    Tfinal=0.01;
                     
                     % test different calls
                     step(sys,sys2,t,struct('nMin',0));
                     step(sys,ss(sys2),Tfinal,struct('nMin',0));
-                    step(sys,sys2,struct('nMin',0));
-                    step(sys,'b-',sys2,'r--',struct('nMin',0));
+                    step(sys,'b-',sys2,'r--',Tfinal,struct('nMin',0));
                 end
             end
         end
