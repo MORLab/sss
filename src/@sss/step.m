@@ -4,11 +4,15 @@ function  varargout = step(varargin)
 % Syntax:
 %   STEP(sys)
 %   STEP(sys,t)
+%   STEP(sys,Tfinal)
 %   STEP(sys1, sys2, ..., t)
+%   STEP(sys1, sys2, ..., Tfinal)
 %   STEP(sys1,'-r',sys2,'--k',t);
+%   STEP(sys1,'-r',sys2,'--k',Tfinal)
 %   [h, t] = STEP(sys)
 %   [h, t] = STEP(sys, t)
-%   [h, t] = STEP(sys, t, opts)
+%   [h, t] = STEP(sys, Tfinal)
+%   [h, t] = STEP(sys, ..., Opts)
 %
 % Description:
 %       step(sys) plots the step response of the sparse LTI system sys
@@ -22,19 +26,26 @@ function  varargout = step(varargin)
 %       -sys: an sss-object containing the LTI system
 %       *Optional Input Arguments:*
 %       -t:     vector of time values to plot at
+%       -Tfinal: end time of step response
 %       -Opts:  structure with execution parameters
 %			-.odeset:  odeset Settings of ODE solver
 %           -.tolOutput: Terminate if norm(y_-yFinal)/norm(yFinal)<tolOutput with yFinal = C*xFinal+D;
-%						[1e-3]
+%						[1e-3 / positive float]
 %           -.tolState: Terminate if norm(x-xFinal)/norm(xFinal)<tolState with xFinal = -(A\B);
-%						[1e-3]
-%           -.tf: % return [h, t] instead of tf object as in bult-in case
-%                       [0]
+%						[1e-3 / positive float]
+%           -.tf: return tf object
+%                       [{0} / 1]
 %           -.ode: ode solver;
-%                       [{'ode45'},'ode113','ode15s','ode23'] 
+%                       [{'ode45'} / 'ode113' / 'ode15s' / 'ode23'] 
+%           -.tsMin: minimum sample time if no time vector is specified
+%                       [{0} / positive float]
+%           -.htOde: return ode output [h,t] at irregularly spaced t
+%                       [{0} / 1]
 % 
 % Output Arguments:
 %       -h, t: vectors containing step response and time vector
+%       -tf: discrete time tf object of step response
+%
 % Examples:
 %       The following code plots the step response of the benchmark
 %       'CDplayer' (SSS, MIMO):
@@ -61,7 +72,7 @@ function  varargout = step(varargin)
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  10 Nov 2015
+% Last Change:  14 Jun 2016
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
@@ -89,6 +100,7 @@ Def.tf = 0; % return [h, t] instead of tf object as in bult-in case
 Def.ode = 'ode45';
 Def.nMin = 1000; % impulse responses for models with n<nMin are calculated with the build in Matlab function
 Def.tsMin = 0;
+Def.htOde = 0; % return directly [h,t] from ode (t is not linearly spaced)
 
 % create the options structure
 if ~isempty(varargin) && isstruct(varargin{end})
@@ -121,10 +133,20 @@ for i = 1:length(varargin)
     
     % Convert sss to frequency response data model
     if isa(varargin{i},'sss')
-        [varargin{i},Tmax] = gettf(varargin{i}, t, Opts);
-        Tfinal=max([Tmax,Tfinal]);
+        if Opts.htOde==0
+            [varargin{i},Tmax] = gettf(varargin{i}, t, Opts);
+            Tfinal=max([Tmax,Tfinal]);
+        else
+            [varargin{i},th] = getht(varargin{i}, t, Opts);
+        end
     end
     
+end
+
+if Opts.htOde
+    varargout{1}=varargin{1};
+    varargout{2}=th;
+    return;
 end
 
 if isempty(t)
@@ -192,6 +214,26 @@ h = cellfun(@(x) [x(1) diff(x)],h,'UniformOutput',false);
 TF = filt(h,1,Ts,...
     'InputName',sys.InputName,'OutputName',sys.OutputName,...
     'Name',sys.Name);
+end
+
+function [h,th] = getht(sys, t, Opts)
+t = t(:);
+h = cell(sys.p,sys.m);
+th = cell(sys.p,sys.m);
+if sys.n > Opts.nMin
+    for i = 1:sys.p
+        for j=1:sys.m
+            [h{i,j},th{i,j}] = stepLocal(truncate(sys,i,j), t, Opts);
+        end
+    end
+else
+    for i = 1:sys.p
+        for j=1:sys.m
+            [h{i,j},th{i,j}] = step(truncate(sys,i,j), t);
+        end
+    end
+    
+end
 end
 
 function [h,te] = stepLocal(sys, t_, Opts)

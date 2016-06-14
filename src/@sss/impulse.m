@@ -4,10 +4,14 @@ function  varargout = impulse(varargin)
 % Syntax:
 %   IMPULSE(sys)
 %   IMPULSE(sys,t)
+%   IMPULSE(sys,Tfinal)
 %   IMPULSE(sys1, sys2, ..., t)
-%   IMPULSE(sys1,'-r',sys2,'--k',t);
+%   IMPULSE(sys1, sys2, ..., Tfinal)
+%   IMPULSE(sys1,'-r',sys2,'--k',t)
+%   IMPULSE(sys1,'-r',sys2,'--k',Tfinal)
 %   [h, t] = IMPULSE(sys,t)
-%   [h, t] = IMPULSE(sys,t,opts)
+%   [h, t] = IMPULSE(sys,Tfinal)
+%   [h, t] = IMPULSE(sys,...,Opts)
 %
 % Description:
 %       Computes and/or plots the impulse response of a sparse LTI system
@@ -17,19 +21,23 @@ function  varargout = impulse(varargin)
 %       -sys: an sss-object containing the LTI system
 %       *Optional Input Arguments:*
 %       -t:     vector of time values to plot at
+%       -Tfinal: end time of impulse response
 %       -Opts:  structure with execution parameters
 %			-.odeset:  odeset Settings of ODE solver
 %           -.tolOutput: Terminate if norm(y_-yFinal)/norm(yFinal)<tolOutput with yFinal = C*xFinal+D;
-%						[1e-3]
+%						[1e-3 / positive float]
 %           -.tolState: Terminate if norm(x-xFinal)/norm(xFinal)<tolState with xFinal = -(A\B);
-%						[1e-3]
-%           -.tf: % return [h, t] instead of tf object as in bult-in case
-%                       [0]
+%						[1e-3 / positive float]
+%           -.tf: return tf object
+%                       [{0} / 1]
 %           -.ode: ode solver;
-%                       [{'ode45'},'ode113','ode15s','ode23'] 
+%                       [{'ode45'} / 'ode113' / 'ode15s' / 'ode23'] 
+%           -.tsMin: minimum sample time if no time vector is specified
+%                       [{0} / positive float]
 %
 % Outputs:
 %       -h, t: vectors containing impulse response and time vector
+%       -tf: discrete time tf object of step response
 %
 % Examples:
 %       The following code computes the impulse response of the benchmark
@@ -59,7 +67,7 @@ function  varargout = impulse(varargin)
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  10 Nov 2015
+% Last Change:  14 Jun 2016
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
@@ -128,8 +136,12 @@ for i = 1:length(varargin)
             g=cell(varargin{i}.p,varargin{i}.m);
             for k=1:varargin{i}.p
                 for j=1:varargin{i}.m
-                    g{k,j}=Ts*interp1(th,[h(1,k,j),diff(h(:,k,j)')]/(th(2)-th(1)),0:Ts:t(end));
-                    g{k,j}(isnan(g{k,j}))=[];
+                    if size(h{k,j},1)>size(h{k,j},2)
+                        h{k,j}=h{k,j}';
+                        th{k,j}=th{k,j}';
+                    end
+                    g{k,j}=Ts*interp1(th{k,j}(1:end-1)+diff(th{k,j})/2,diff(h{k,j})./diff(th{k,j}),0:Ts:t(end));
+                    g{k,j}(isnan(g{k,j}))=0;
                 end
             end
             varargin{i}=filt(g,1,Ts);
@@ -167,13 +179,15 @@ else
 end
 
 function [TF,tMax] = gettf(sys, t, Opts)
-Opts.tf = 1;
+Opts.tf = true;
+Opts.htOde = false;
 sys.d = zeros(size(sys.d));
 TF = step(sys,t,Opts);
 tMax = max(cellfun(@length,TF.num(:)))*TF.Ts;
 
 function [h,t] = getht(sys, te, Opts)
-Opts.tf = 0;
+Opts.tf = false;
+Opts.htOde = true;
 sys.d = zeros(size(sys.d));
 [h,t] = step(sys,te,Opts);
 

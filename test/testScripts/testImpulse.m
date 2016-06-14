@@ -116,7 +116,7 @@ classdef testImpulse < sssTest
                     Tfinal=0.05;
                     
                     % test call
-                    impulse(sys,'b-',ss(sys2),'r--',sys3,'g:',Tfinal,struct('nMin',0));
+                    impulse(sys,'b-',ss(sys2),'r--',sys3,'g:',Tfinal,struct('nMin',0,'tsMin',1e-3));
                 end
             end
         end

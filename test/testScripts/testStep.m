@@ -116,9 +116,9 @@ classdef testStep < sssTest
                     Tfinal=0.01;
                     
                     % test different calls
-                    step(sys,sys2,t,struct('nMin',0));
-                    step(sys,ss(sys2),Tfinal,struct('nMin',0));
-                    step(sys,'b-',sys2,'r--',Tfinal,struct('nMin',0));
+                    step(sys,sys2,t,struct('nMin',0,'tsMin',1e-3));
+                    step(sys,ss(sys2),Tfinal,struct('nMin',0,'tsMin',1e-3));
+                    step(sys,'b-',sys2,'r--',Tfinal,struct('nMin',0,'tsMin',1e-3));
                 end
             end
         end
