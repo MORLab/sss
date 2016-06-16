@@ -34,7 +34,7 @@ function [issd, numericalAbscissa] = issd(sys)
 %> clear all;
 %> load CDplayer.mat
 %> sys=sss(A,B,C);
-%> [issd, numericalAbscissa]=issd(sys);
+%> [issd, numericalAbscissa]=issd(sys)
 %	
 % See Also:
 %       ispd, eigs, chol, sparse

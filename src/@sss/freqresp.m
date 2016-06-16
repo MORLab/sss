@@ -31,11 +31,13 @@ function [varargout] = freqresp(varargin)
 %       -Opts:  structure with execution parameters
 %			-.frd:  return frd object;
 %						[{0} / 1]
+%           -.maxPoints: Maximum number of refinement points
+%                       [{1500} / positive integer]
 %       
 % Outputs:      
 %       -G: vector of complex frequency response values
 %       -omega: vector with the frequencies at which the response was computed
-%       - frdData:   a frd object with the frequency response data
+%       -frdData:   a frd object with the frequency response data
 %
 % Examples:
 %       The following code computes the frequency response of the benchmark
@@ -70,7 +72,7 @@ function [varargout] = freqresp(varargin)
 %------------------------------------------------------------------
 
 %% Parse inputs and options
-Def.maxPoints = 1500; % number of refinement points
+Def.maxPoints = 1500; % maximum number of refinement points
 Def.frd = 0; %return magnitude instead of frd object as in bult-in case 
 
 % create the options structure
@@ -98,6 +100,11 @@ elseif ~isempty(omegaCellIndex) && nnz(omegaCellIndex)
 end
 
 sys= varargin{1};
+
+if sys.isDae == true && isempty(omega)
+    error('freqresp and bode only support DAEs, if a single frequency or a frequency vector omega is parsed to the functions');
+end
+
 nOutputs=sys.p;
 nInputs=sys.m;
 [A,B,C,D,E]=dssdata(sys);
@@ -112,22 +119,41 @@ sys.E = E(reOrder,reOrder);
 %Verifying relation between Inputs and Outputs
 M=InputOutputRelation(sys,reOrderMatrix);
 
-if not(exist('omega','var')) || isempty(omega)
-    if any(any(M))
-        %Finding mininum and maximum frequencies
+if ~any(any(M))
+    %Disconnected, but static gain
+    if not(exist('omega','var')) || isempty(omega)
         if isempty(omegaCellIndex) || ~nnz(omegaCellIndex)
-            minW=findminW(sys,M);
-            maxW=findmaxW(sys,M);
+            maxW=1;
+            minW=0;
         end
-        %Compute first points of frequency response
         qttyPoints=ceil(log(10^(maxW-minW))/log(2))+1;
-        omega=logspace(minW,maxW,qttyPoints)'; %w should be a column according to built-in MATLAB function
-        [firstDerivLog,secondDerivLog,magnitude,resp]=ComputeFreqResp(sys,omega*1i,M);
-        %Refine the frequency response points
-        [G,omega]=FreqRefinement(sys,omega,firstDerivLog,secondDerivLog,magnitude,resp,M,Opts);
+        omega=logspace(minW,maxW,qttyPoints)';
     else
-        error('All the inputs of the system are disconnected to all outputs');
+        %make sure it's a column vector
+        if size(omega,2)>size(omega,1)
+            omega = omega.';
+        end
     end
+    G=zeros(nOutputs,nInputs,size(omega,1));
+    for i=1:nOutputs
+        for j=1:nInputs
+            G(i,j,:)=ones(size(omega,1),1)*sys.D(i,j);
+        end
+    end
+    
+elseif not(exist('omega','var')) || isempty(omega)
+    %Finding mininum and maximum frequencies
+    if isempty(omegaCellIndex) || ~nnz(omegaCellIndex)
+        minW=findminW(sys,M);
+        maxW=findmaxW(sys,M);
+    end
+    %Compute first points of frequency response
+    qttyPoints=ceil(log(10^(maxW-minW))/log(2))+1;
+    omega=logspace(minW,maxW,qttyPoints)'; %w should be a column according to built-in MATLAB function
+    [firstDerivLog,secondDerivLog,magnitude,resp]=ComputeFreqResp(sys,omega*1i,M);
+    %Refine the frequency response points
+    [G,omega]=FreqRefinement(sys,omega,firstDerivLog,secondDerivLog,magnitude,resp,M,Opts);
+    
 else
     %%  Compute the value of the transfer function at selected freq.
     %make sure it's a column vector
@@ -231,7 +257,11 @@ nOutputs=sys.p;
 resp=zeros(nOutputs,nInputs,numel(wEval));
 respp=zeros(nOutputs,nInputs,numel(wEval));
 resppp=zeros(nOutputs,nInputs,numel(wEval));
-M=repmat(not(M),1,1,numel(wEval));
+if length(M)==1 && nnz(M)
+    M=zeros(1,1,numel(wEval));
+else
+    M=repmat(not(M),1,1,numel(wEval));
+end
 for i=1:numel(wEval)
     w=wEval(i);
     if isinf(w)
@@ -283,8 +313,10 @@ firstDerivLog(:,:,w)=(0.5*Deriv1(:,:,w)./magnitude(:,:,w)./magnitude(:,:,w));
 secondDerivLog(:,:,w)=0.5*(Deriv2(:,:,w).*magnitude(:,:,w).*magnitude(:,:,w)-Deriv1(:,:,w).^2)./magnitude(:,:,w)./magnitude(:,:,w)./magnitude(:,:,w)./magnitude(:,:,w); 
 
 %The derivatives of transfer functions of inputs and outputs not connected must be zero
-firstDerivLog(M)=0;
-secondDerivLog(M)=0; 
+if nnz(M)
+    firstDerivLog(M)=0;
+    secondDerivLog(M)=0; 
+end
 %Warning to guarantee that any Derivative will get to infinity. 
 if any(any(any(isinf(firstDerivLog)))) || any(any(any(isinf(secondDerivLog))))
     warning('The magnitude values of your transfer function got too small and the results might not be precise');

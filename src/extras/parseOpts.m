@@ -22,7 +22,7 @@ function Opts = parseOpts(Opts,Def)
 %       structures:
 %
 %> Opts=struct('field1','value1Opts');
-%> Def=struct('field1','value1Def',field2','value2Def');
+%> Def=struct('field1','value1Def','field2','value2Def');
 %> Opts=parseOpts(Opts,Def);
 %
 %------------------------------------------------------------------

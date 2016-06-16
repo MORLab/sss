@@ -67,7 +67,6 @@ classdef sss
 %> p = sys.p %get the number of outputs
 %> isMimo = sys.isMimo %get if the system is MIMO
 %> isDae = sys.isDae %get if the system is DAE
-%> sys.bode %call the function bode
 %
 % See Also: 
 %        ss, dss
@@ -302,6 +301,8 @@ classdef sss
             else
                 if (size(E) ~= size(sys.A))
                     error('E and A must have the same size.')
+                elseif nnz(E)==0
+                    error('E matrix must not be zero.');
                 end
                 % check whether descriptor matrix is not unity
                 if any(any(E-speye(size(E))))
@@ -376,7 +377,9 @@ classdef sss
             if isequal(sys.isSym,0) || isequal(sys.isSym,1)
                 isSym = sys.isSym;
             else
-                if issymmetric(sys.A) && issymmetric(sys.E)
+%                 if issymmetric(sys.A) && issymmetric(sys.E)
+%                 if norm(sys.A-sys.A.','fro')<1e-6 && norm(sys.E-sys.E.','fro')<1e-6
+                if full(max(max(sys.A-sys.A.')))<1e-6 && full(max(max(sys.E-sys.E.')))<1e-6
                     isSym = 1;
                 else
                     isSym = 0;

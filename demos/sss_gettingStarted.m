@@ -48,8 +48,9 @@ end
 
 %%  Initialization
 clearvars -except Opts 
-clc
+
 warning('off','all');
+fprintf('\n\n\n'); 
 fprintf('Starting demo execution: sss_gettingStarted...\n\n'); 
 
 init_demo;
@@ -271,7 +272,7 @@ end
 end
 
 function init_demo
-    sys = sss(-1,1,1,0,0);
+    sys = sss(-1,1,1);
     norm(sys);
     [init1,init2] = step(sys);
     [init1,init2,init3] = bode(sys,0);

@@ -37,7 +37,7 @@ function varargout = eig(sys, varargin)
 %       Load the benchmark 'building' (SSS, SISO) and compute the eigenvalues.
 %
 %> load building.mat
-%> sys = sss(A,B,C)
+%> sys = sss(A,B,C);
 %> e = eig(sys);
 %
 %       Load the benchmark 'rail_1357' (DSSS, MIMO) and compute the
@@ -46,7 +46,7 @@ function varargout = eig(sys, varargin)
 %
 %> load rail_1357.mat
 %> p = size(C,1); m = size(B,2);
-%> sys = sss(A,B,C,zeros(p,m),E)
+%> sys = sss(A,B,C,zeros(p,m),E);
 %> [V,D,W] = eig(sys);
 %
 % See Also:
@@ -90,10 +90,6 @@ else
     elseif nargout == 3
         [varargout{1}, varargout{2}, varargout{3}]  = eig(full(sys.a),varargin{:});
     end
-end
-
-for i = 1:nargout
-    varargout{i} = varargout{i};
 end
 
 end

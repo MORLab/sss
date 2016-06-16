@@ -35,18 +35,18 @@ function [isstable,spectralAbscissa] = isstable(sys)
 %       -spectralAbscissa: i.e. the largest real part of the eigenvalues.
 %
 % Examples:
-%       The following code checks if the benchmark 'CDplayer' is
+%       The following code checks if the benchmark 'building' is
 %       asymptotically stable:
+%
+%> load building.mat
+%> sys=sss(A,B,C);
+%> [isstab, spectralAbscissa]=isstable(sys)
+%
+%       Another example, this time using the benchmark 'CDplayer' (SSS,
+%       MIMO):
 %
 %> load CDplayer.mat
 %> sys=sss(A,B,C);
-%> [issd, spectralAbscissa]=isstable(sys);
-%
-%       Another example, this time using the benchmark 'rail_5177' (DSSS,
-%       MIMO):
-%
-%> load rail_5177.mat
-%> sys=sss(A,B,C,[],E);
 %> isstable(sys)
 %
 % See Also:
@@ -78,7 +78,6 @@ function [isstable,spectralAbscissa] = isstable(sys)
 if sys.n < 100
     %%  For small systems, compute the eigenvalue decomposition directy
     lambda = eig(sys);
-    lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
 else       
     %%  Compute the eigenvalue with largest real part
     try
@@ -89,17 +88,17 @@ else
             try
                 lambda=eigs(sys,1,'lr',struct('tol',1e-4','v0',sys.b));
             catch
-                warning('eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
+                warning('sss:isstable:EigsFailed','eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
                 lambda = eig(sys);
-                lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
             end
         else
-            warning('eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
+            warning('sss:isstable:EigsFailed','eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
             lambda = eig(sys);
-            lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
         end
     end
 end
+lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
+lambda = lambda(abs(real(lambda))<1e6); % infinity-threshold
 spectralAbscissa = max(real(lambda));
 
 %%  Check wether the spectral abscissa is strictly less than zero

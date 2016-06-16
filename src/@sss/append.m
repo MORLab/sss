@@ -22,7 +22,7 @@ function sys = append(varargin)
 %> load CDplayer
 %> sysCdplayer = sss(A,B,C);
 %> sysAppended = append(sysBuilding,sysCdplayer);
-%> spy(sysAppended)
+%> spy(sysAppended);
 %
 % See Also:
 %       connect, ss/append, ss/blkdiag

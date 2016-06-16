@@ -18,10 +18,7 @@ function sys = second2first(M, D, K, B, Cx, Cv, Opts)
 %
 %       State space representation uses the following form:
 %
-%       ${ F ~~ 0 \choose 0 ~~ M}$  ${\dot x \choose \ddot x}$
-%       $= {0 ~~ F \choose -K ~~ -D}$ ${x \choose \dot x }$ + $B ~ u$
-%
-%       $y = \left( C_x ~~ C_v \right) ~ { x \choose \dot x }$
+%       <<img/second2first.png>>
 %
 %       The conversion from second order to first order allows some freedom
 %       in the choise of the matrix F. Which value from the possible
