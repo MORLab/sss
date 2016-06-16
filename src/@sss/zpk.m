@@ -74,7 +74,7 @@ function [varargout] = zpk(sys,varargin)
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  19 Apr 2016
+% Last Change:  16 Jun 2016
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
@@ -109,22 +109,23 @@ z=cell(sys.m,sys.p);
 c=zeros(sys.m,sys.p);
 
 if strcmp(Opts.typeZ,'lm')
-    Opts.typeZ=max(pTemp);
+    Opts.type=max(pTemp);
+    Opts.sortLm=true;
 end
 
 % remove single complex element
-pTemp(abs(imag(pTemp)-imag(sum(pTemp)))<1e-16)=[];
+if ~isreal(pTemp)
+    temp=pTemp(abs(imag(pTemp)-imag(sum(pTemp)))<1e-16);
+    if ~isempty(temp)
+        pTemp(end+1)=temp;
+    end
+end
 
 for i=1:sys.m
     for j=1:sys.p
         % call zeros and moments for each siso transfer function
         tempSys=sss(sys.A,sys.B(:,j),sys.C(i,:),sys.D(i,j),sys.E);
-        zTemp=zeros(tempSys,k,struct('type',Opts.typeZ));
-
-        % remove single complex element
-        if ~any(isreal(zTemp))
-            zTemp(abs(imag(zTemp)-imag(sum(zTemp)))<1e-16)=[];
-        end
+        zTemp=zeros(tempSys,k,Opts);
         
         if Opts.zpk
             % remove not converged eigenvalues
@@ -134,6 +135,14 @@ for i=1:sys.m
             % avoid infinity
             pTemp(abs(pTemp)>1e6)=1e6*sign(real(pTemp(abs(pTemp)>1e6)));
             zTemp(abs(zTemp)>1e6)=1e6*sign(real(zTemp(abs(zTemp)>1e6)));
+            
+            % add second element of single complex element
+            if ~isreal(zTemp)
+                temp=zTemp(abs(imag(zTemp)-imag(sum(zTemp)))<1e-16);
+                if ~isempty(temp)
+                    zTemp(end+1)=conj(temp);
+                end
+            end
         end
 
         p{i,j}=pTemp;

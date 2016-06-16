@@ -7,6 +7,7 @@ classdef testZeros < sssTest
                 sys=testCase.sysCell{i};
 
                 if ~sys.isDae
+                    sys.Name
                     Opts.type='lm';
                     k=20;
                     zAll=zeros(sys,k,Opts);

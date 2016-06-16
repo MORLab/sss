@@ -58,12 +58,13 @@ function z = zeros(sys,varargin)
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  19 Apr 2016
+% Last Change:  16 Jun 2016
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
 %% Parse inputs and options
 Def.type = 'lm'; %eigs type
+Def.sortLm = false; %return first k zeros with 'lm' at sigma
 
 for i=1:length(varargin)
     if isa(varargin{i},'double')
@@ -106,19 +107,46 @@ for i=1:sys.m
             % use the largest pole instead of 'lm' (usually 'lm' fails)
             if strcmp(Opts.type,'lm')
                 try
-                    Opts.type=eigs(sys,1,'lm');
+                    sigma=eigs(sys,1,'lm');
                 catch
                     opts.p=4*k;  %double number of lanczos vectors (default: 2*k)
-                    Opts.type=eigs(sys,1,'lm',opts);
+                    sigma=eigs(sys,1,'lm',opts);
                 end
+            else
+                sigma=Opts.type;
             end
             
             % use 1e6 instead of Inf
-            if abs(Opts.type)<1e6
-                z=eigs([sys.A,sys.B(:,j);sys.C(i,:),sys.D(i,j)],[sys.E,zeros(sys.n,1);zeros(1,sys.n),0],k,Opts.type);
-                if ~isreal(Opts.type);
+            if abs(sigma)<1e6
+                z=eigs([sys.A,sys.B(:,j);sys.C(i,:),sys.D(i,j)],[sys.E,zeros(sys.n,1);zeros(1,sys.n),0],k,sigma);
+                if ~isreal(sigma);
                     % z only contains values with same imaginary sign as temp
-                    z=[z;conj(z)];
+                    l=1;
+                    while(l<=length(z))
+                        if ~isreal(z(l))
+                            % add conjugated value if not already in z
+                            if min(abs(bsxfun(@minus,[z(1:l-1);z(l+1:end)],conj(z(l)))))>1e-8
+                                temp=z((l+1):end);
+                                z(l+1)=conj(z(l));
+                                if ~isempty(temp)
+                                    z(l+2:end+1)=temp;
+                                end
+                                l=l+1;
+                            end
+                        end
+                        l=l+1;
+                    end
+                    
+                    % remove zeros at infinity
+                    z=z(abs(real(z))<1e6);
+                    
+                    % largest magnitude sorting
+                    if strcmp(Opts.type,'lm') || Opts.sortLm
+                        tbl=table(-abs(z),z);
+                        tbl=sortrows(tbl);
+                        z=tbl.z;
+                    end
+                    z=z(1:k);
                 end
             else
                 z=eigs([sys.A,sys.B(:,j);sys.C(i,:),sys.D(i,j)],[sys.E,zeros(sys.n,1);zeros(1,sys.n),0],k,-1e6);
@@ -128,7 +156,8 @@ for i=1:sys.m
         end
 
         % remove zeros at infinity
-        z=z(abs(real(z))<1e6); 
+        z=z(abs(real(z))<1e6);
+        
         if ~sys.isSiso
             zTemp{i,j}=z;
         end
