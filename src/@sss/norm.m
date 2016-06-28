@@ -108,6 +108,12 @@ elseif p==2
         return
     end
     
+    if isstable(sys)~=1
+        warning('System appears to be unstable. The norm will be set to Inf.');
+        nrm=Inf;
+        return;
+    end
+    
     % see if a Gramian or its Cholesky factor is already available
     if isempty(sys.ConGramChol)
         if isempty(sys.ObsGramChol)
@@ -138,11 +144,6 @@ elseif p==2
                     try
                         if strcmp(Opts.adi,'lyap') || sys.n<100 || sys.isDae || (~strcmp(Opts.adi,'adi') && sys.n<500)
                             error('lyap');
-                        end
-                        if isstable(sys)~=1
-                            warning('System appears to be unstable. The norm will be set to Inf.');
-                            nrm=Inf;
-                            return;
                         end
 
                         % get adi shifts
