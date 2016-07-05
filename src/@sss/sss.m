@@ -165,6 +165,11 @@ classdef sss
                 if isa(varargin{1},'tf')
                     varargin{1} = ss(varargin{1});
                 end
+                if isa(varargin{1},'ssRed')
+                   error(strcat('Conversion from ssRed-objects to sss-objects ', ...
+                       ' is not possible, because the additional informations ', ...
+                       ' that are stored in the ssRed-class would go lost'));
+                end
                 if isa(varargin{1}, 'ss') % convert ss to sss
                     sys_ss = varargin{1};
                     
