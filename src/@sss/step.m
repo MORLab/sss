@@ -236,15 +236,19 @@ else
 end
 end
 
+function x = funLU(A,B,L,U,a,o,S,x)
+    x(o,:) = U\(L\(S(:,a)\(A*x+B)));
+end
+
 function [h,te] = stepLocal(sys, t_, Opts)
 x0 = zeros(size(sys.x0));
 optODE = Opts.odeset;
 [A,B,C,D,E,~] = dssdata(sys);
-
+[L,U,a,o,S]=lu(E,'vector');
 if ~sys.isDescriptor
     odeFun = @(t,x) A*x+B;
 else
-    odeFun = @(t,x) E\(A*x+B);
+    odeFun = @(t,x) funLU(A,B,L,U,a,o,S,x);
 end
 if ~isempty(t_)
     tSim = [0,t_(end)];
