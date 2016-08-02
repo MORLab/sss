@@ -101,21 +101,6 @@ elseif(na==4)
             error('MESS:control_data','flag1 has to be ''A'' or ''E''');
     end 
 end
-
-%% from lyapack (reduce bandwith)
-if ~isfield(eqn,'prm') || isempty(eqn.prm)
-    eqn.prm = lp_prm(eqn.A_,'rcm');
-
-    eqn.A_ = eqn.A_(eqn.prm,eqn.prm);
-
-    eqn.E_ = eqn.E_(eqn.prm,eqn.prm); % E changed?
-
-    eqn.B = eqn.B(eqn.prm,:);
-
-    eqn.C = eqn.C(:,eqn.prm);
-    
-    eqn.haveE=true;
-end
 end
 
 %checkdata for A_

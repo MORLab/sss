@@ -102,11 +102,11 @@ lambda = lambda(abs(real(lambda))<1e6); % infinity-threshold
 spectralAbscissa = max(real(lambda));
 
 if isempty(spectralAbscissa)
-    error('The spectral abscissa is empty.');
-end
+    warning('The spectral abscissa is empty.');
+    isstable=NaN;
 
 %%  Check wether the spectral abscissa is strictly less than zero
-if  spectralAbscissa < 0
+elseif  spectralAbscissa < 0
     if nargout<1, fprintf('The system is asymptotically stable.\n');
     else isstable = 1; end
         
