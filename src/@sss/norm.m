@@ -23,8 +23,8 @@ function [nrm, varargout] = norm(sys, varargin)
 %       -p: choice of H_2-norm or H_inf-norm 
 %           [{'2'} / 'inf']
 %       -Opts:              a structure containing following options
-%           -.adi:          try only solution by adi or lyapunov equation
-%                           [{'0'} / 'adi' / 'lyap']
+%           -.lyapchol:     try only solution by adi or lyapunov equation
+%                           [{'0'} / 'adi' / 'builtIn']
 %           -.lse:          solve linear system of equations (only for adi)
 %                           [{'gauss'} / 'luChol']
 %
@@ -67,7 +67,7 @@ function [nrm, varargout] = norm(sys, varargin)
 % Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 %%  Define execution parameters
-Def.adi= 0; %use only adi or lyapunov equation ('0','adi','lyap')
+Def.lyapchol = 0; % ('0','adi','builtIn')
 Def.lse= 'gauss'; %lse (used only for adi)
 
 p=2;    % default: H_2
@@ -114,117 +114,11 @@ elseif p==2
         return;
     end
     
-    % see if a Gramian or its Cholesky factor is already available
-    if isempty(sys.ConGramChol)
-        if isempty(sys.ObsGramChol)
-            if isempty(sys.ConGram)
-                if isempty(sys.ObsGram)
-                    % No, it is not. Solve Lyapunov equation.
-                    if ~sys.isDae
-                        % options for mess
-                        % eqn struct: system data
-                        eqn=struct('A_',sys.A,'E_',sys.E,'B',sys.B,'C',sys.C,'type','N','haveE',sys.isDescriptor);
-
-                        % opts struct: mess options
-                        messOpts.adi=struct('shifts',struct('l0',20,'kp',50,'km',25,'b0',ones(sys.n,1),...
-                            'info',0),'maxiter',300,'restol',0,'rctol',1e-12,...
-                            'info',0,'norm','fro');
-                        
-                        % user functions: default
-                        if strcmp(Opts.lse,'gauss')
-                            oper = operatormanager('default');
-                        elseif strcmp(Opts.lse,'luChol')
-                            if sys.isSym
-                                oper = operatormanager('chol');
-                            else
-                                oper = operatormanager('lu');
-                            end
-                        end
-                    end
-                    try
-                        if strcmp(Opts.adi,'lyap') || sys.n<100 || sys.isDae || (~strcmp(Opts.adi,'adi') && sys.n<500)
-                            error('lyap');
-                        end
-
-                        % get adi shifts
-                        [messOpts.adi.shifts.p, eqn]=mess_para(eqn,messOpts,oper);
-
-                        % low rank adi
-                        [R,~,eqn]=mess_lradi(eqn,messOpts,oper);
-
-                        nrm=norm(R'*eqn.C','fro');
-                    catch ex
-                        if strcmp(Opts.adi,'adi')
-                            if strcmp(ex.message,'lyap')
-                                error('ADI failed. System may be too small or DAE.');
-                            else
-                                error(ex.message);
-                            end
-                        elseif  ~strcmp(ex.message,'lyap');
-                            warning([ex.message,' Trying without ADI...']);
-                        end
-                        if sys.isDescriptor
-                            try
-                                try
-                                    sys.ConGramChol = lyapchol(sys.A,sys.B,sys.E); % P=S'*S3
-                                    nrm=norm(sys.ConGramChol*sys.C','fro');
-                                    if ~isreal(nrm)
-                                        error('Gramian must be positive definite');
-                                    end
-                                catch ex3
-                                    P = lyapchol(sys.A',sys.C',sys.E');
-                                    nrm=norm(P*sys.B,'fro');
-                                end
-                            catch ex
-                                warning(ex.identifier, 'Error solving Lyapunov equation. Trying without Cholesky factorization...')
-                                try
-                                    try
-                                        X = lyap(sys.A, sys.B*sys.B', [], sys.E);
-                                        nrm=sqrt(trace(sys.C*X*sys.C'));
-                                        if ~isreal(nrm)
-                                            error('Gramian must be positive definite');
-                                        end
-                                    catch ex3
-                                        Y = lyap(sys.A', sys.C'*sys.C, [], sys.E');
-                                        nrm=sqrt(trace(sys.B'*Y*sys.B));
-                                    end
-                                catch ex2
-                                    warning(ex2.message, 'Error solving Lyapunov equation. Premultiplying by E^(-1)...')
-                                    tmp = sys.E\sys.B;
-                                    X = lyap(sys.E\sys.A, tmp*tmp');
-                                    nrm=sqrt(trace(sys.C*X*sys.C'));
-                                end
-                            end
-                        else
-                            try
-                                sys.ConGramChol = lyapchol(sys.A,sys.B);
-                                nrm=norm(sys.ConGramChol*sys.C','fro');
-                            catch ex
-                                if strcmp(ex.identifier,'Control:foundation:LyapChol4');
-                                    %Unstable system. Set the norm to infinity
-                                    warning('System appears to be unstable. The norm will be set to Inf.')
-                                    nrm = Inf;
-                                else
-                                    warning(ex.message, 'Error solving Lyapunov equation. Trying without Cholesky factorization...')
-                                    sys.ConGram = lyap(sys.A, sys.B*sys.B');                
-                                    nrm=sqrt(trace(sys.C*sys.ConGram*sys.C'));
-                                end
-                            end
-                        end
-                    end
-                else
-                    nrm=sqrt(trace(sys.B'*sys.ObsGram*sys.B));
-                end
-            else
-                nrm=sqrt(trace(sys.C*sys.ConGram*sys.C'));
-            end
-        else
-            nrm=norm(sys.ObsGramChol*sys.B, 'fro');
-        end
-    else
-        nrm=norm(sys.ConGramChol*sys.C','fro');
-    end
+    Opts.type=Opts.lyapchol;
+    R=lyapchol(sys,Opts);
     
+    nrm=norm(R*sys.C','fro');
+
     if imag(nrm)~=0
         nrm=Inf;
     end
@@ -266,9 +160,8 @@ freq=w(indexMaxNorm);
 
 %Optimization of the maximum Hinfty norm using newton method
 [A,B,C,D,E]=dssdata(sys);
-minusA=-A;
 w=freq;
-[Deriv0,Deriv1,Deriv2]=computeDerivatives(minusA,B,C,D,E,w);
+[Deriv0,Deriv1,Deriv2]=computeDerivatives(A,B,C,D,E,w);
 [eigenVectors,eigenValues]=(eig(full(Deriv0)));
 eigenValues=diag(eigenValues);
 [~,Index]=max(eigenValues);
@@ -282,7 +175,7 @@ while(1==1) %Newton-Method Iteration
     deltaBefore=delta;
     delta=firstDeriv/secondDeriv;
     w=w-delta; %Update of w in order to find firstDeriv=0
-    [Deriv0,Deriv1,Deriv2]=computeDerivatives(minusA,B,C,D,E,w);
+    [Deriv0,Deriv1,Deriv2]=computeDerivatives(A,B,C,D,E,w);
     
     [eigenVectors,eigenValues]=(eig(full(Deriv0)));
     eigenValues=diag(eigenValues);
@@ -298,24 +191,18 @@ freq=w;
 H_Infty=sqrt(max(eig(full(Deriv0))));
 end
 
-function [Deriv0,Deriv1,Deriv2]=computeDerivatives(minusA,B,C,D,E,w)
-[L,U,k,l,S]=lu((minusA+E*w*1i),'vector');
-b=S\B; b=b(k,:);
-LinearSolve0=L\b;
-LinearSolve0(l,:)=U\LinearSolve0;
-resp=(C*LinearSolve0)+D;
+function [Deriv0,Deriv1,Deriv2]=computeDerivatives(A,B,C,D,E,w)
+Opts.krylov='standardKrylov';
+Opts.lse='sparse';
+LinearSolve=solveLse(A,B,E,-ones(1,3)*w*1i, Opts);
+
+resp=(C*LinearSolve(:,1))+D;
 Deriv0=((resp)'*resp); %it is ln
 %Compute first derivative
-b=S\(E*LinearSolve0); b=b(k,:);
-LinearSolve1=L\b;
-LinearSolve1(l,:)=U\LinearSolve1;
-respp=-1i*C*LinearSolve1;
+respp=-1i*C*LinearSolve(:,2);
 Deriv1=(respp'*resp)+(respp'*resp)';
 %Compute second derivative
-b=S\(E*LinearSolve1); b=b(k,:);
-LinearSolve2=L\b;
-LinearSolve2(l,:)=U\LinearSolve2;
-resppp=-2*C*LinearSolve2;
+resppp=-2*C*LinearSolve(:,3);
 Deriv2=(resppp'*resp)+(resppp'*resp)'+2*(respp'*respp);
 end
 
