@@ -269,24 +269,36 @@ for i=1:numel(wEval)
         respp(:,:,i)=nan(size(D));
         resppp(:,:,i)=nan(size(D));
     else
-    %Computation of the frequency response for w=wEval(i)
-    [L,U,k,l,S]=lu(minusA+E*w,'vector');
-    warning('OFF', 'MATLAB:nearlySingularMatrix');
-    b=S\B; b=b(k,:);
-    linSolve0=L\b;
-    linSolve0(l,:)=U\linSolve0;
-    resp(:,:,i)=(C*linSolve0)+D;
-    %Computation of the first derivative (Respp) of the frequency response for w=wEval(i)
-    b=S\(E*linSolve0); b=b(k,:);
-    linSolve1=L\b;
-    linSolve1(l,:)=U\linSolve1;
-    respp(:,:,i)=-w*C*linSolve1;
-    %Computation of the second derivative (Resppp) of the frequency response for w=wEval(i)
-    b=S\(E*linSolve1); b=b(k,:);
-    linSolve2=L\b;
-    linSolve2(l,:)=U\linSolve2;
-    warning('ON', 'MATLAB:nearlySingularMatrix');
-    resppp(:,:,i)=2*C*linSolve2;
+        %Computation of the frequency response for w=wEval(i)
+        Opts.krylov='standardKrylov';
+        Opts.lse='sparse';
+
+        % tangential directions
+        Rt=zeros(size(B,2),size(B,2)*3);
+        for nB2=1:size(B,2)
+            Rt(nB2,(nB2-1)*3+1:(nB2-1)*3+3)=ones(1,3);
+        end
+        
+        % solve lse
+        linSolve=solveLse(minusA,B,E,-ones(1,3*size(B,2))*w,Rt,Opts);
+
+        % sort solutions
+        linSolve1=zeros(size(B));
+        linSolve2=zeros(size(B));
+        linSolve3=zeros(size(B));
+        for nB2=1:size(B,2)
+            linSolve1(:,nB2)=linSolve(:,(nB2-1)*3+1);
+            linSolve2(:,nB2)=linSolve(:,(nB2-1)*3+2);
+            linSolve3(:,nB2)=linSolve(:,(nB2-1)*3+3);
+        end
+        
+        resp(:,:,i)=(C*linSolve1)+D;
+        
+        %Computation of the first derivative (Respp) of the frequency response for w=wEval(i)
+        respp(:,:,i)=-w*C*linSolve2;
+
+        %Computation of the second derivative (Resppp) of the frequency response for w=wEval(i)
+        resppp(:,:,i)=2*C*linSolve3;
     end
 end
 %Computation of the first two derivatives for a log-log of the magnitude plot
