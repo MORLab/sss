@@ -2,9 +2,9 @@ function [R,L] = lyapchol(sys, Opts)
 % TBR - Performs model order reduction by Truncated Balanced Realization
 %
 % Syntax:
-%       R				= TBR(sys)
-%       [R,L]			= TBR(sys)
-%       [R,L]  		    = TBR(sys,Opts)
+%       R				= LYAPCHOL(sys)
+%       [R,L]			= LYAPCHOL(sys)
+%       [R,L]  		    = LYAPCHOL(sys,Opts)
 %
 % Description:
 %       This function returns the Cholesky factorization X=R'*R of the 
@@ -106,16 +106,9 @@ if (strcmp(Opts.type,'standard') && sys.n>500 && ~sys.isDae) || strcmp(Opts.type
         'info',0),'maxiter',300,'restol',0,'rctol',1e-12,...
         'info',0,'norm','fro');
     
-    % user functions: default
-    if strcmp(Opts.lse,'gauss')
-        oper = operatormanager('default');
-    elseif strcmp(Opts.lse,'luChol')
-        if sys.isSym
-            oper = operatormanager('chol');
-        else
-            oper = operatormanager('lu');
-        end
-    end
+    oper = operatormanager('solveLse');
+    messOpts.solveLse.lse=Opts.lse;
+    messOpts.solveLse.krylov=0;
     
     if Opts.q>0 %size of cholesky factor [sys.n x q] -> qmax=q
         messOpts.adi.maxiter=Opts.q;
@@ -200,7 +193,7 @@ else
 
     if nargout>1
         if sys.isDescriptor
-            L = lyapchol(sys.A'/sys.E', sys.C');
+            L = lyapchol(sys.A', sys.C',sys.E');
         else
             L = lyapchol(sys.A',sys.C');
         end

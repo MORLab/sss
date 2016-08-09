@@ -1,5 +1,11 @@
 classdef testLyapchol < sssTest
     methods(Test)
+%         function testLyapchol0(testCase) 
+%             for i=1:length(testCase.sysCell)
+%                 sys=testCase.sysCell{i};
+%                 verification(testCase,lyapchol(sys.A,sys.B),lyapchol(sys.A,sys.B,sys.E));
+%             end
+%         end
         function testLyapchol1(testCase) 
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
