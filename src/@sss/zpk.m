@@ -156,6 +156,7 @@ end
 
 if Opts.zpk    
     varargout{1}=zpk(z,p,c);
+    varargout{1}.name=sys.Name;
 elseif sys.isSiso
     varargout{1}=p{1,1};
     varargout{2}=z{1,1};
