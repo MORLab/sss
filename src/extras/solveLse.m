@@ -67,6 +67,12 @@ function [varargout] = solveLse(varargin)
 %                           [{1} / 0]
 %           -.force:        force solve iteratively when not converging
 %                           [{0} / 1]
+%           -.refine:       preferred solver in iterSolve
+%                           [{0} / 'wilkinson' / 'cgs']
+%           -.refTol:       iterative refinement tolerance
+%                           [{1e-15} / positive float]
+%           -.refMaxiter:   iterative refinement maximum number of iterations
+%                           [{1e2} / positive integer]
 %
 % Output Arguments:
 %       -X:        Lse solution corresp. to B/Orthonormal basis spanning the input Krylov subsp. 
@@ -104,7 +110,7 @@ function [varargout] = solveLse(varargin)
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  19 Jul 2016
+% Last Change:  14 Aug 2016
 % Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
@@ -117,6 +123,10 @@ Def.maxiterlse = 1000; %maximum number of iterations in iterative solver
 Def.tollse = 1e-6; %residual tolerance in iterSolve 
 Def.verbose = 1; %display warnings when iterative methods fail
 Def.force = 0;  %not converging in iterSolve leads to error (0) or warning (1)
+
+Def.refine  = 0; % iterative refinement (0, 'wilkinson', 'cgs')
+Def.refTol     = 1e-15;
+Def.refMaxiter = 1e2;
 
 %% parsing of inputs
 if isa(varargin{end},'struct')
@@ -166,12 +176,26 @@ elseif length(varargin)>1
     switch length(varargin)
         case 2
             hermite=false;
+            % check if Rt directions are necessary
+            if size(B,2)>1
+                Rt = speye(size(B,2));
+                s0=zeros(1,size(B,2));
+                withoutE=true;
+            end
         case 3
             if ~isscalar(varargin{1}) && size(varargin{3},1)==size(A,1) && size(varargin{3},2)==size(A,2)
                 error('Please specify s0.');
-            else
+            elseif size(varargin{3},1)==size(B,2) && size(varargin{3},2)==size(B,1)
                 C=varargin{3};
                 hermite=true;
+                if size(B,2)>1
+                    Rt = speye(size(B,2));
+                    Lt = Rt;
+                    s0=zeros(1,size(B,2));
+                    withoutE=true;
+                end
+            else
+                error('Wrong input.');
             end
         case 4
             if size(varargin{3},1)==size(A,1) && size(varargin{3},2)==size(A,2) && (nargout==1 || nargout==3)
@@ -273,7 +297,9 @@ end
 % check E-matrix, tangential directions and IP
 if ~exist('E','var') || isempty(E)
     withoutE=true;
-    s0=0;
+    if ~exist('s0','var') || isempty(s0)
+        s0=0;
+    end
 else
     withoutE=false;
 end
@@ -340,11 +366,11 @@ if exist('jCol','var') && ~isempty(jCol)
 else
     % preallocate memory
     q=length(s0)+nnz(imag(s0));
-    V=zeros(length(B),q);
+    V=zeros(size(A,1),q);
     Rv=zeros(size(B,2),q);
     Sv=zeros(q);
     if hermite 
-        W = zeros(length(B),q); 
+        W = zeros(size(A,1),q); 
         Lw = zeros(size(C,1),q);
         Sw=zeros(q);
     end
@@ -538,13 +564,13 @@ function [tempV, tempW] = lse(newlu, newtan, jCol, s0, tempV, tempW)
 persistent R S L U a o;
 
 if isinf(s0(jCol)) %Realization problem (match Markov parameters)
-    if (newlu==0 && strcmp(Opts.krylov,'cascadedKrylov')) || strcmp(Opts.krylov,'cascadedKrylov')
+    if (newlu==0 && (size(B,2)==1 || newtan==0) && strcmp(Opts.krylov,'standardKrylov')) || strcmp(Opts.krylov,'cascadedKrylov')
         tempV=A*tempV;
         if hermite
             tempW=A*tempW;
         end
     end
-    if newlu==1
+    if newlu==1 || (isempty(R) && isempty(S) && isempty(L) && isempty(U) && isempty(a) && isempty(o))
         try
             % compute Cholesky factors of E
             U=[];
@@ -569,10 +595,20 @@ if isinf(s0(jCol)) %Realization problem (match Markov parameters)
     if ~isempty(U) || strcmp(Opts.lse,'hess') || strcmp(Opts.lse,'gauss')
         switch Opts.lse
             case 'sparse'
+                oldV=tempV;
                 tempV(o,:) = U\(L\(S(:,a)\tempV)); %LU x(o,:) = S(:,a)\b 
                 if hermite
+                    oldW=tempW;
                     tempW(o,:) = U\(L\(S(:,a)\tempW));
                 end
+                % iterative refinement
+                if Opts.refine
+                       if hermite
+                           [tempV,tempW] = iterativeRefinement(E, oldV, tempV, oldW, tempW);
+                       else
+                           tempV = iterativeRefinement(E,oldV, tempV);
+                       end
+               end
             case 'full'
                 tempV = U\(L\tempV);
                 if hermite
@@ -611,7 +647,8 @@ else %Rational Krylov
                     if hermite, tempW = E.'*tempW; end
                 end
             end
-        else
+        end
+        if newlu==1 || (isempty(R) && isempty(S) && isempty(L) && isempty(U) && isempty(a) && isempty(o))
             if withoutE
                 switch Opts.lse
                     case 'sparse'
@@ -634,8 +671,28 @@ else %Rational Krylov
         % Solve the linear system of equations
         switch Opts.lse
             case 'sparse'
+                oldV=tempV;
                 tempV(o,:) = U\(L\(S(:,a)\tempV)); %LU x(o,:) = S(:,a)\b 
-                if hermite, tempW = (S(:,a)).'\(L.'\(U.'\(tempW(o,:)))); end %U'L'S(:,a) x = c'(o,:) 
+                if hermite
+                    oldW=tempW;
+                    tempW = (S(:,a)).'\(L.'\(U.'\(tempW(o,:)))); 
+                end %U'L'S(:,a) x = c'(o,:) 
+                % iterative refinement
+                if Opts.refine
+                   if withoutE
+                       if hermite
+                           [tempV,tempW] = iterativeRefinement(A, oldV, tempV, oldW, tempW);
+                       else
+                           tempV = iterativeRefinement(A,oldV, tempV);
+                       end
+                   else
+                       if hermite
+                           [tempV,tempW] = iterativeRefinement(A-s0(jcol)*E, oldV, tempV, oldW, tempW);
+                       else
+                           tempV = iterativeRefinement(A-s0(jCol)*E,oldV, tempV);
+                       end
+                   end
+               end
             case 'full'
                 tempV = U\(L\tempV);
                 if hermite, tempW = (L.'\(U.'\(tempW))); end 
@@ -701,6 +758,104 @@ else %Rational Krylov
             end
         end
     end
+end
+
+function [tempV, tempW, rNormVecV, rNormVecW] = iterativeRefinement(AsE, oldV, tempV, oldW, tempW)
+%   ITERATIVEREFINEMENT - Use iterative LSE solver to refine LSE solution
+%
+%   This function takes as input the approximate solution tempV to the
+%   linear system AsE*tempV = oldV and tries to improve its accuracy. oldV is also
+%   allowed to be a matrix, so that tempV is the solution of a set of lse
+%   with common AsE matrix.
+% 
+%   This can be done either by direct methods (compare [1,2]) or 
+%   by feeding the data to an iterative solver (so far, only cgs is 
+%   implemented). In both cases, the algorihm stops when the desired
+%   accuracy, measured as the relative norm of the residual
+%   r = oldV-AsE*tempV is achieved.
+% 
+%   This can be useful when subspecting that a solution X obtained
+%   through direct methods (e.g. lu or chol) may be inaccurate due to
+%   roundoff errors.
+%   Input:    AsE        A-s0(jCol)*E
+%             oldV       tempV before solving lse
+%             tempV      current lse solution
+%   Output:   tempV      improved lse solution
+
+switch Opts.refine
+    case 'wilkinson'
+        oldVNorm = norm(oldV,'fro');
+        k = 0; rNormVecV = zeros(1,Opts.refMaxiter);
+        
+        resV = oldV-AsE*tempV; %residual
+        rNormV = norm(resV,'fro')/oldVNorm;
+        
+        if hermite
+            oldWNorm = norm(oldW,'fro');
+            rNormVecW = zeros(1,Opts.refMaxiter);
+        
+            resW = oldW-AsE.'*tempW; %residual
+            rNormW = norm(resW,'fro')/oldWNorm;
+        end
+        
+        %   Compute LU if not available, provided we need to improve R
+        if (rNormV > Opts.refTol || (hermite && rNormW > Opts.refTol)) && (isempty(L) || ~isempty(U))
+            [L, U, a, o, S] = lu(AsE, 'vector');
+        end
+        
+        %   Refine!
+        while (rNormV > Opts.refTol || (hermite && rNormW > Opts.refTol)) && k <= Opts.refMaxiter
+            k = k+1;
+
+%             D = o*(U\(L\(a*(S\R)))); %lu(AsE)
+            Dv = zeros(size(resV));
+            Dv(o,:) = U\(L\(S(:,a)\resV));
+            tempV = tempV + Dv;      
+            
+            resV = oldV-AsE*tempV;
+            rNormV = norm(resV,'fro')/oldVNorm;
+            rNormVecV(k) = rNormV;
+            
+            if hermite
+                Dw = (S(:,a)).'\(L.'\(U.'\(resW(o,:)))); 
+                tempW = tempW + Dw;
+                resW = oldW-AsE.'*tempW;
+                rNormW = norm(resW,'fro')/oldWNorm;
+                rNormVecW(k) = rNormW;
+            end
+        end
+        
+        if k <= Opts.refMaxiter
+            rNormVecV(k+1:end) = [];
+            if hermite
+                rNormVecW(k+1:end) = []; 
+            end
+        end
+            
+    case 'cgs'
+        warning('off','MATLAB:cgs:tooSmallTolerance');
+        for iCol = 1:size(tempV,2)
+            %Solve LSE with desired accuracy
+            [tempv,exitFlagv,rNormVecV] = cgs(AsE,oldV(:,iCol),Opts.refTol,Opts.refMaxiter,L,U,tempV(:,iCol));
+            if hermite
+                [tempw,exitFlagw,rNormVecW] = cgs(AsE.',oldW(:,iCol),Opts.refTol,Opts.refMaxiter,U.',L.',tempW(:,iCol));
+            end
+            %replace column if refinement worked
+            if exitFlagv == 0,
+                tempV(:,iCol) = tempv;
+                if hermite && exitFlagw == 0
+                    tempW(:,iCol) = tempw;
+                else
+                    warning('sss:iterativeRefinement:cgsNoConvergence','iterative refinement did not work.');
+                end
+            else
+                warning('sss:iterativeRefinement:cgsNoConvergence','iterative refinement did not work.');
+            end
+        end
+        warning('on','MATLAB:cgs:tooSmallTolerance');
+    otherwise
+        error('Iterative refinement method not implemented.');
+end
 end
 end
 

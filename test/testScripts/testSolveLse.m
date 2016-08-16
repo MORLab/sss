@@ -25,7 +25,9 @@ classdef testSolveLse < sssTest
                     expX4=full(sys.E\sys.B);
                     
                     % test several shifts
-                    [actX5]=solveLse(sys.A,sys.B,sys.E,[3,4,4, 1+i, 1-i]);
+                    Opts.lse='sparse';
+                    Opts.refine='wilkinson';
+                    [actX5]=solveLse(sys.A,sys.B,sys.E,[3,4,4, 1+i, 1-i],Opts);
                     expX5=full([(sys.A-3*sys.E)\sys.B,(sys.A-4*sys.E)\sys.B,...
                         (sys.A-4*sys.E)\sys.B,(sys.A-(1+i)*sys.E)\sys.B,...
                         (sys.A-(1-i)*sys.E)\sys.B]);
