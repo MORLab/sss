@@ -12,6 +12,7 @@ function  varargout = impulse(varargin)
 %   [h, t] = IMPULSE(sys,t)
 %   [h, t] = IMPULSE(sys,Tfinal)
 %   [h, t] = IMPULSE(sys,...,Opts)
+%   TF     = IMPULSE(sys,...,struct('tf',true))
 %
 % Description:
 %       Computes and/or plots the impulse response of a sparse LTI system
