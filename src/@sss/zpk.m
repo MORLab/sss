@@ -116,7 +116,7 @@ end
 % remove single complex element
 if ~isreal(pTemp)
     temp=pTemp(abs(imag(pTemp)-imag(sum(pTemp)))<1e-16);
-    if ~isempty(temp)
+    if ~isempty(temp) && any(abs(imag(temp))>1e-16)
         pTemp(end+1)=temp;
     end
 end
