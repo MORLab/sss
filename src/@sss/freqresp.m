@@ -33,6 +33,8 @@ function [varargout] = freqresp(varargin)
 %						[{0} / 1]
 %           -.maxPoints: Maximum number of refinement points
 %                       [{1500} / positive integer]
+%           -.lse:  solve linear system of equations
+%                       [{'sparse'} / 'full' /'gauss' /'hess' / 'iterative']
 %       
 % Outputs:      
 %       -G: vector of complex frequency response values
@@ -74,6 +76,7 @@ function [varargout] = freqresp(varargin)
 %% Parse inputs and options
 Def.maxPoints = 1500; % maximum number of refinement points
 Def.frd = 0; %return magnitude instead of frd object as in bult-in case 
+Def.lse = 'sparse'; % solveLse
 
 % create the options structure
 if ~isempty(varargin) && isstruct(varargin{end})
@@ -271,7 +274,6 @@ for i=1:numel(wEval)
     else
         %Computation of the frequency response for w=wEval(i)
         Opts.krylov='standardKrylov';
-        Opts.lse='sparse';
 
         % tangential directions
         Rt=zeros(size(B,2),size(B,2)*3);
