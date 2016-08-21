@@ -25,8 +25,8 @@ function [nrm, varargout] = norm(sys, varargin)
 %       -Opts:              a structure containing following options
 %           -.lyapchol:     try only solution by adi or lyapunov equation
 %                           [{'0'} / 'adi' / 'builtIn']
-%           -.lse:          solve linear system of equations (only for adi)
-%                           [{'gauss'} / 'luChol']
+%           -.lse:          solve linear system of equations
+%                           [{'sparse'} / 'full' / 'gauss' / 'hess' / 'iterative']
 %
 % Output Arguments:
 %       -nrm:             value of norm
@@ -68,7 +68,7 @@ function [nrm, varargout] = norm(sys, varargin)
 % ------------------------------------------------------------------
 %%  Define execution parameters
 Def.lyapchol = 0; % ('0','adi','builtIn')
-Def.lse= 'gauss'; %lse (used only for adi)
+Def.lse= 'sparse'; %lse 
 
 p=2;    % default: H_2
 if nargin>1
@@ -193,16 +193,32 @@ end
 
 function [Deriv0,Deriv1,Deriv2]=computeDerivatives(A,B,C,D,E,w)
 Opts.krylov='standardKrylov';
-Opts.lse='sparse';
-LinearSolve=solveLse(A,B,E,-ones(1,3)*w*1i, Opts);
 
-resp=(C*LinearSolve(:,1))+D;
+% tangential directions
+Rt=zeros(size(B,2),size(B,2)*3);
+for nB2=1:size(B,2)
+    Rt(nB2,(nB2-1)*3+1:(nB2-1)*3+3)=ones(1,3);
+end
+
+linSolve=solveLse(A,B,E,-ones(1,3)*w*1i, Rt, Opts);
+
+% sort solutions
+linSolve1=zeros(size(B));
+linSolve2=zeros(size(B));
+linSolve3=zeros(size(B));
+for nB2=1:size(B,2)
+    linSolve1(:,nB2)=linSolve(:,(nB2-1)*3+1);
+    linSolve2(:,nB2)=linSolve(:,(nB2-1)*3+2);
+    linSolve3(:,nB2)=linSolve(:,(nB2-1)*3+3);
+end
+
+resp=(C*linSolve1)+D;
 Deriv0=((resp)'*resp); %it is ln
 %Compute first derivative
-respp=-1i*C*LinearSolve(:,2);
+respp=-1i*C*linSolve2;
 Deriv1=(respp'*resp)+(respp'*resp)';
 %Compute second derivative
-resppp=-2*C*LinearSolve(:,3);
+resppp=-2*C*linSolve3;
 Deriv2=(resppp'*resp)+(resppp'*resp)'+2*(respp'*respp);
 end
 
