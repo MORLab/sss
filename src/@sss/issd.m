@@ -67,11 +67,13 @@ if condest(sys.e)>1e16, error('issd does not support DAEs'),end
 
 %%  Perform computations
 % E >0?
-isPosDef = ispd(sys.e);
-if ~isPosDef
-    if nargout == 0, warning('System is not strictly dissipative (E~>0).'); 
-    else issd = 0; end
-    return
+if sys.isDescriptor
+    isPosDef = ispd(sys.e);
+    if ~isPosDef
+        if nargout == 0, warning('System is not strictly dissipative (E~>0).'); 
+        else issd = 0; end
+        return
+    end
 end
 
 % A + A' <0?  
