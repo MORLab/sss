@@ -109,9 +109,9 @@ function [varargout] = solveLse(varargin)
 %       arnoldi, rk, irka, projectiveMor
 %
 % References:
-%       * *[1] Grimme (1997)*, Krylov projection methods for model reduction
-%       * *[2] Antoulas (2005)*, Approximation of large-scale dynamical systems
-%       * *[3] Antoulas (2010)*, Interpolatory model reduction of large-scale...
+%       * *[1] Duff et al. (1986)*, Direct methods for sparse matrices
+%       * *[2] Saad (2003)*, Iterative methods for sparse linear systems
+%       * *[3] Golub, Van Loan (1996)*, Matrix computations
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State-Space, Model Order
