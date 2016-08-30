@@ -1,5 +1,5 @@
 function [varargout] = solveLse(varargin)
-% ARNOLDI - Arnoldi algorithm for Krylov subspaces with multiple shifts
+% SOLVELSE - Solve linear system of equations
 %
 % Syntax:
 %       SOLVELSE(A)
@@ -114,20 +114,20 @@ function [varargout] = solveLse(varargin)
 %       * *[3] Golub, Van Loan (1996)*, Matrix computations
 %
 %------------------------------------------------------------------
-% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State-Space, Model Order
-% Reduction and System Analysis Toolbox developed at the Chair of
-% Automatic Control, Technische Universitaet Muenchen. For updates
-% and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Professur fuer Thermofluiddynamik, Technische Universitaet Muenchen.
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % For any suggestions, submission and/or bug reports, mail us at
-%                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
+%                   -> <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a> <-
 %
-% More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
+% More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
 % Authors:      Heiko Panzer, Alessandro Castagnotto, Maria Cruz Varona,
 %               Lisa Jeschek
-% Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
-% Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
+% Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
 % Last Change:  14 Aug 2016
 % Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
