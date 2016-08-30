@@ -105,6 +105,27 @@ function [varargout] = solveLse(varargin)
 %       -Syj:      Column of output Sylvester Eq. corresponding to jCol
 %       -Ryj:      Column of right tangential directions of Sylvester Eq. corresponding to jCol
 %
+% Examples:
+%       This code computes A^-1*B for two sparse random matrices A and B.
+%
+%> A=sprand(10,10,0.6); B=sprand(10,1,0.6);
+%> x=solveLse(A,B); norm(x-A\B)
+%
+%       The computation is now repeated for several iterations. To reuse
+%       the LU factors, first initialize solveLse and set the option 
+%       'reuseLU' to true.
+%
+%> A=sprand(10,10,0.6); x=sprand(10,1,0.6); Opts.reuseLU=true;
+%> solveLse(A,Opts); %initialize solveLse
+%> for i=1:round(rand(1)*5)
+%>     x=solveLse(A,x,Opts);
+%> end
+%
+%       To solve a shifted system, pass a shift vector s0 to the function:
+%
+%> sys=loadSss('building'); s0=rand(8,1);
+%> x=solveLse(sys,s0);
+%
 % See Also:
 %       arnoldi, rk, irka, projectiveMor
 %
