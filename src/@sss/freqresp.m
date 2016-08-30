@@ -140,20 +140,20 @@ if ~any(any(M))
     G=zeros(nOutputs,nInputs,size(omega,1));
     for i=1:nOutputs
         for j=1:nInputs
-            G(i,j,:)=ones(size(omega,1),1)*sys.D(i,j);
+            G(i,j,:)=ones(size(omega,1),1)*D(i,j);
         end
     end
     
 elseif not(exist('omega','var')) || isempty(omega)
     %Finding mininum and maximum frequencies
     if isempty(omegaCellIndex) || ~nnz(omegaCellIndex)
-        minW=findminW(sys,M);
-        maxW=findmaxW(sys,M);
+        minW=findminW(sys,M,Opts);
+        maxW=findmaxW(sys,M,Opts);
     end
     %Compute first points of frequency response
     qttyPoints=ceil(log(10^(maxW-minW))/log(2))+1;
     omega=logspace(minW,maxW,qttyPoints)'; %w should be a column according to built-in MATLAB function
-    [firstDerivLog,secondDerivLog,magnitude,resp]=ComputeFreqResp(sys,omega*1i,M);
+    [firstDerivLog,secondDerivLog,magnitude,resp]=ComputeFreqResp(sys,omega*1i,M,Opts);
     %Refine the frequency response points
     [G,omega]=FreqRefinement(sys,omega,firstDerivLog,secondDerivLog,magnitude,resp,M,Opts);
     
@@ -186,7 +186,7 @@ else
     end
 
     G=zeros(nOutputs,nInputs,numel(s));
-    [~,~,~,resp]=ComputeFreqResp(sys,s,M);
+    [~,~,~,resp]=ComputeFreqResp(sys,s,M,Opts);
     G(1:nOutputs,1:nInputs,:) = resp;
 end
 
@@ -234,7 +234,7 @@ while(length(w)<=Opts.maxPoints)
     end
     wEvaluated=wEvaluated*increment;
     %Compute the new frequency responses
-    [firstDerivLogComp,secondDerivLogComp,magnitudeComp,respComp]=ComputeFreqResp(sys,wEvaluated*1i,M);
+    [firstDerivLogComp,secondDerivLogComp,magnitudeComp,respComp]=ComputeFreqResp(sys,wEvaluated*1i,M,Opts);
     %Reorder everything
     [w,Index]=sort([w;wEvaluated]);
     firstDerivLog=cat(3,firstDerivLog,firstDerivLogComp);
@@ -252,7 +252,7 @@ if length(w)>=Opts.maxPoints
 end
 end
 
-function [firstDerivLog,secondDerivLog,magnitude,resp]=ComputeFreqResp(sys,wEval,M)
+function [firstDerivLog,secondDerivLog,magnitude,resp]=ComputeFreqResp(sys,wEval,M,Opts)
 [A,B,C,D,E]=dssdata(sys);
 minusA=-A;
 nInputs=sys.m;
@@ -362,7 +362,7 @@ end
  M(find(M))=1;
 end
 
-function [minWFinal] = findminW(sys,M)
+function [minWFinal] = findminW(sys,M,Opts)
 [A,B,C,~,E]=dssdata(sys);
 minusA=-A;
 nInputs=size(B,2);
@@ -395,7 +395,7 @@ while(1)
         Cond=repmat(condest(Matrix),nOutputs,nInputs);
     end
     secondDerivLogBefore=secondDerivLog;
-    [~,secondDerivLog,~,~]=ComputeFreqResp(sys,minW*1i,M);
+    [~,secondDerivLog,~,~]=ComputeFreqResp(sys,minW*1i,M,Opts);
     Var=inf(nOutputs,nInputs);
     Var(M&(CondSuf|(Cond>10^-3)))=1e-3;
     if i>1
@@ -412,7 +412,7 @@ minWFinal=floor(log10(minW(end)*10));
 
 end
 
-function [maxWFinal] = findmaxW(sys,M)
+function [maxWFinal] = findmaxW(sys,M,Opts)
 [A,B,C,~,E]=dssdata(sys);
 minusA=-A;
 nInputs=size(B,2);
@@ -439,7 +439,7 @@ while(1)
         Cond=repmat(condest(Matrix),nOutputs,nInputs);
     end
     secondDerivLogBefore=secondDerivLog;
-    [~,secondDerivLog,~,~]=ComputeFreqResp(sys,maxW*1i,M);
+    [~,secondDerivLog,~,~]=ComputeFreqResp(sys,maxW*1i,M,Opts);
     Var=inf(nOutputs,nInputs);
     Var(M&(CondSuf|(Cond>10^-3)))=1e-3;
     if i>1
