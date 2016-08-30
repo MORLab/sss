@@ -854,9 +854,18 @@ end
             %             oldV       tempV before solving lse
             %             tempV      current lse solution
             %   Output:   tempV      improved lse solution
-            
-            switch Opts.refine
-                case 'wilkinson'
+            if Opts.refine
+                % Determine if the condition number of the problem is low enough for
+                % refinement to make sense
+                kU = condest(U); %it seems that cond(U) is close to cond(AsE)
+                if inv(kU)<Opts.refTol
+                    warning(['The condition number of the problem is too high for ',...
+                             'iterative refinement to make sense (at least with given tolerance). ',...
+                             'Switching Opts.refine to 0.'])
+                    Opts.refine = false;
+                else   
+                    switch Opts.refine
+                        case 'wilkinson'
                     oldVNorm = norm(oldV,'fro');
                     k = 0; rNormVecV = zeros(1,Opts.refMaxiter);
                     
@@ -900,7 +909,7 @@ end
                         end
                     end
                     
-                case 'cgs'
+                        case 'cgs'
                     warning('off','MATLAB:cgs:tooSmallTolerance');
                     for iCol = 1:size(tempV,2)
                         %Solve LSE with desired accuracy
@@ -921,8 +930,10 @@ end
                         end
                     end
                     warning('on','MATLAB:cgs:tooSmallTolerance');
-                otherwise
+                        otherwise
                     error('Iterative refinement method not implemented.');
+                    end
+                end
             end
         end
     end
