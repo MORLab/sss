@@ -306,8 +306,6 @@ classdef sss
             else
                 if (size(E) ~= size(sys.A))
                     error('E and A must have the same size.')
-                elseif nnz(E)==0
-                    error('E matrix must not be zero.');
                 end
                 % check whether descriptor matrix is not unity
                 if any(any(E-speye(size(E))))
