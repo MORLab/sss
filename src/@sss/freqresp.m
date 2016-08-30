@@ -110,17 +110,26 @@ end
 
 nOutputs=sys.p;
 nInputs=sys.m;
-[A,B,C,D,E]=dssdata(sys);
+
 %Reordering Matrices
-reOrderMatrix=abs(A)+abs(E); %abs is used to guarantee that any terms will be cancelled in this combination of A and E
+reOrderMatrix=abs(sys.A)+abs(sys.E); %abs is used to guarantee that any terms will be cancelled in this combination of A and E
 reOrder=symrcm(reOrderMatrix);
 reOrderMatrix=reOrderMatrix(reOrder,reOrder);
-sys.A = A(reOrder,reOrder);
-sys.B = B(reOrder,:);
-sys.C = C(:,reOrder);
-sys.E = E(reOrder,reOrder);
+sys.A = sys.A(reOrder,reOrder);
+sys.B = sys.B(reOrder,:);
+sys.C = sys.C(:,reOrder);
+sys.E = sys.E(reOrder,reOrder);
+
 %Verifying relation between Inputs and Outputs
-M=InputOutputRelation(sys,reOrderMatrix);
+if sys.isDae
+    M = ones(size(sys.D)); 
+    %TODO: this seems to be just a quick workaround to make the function
+    %work also for DAEs. Check what is going wrong in the detection of
+    %detached channels!
+else
+    M=InputOutputRelation(sys,reOrderMatrix);
+end
+
 
 if ~any(any(M))
     %Disconnected, but static gain
@@ -140,7 +149,7 @@ if ~any(any(M))
     G=zeros(nOutputs,nInputs,size(omega,1));
     for i=1:nOutputs
         for j=1:nInputs
-            G(i,j,:)=ones(size(omega,1),1)*D(i,j);
+            G(i,j,:)=ones(size(omega,1),1)*sys.D(i,j);
         end
     end
     
