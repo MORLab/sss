@@ -1,6 +1,6 @@
 function [varargout] = solveLse(varargin)
 % ARNOLDI - Arnoldi algorithm for Krylov subspaces with multiple shifts
-% 
+%
 % Syntax:
 %       SOLVELSE(A)
 %       X                                = SOLVELSE(A,B)
@@ -14,31 +14,31 @@ function [varargout] = solveLse(varargin)
 %       [X,Y,Sx,Rx,Sy,Lx]                = SOLVELSE(A,B,C,E,s0,...,Opts)
 %       [X,Sxj,Rxj]                      = SOLVELSE(jCol,X,A,B,E,s0,Rt)
 %       [X,Y,Sxj,Rxj,Syj,Lyj]            = SOLVELSE(jCol,X,Y,A,B,C,E,s0,Rt,Lt)
-% 
+%
 % Description:
-%       This function solves linear systems of equations X=(A-s0*E)\B 
+%       This function solves linear systems of equations X=(A-s0*E)\B
 %       corresponding to shifts s0. The order of the shifts is crucial for
-%       reusing already computed factorizations, so it is recommended to 
-%       sort the shifts in advance. If the output matrix C is passed in 
-%       addition, then SOLVELSE computes the solutions X=(A-s0*E)\B and 
+%       reusing already computed factorizations, so it is recommended to
+%       sort the shifts in advance. If the output matrix C is passed in
+%       addition, then SOLVELSE computes the solutions X=(A-s0*E)\B and
 %       Y=C/(A-s0*E).'.
 %
 %       If the matrix E is empty or not specified, X=A\B is computed. If s0
-%       is Inf, then the Markov parameter X=(A-s0*E)*B is computed. 
+%       is Inf, then the Markov parameter X=(A-s0*E)*B is computed.
 %
-%       If a system (ss, sss or ssRed) is passed to the function, 
-%       X=(A-s0*E)\B is computed if shifts s0 are specified, and X=(A-E)\B 
+%       If a system (ss, sss or ssRed) is passed to the function,
+%       X=(A-s0*E)\B is computed if shifts s0 are specified, and X=(A-E)\B
 %       otherwise.
 %
-%       If Opts.krylov is set, a Krylov subspace [1-3] is created from the 
-%       solutions. If C is specified, this means that input and output  
-%       Krylov subspaces corresponding to the same shifts are computed. 
+%       If Opts.krylov is set, a Krylov subspace [1-3] is created from the
+%       solutions. If C is specified, this means that input and output
+%       Krylov subspaces corresponding to the same shifts are computed.
 %       Optionally this function computes the Sylvester matrices Sv, Rv, Sy
 %       and Ly. For more details, please refer to arnoldi.
-% 
-%       In case of MIMO models, matrices of tangential directions Rt 
-%       (and Lt) have to be defined. They must have the same number of 
-%       columns as the shifts s0, so that for each tangential direction it 
+%
+%       In case of MIMO models, matrices of tangential directions Rt
+%       (and Lt) have to be defined. They must have the same number of
+%       columns as the shifts s0, so that for each tangential direction it
 %       is clear to which shift it belongs.
 %
 %       If a shifted system has to be solved, sometimes the solution
@@ -46,13 +46,13 @@ function [varargout] = solveLse(varargin)
 %       computation. In this case, a vector of shift s0, a current solution
 %       V and an index jCol can be passed to SOLVELSE, which will only
 %       determine the solution corresponding to jCol and update this
-%       column of V. SOLVELSE will take the previous shift and tangential 
+%       column of V. SOLVELSE will take the previous shift and tangential
 %       direction into account to reuse lu-factors.
 %
-%       If a system without shifts (e.g. A\B) has to be solved several 
-%       times, it is recommended to first call SOLVELSE(A). This will 
-%       initialize the function by storing the lu-factors of A. If 
-%       Opts.reuseLU=true is set afterwards, SOLVELSE will check if the 
+%       If a system without shifts (e.g. A\B) has to be solved several
+%       times, it is recommended to first call SOLVELSE(A). This will
+%       initialize the function by storing the lu-factors of A. If
+%       Opts.reuseLU=true is set afterwards, SOLVELSE will check if the
 %       lu-factors belong to A and reuse them.
 %
 %
@@ -94,7 +94,7 @@ function [varargout] = solveLse(varargin)
 %                           [{1e-10} / positive float]
 %
 % Output Arguments:
-%       -X:        Lse solution corresp. to B/Orthonormal basis spanning the input Krylov subsp. 
+%       -X:        Lse solution corresp. to B/Orthonormal basis spanning the input Krylov subsp.
 %       -Sx:       Matrix of input Sylvester Eq.
 %       -Rx:       Right tangential directions of Sylvester Eq., (mxq) matrix
 %       -Y:        Lse solution corresp. to C/Orthonormal basis spanning the output Krylov subsp.
@@ -105,7 +105,7 @@ function [varargout] = solveLse(varargin)
 %       -Syj:      Column of output Sylvester Eq. corresponding to jCol
 %       -Ryj:      Column of right tangential directions of Sylvester Eq. corresponding to jCol
 %
-% See Also: 
+% See Also:
 %       arnoldi, rk, irka, projectiveMor
 %
 % References:
@@ -114,9 +114,9 @@ function [varargout] = solveLse(varargin)
 %       * *[3] Antoulas (2010)*, Interpolatory model reduction of large-scale...
 %
 %------------------------------------------------------------------
-% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State-Space, Model Order 
-% Reduction and System Analysis Toolbox developed at the Chair of 
-% Automatic Control, Technische Universitaet Muenchen. For updates 
+% This file is part of <a href="matlab:docsearch sssMOR">sssMOR</a>, a Sparse State-Space, Model Order
+% Reduction and System Analysis Toolbox developed at the Chair of
+% Automatic Control, Technische Universitaet Muenchen. For updates
 % and further information please visit <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % For any suggestions, submission and/or bug reports, mail us at
 %                   -> <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a> <-
@@ -135,14 +135,14 @@ function [varargout] = solveLse(varargin)
 
 Def.lse = 'sparse'; %use sparse or full LU or lse with Hessenberg decomposition {'sparse', 'full','hess','iterative', 'gauss'}
 Def.dgksTol = 1e-12; %orthogonality tolerance: norm(V'*V-I,'fro')<tol
-Def.krylov = 0; %standard or cascaded krylov basis (only for siso) {0,'cascade'}  
+Def.krylov = 0; %standard or cascaded krylov basis (only for siso) {0,'cascade'}
 
 Def.reuseLU = false; %reuse lu (false/true)
 Def.reuseTol = 1e-10;
 
 Def.solver = 'cgs'; %first iterative solver to try
 Def.maxiterlse = 1000; %maximum number of iterations in iterative solver
-Def.tollse = 1e-6; %residual tolerance in iterSolve 
+Def.tollse = 1e-6; %residual tolerance in iterSolve
 Def.verbose = 1; %display warnings when iterative methods fail
 Def.force = 0;  %not converging in iterSolve leads to error (0) or warning (1)
 
@@ -161,7 +161,7 @@ if ~exist('Opts','var') || isempty(Opts)
     Opts = Def;
 else
     Opts = parseOpts(Opts,Def);
-end  
+end
 
 % input of sys
 if isa(varargin{1},'sss') || isa(varargin{1},'ss') || isa(varargin{1},'ssRed')
@@ -190,13 +190,13 @@ if isa(varargin{1},'sss') || isa(varargin{1},'ss') || isa(varargin{1},'ssRed')
             hermite=true;
         end
     end
-
-elseif length(varargin)>1    
+    
+elseif length(varargin)>1
     % input of matrices
     A=varargin{1};
     B=varargin{2};
     initLse=false;
-
+    
     switch length(varargin)
         case 2
             hermite=false;
@@ -248,8 +248,8 @@ elseif length(varargin)>1
             else
                 error('Wrong input');
             end
-        case 6 
-            if isscalar(varargin{1}) 
+        case 6
+            if isscalar(varargin{1})
                 jCol=varargin{1};
                 V=varargin{2};
                 A=varargin{3};
@@ -261,7 +261,7 @@ elseif length(varargin)>1
                 error('Wrong input');
             end
         case 7
-           if isscalar(varargin{1}) && (nargout==1  || nargout==3)
+            if isscalar(varargin{1}) && (nargout==1  || nargout==3)
                 jCol=varargin{1};
                 V=varargin{2};
                 A=varargin{3};
@@ -270,17 +270,17 @@ elseif length(varargin)>1
                 s0=varargin{6};
                 Rt=varargin{7};
                 hermite=false;
-           elseif nargout==2 || nargout>3
+            elseif nargout==2 || nargout>3
                 C=varargin{3};
                 E=varargin{4};
                 s0=varargin{5};
                 Rt=varargin{6};
                 Lt=varargin{7};
                 hermite=true;
-           else
+            else
                 error('Wrong input.');
-           end
-        case 8 
+            end
+        case 8
             if isscalar(varargin{1})
                 jCol=varargin{1};
                 V=varargin{2};
@@ -373,7 +373,7 @@ if initLse
     end
     Opts.krylov='init';
     nextDirection(1,0,zeros(size(A,1),1));
-
+    
 elseif exist('jCol','var') && ~isempty(jCol)
     
     if hermite
@@ -401,12 +401,12 @@ else
     V=zeros(size(A,1),q);
     Rv=zeros(size(B,2),q);
     Sv=zeros(q);
-    if hermite 
-        W = zeros(size(A,1),q); 
+    if hermite
+        W = zeros(size(A,1),q);
         Lw = zeros(size(C,1),q);
         Sw=zeros(q);
     end
-
+    
     for jCol=1:length(s0)
         if hermite
             [V, SRsylv, Rsylv, W, SLsylv, Lsylv] = nextDirection(jCol, s0, V, W);
@@ -434,7 +434,7 @@ else
             end
         end
     end
-
+    
     % output
     if hermite
         varargout{1}=V;
@@ -450,707 +450,707 @@ else
     end
 end
 
-function [V, SRsylv, Rsylv, W, SLsylv, Lsylv] = nextDirection(jCol, s0, V, W)  
-%   Get the next direction by solving the lse
-%   Input:  jCol:  Column to be treated
-%           s0:    Vector containing the expansion points
-%           V, W:  solution of lse/Krylov subspaces
-%   Output: V, W:  Updated lse solutions/Krylov subspace
-%           SRsylv: update of column jCol of the Sylvester matrices
-%                  Sv (e.g. SRsylv(:,jCol)=SRsylv)
-%           Rsylv: update of column jCol of the Sylvester matrices 
-%                  Rv (Rsylv either eye(size(B,2)) or 
-%                  zeros(size(B,2)), e.g. Rsylv(:,jCol)=Rsylv*Rt(:,jCol)
-%           SLsylv: update of column jCol of the Sylvester matrices
-%                  Sw (e.g. SLsylv(:,jCol)=SLsylv)
-%           Lsylv: update of column jCol of the Sylvester matrices 
-%                  Lw (Lsylv either eye(size(C,1)) or 
-%                  zeros(size(C,1)), e.g. Lsylv(:,jCol)=Lsylv*Lt(:,jCol)
-
-SRsylv=zeros(size(V,2),1);
-if hermite
-    SLsylv=zeros(size(W,2),1);
-end
-
-% build Krylov subspace or just solve lse with current s0, Rt and B
-switch Opts.krylov
-    case 0
-        tempV=B*Rt(:,jCol);
-        newlu=1;
-        newtan=1;
-        SRsylv(jCol)=s0(jCol);
-        Rsylv=eye(size(B,2));
+    function [V, SRsylv, Rsylv, W, SLsylv, Lsylv] = nextDirection(jCol, s0, V, W)
+        %   Get the next direction by solving the lse
+        %   Input:  jCol:  Column to be treated
+        %           s0:    Vector containing the expansion points
+        %           V, W:  solution of lse/Krylov subspaces
+        %   Output: V, W:  Updated lse solutions/Krylov subspace
+        %           SRsylv: update of column jCol of the Sylvester matrices
+        %                  Sv (e.g. SRsylv(:,jCol)=SRsylv)
+        %           Rsylv: update of column jCol of the Sylvester matrices
+        %                  Rv (Rsylv either eye(size(B,2)) or
+        %                  zeros(size(B,2)), e.g. Rsylv(:,jCol)=Rsylv*Rt(:,jCol)
+        %           SLsylv: update of column jCol of the Sylvester matrices
+        %                  Sw (e.g. SLsylv(:,jCol)=SLsylv)
+        %           Lsylv: update of column jCol of the Sylvester matrices
+        %                  Lw (Lsylv either eye(size(C,1)) or
+        %                  zeros(size(C,1)), e.g. Lsylv(:,jCol)=Lsylv*Lt(:,jCol)
+        
+        SRsylv=zeros(size(V,2),1);
         if hermite
-            SLsylv(jCol)=s0(jCol);
-            Lsylv=eye(size(C,1));
-            tempW = C.'*Lt(:,jCol);
+            SLsylv=zeros(size(W,2),1);
         end
-        % reuse old factors, but don't build Krylov subspace (tempV ~= E*V(:,jCol-1))
-        if jCol>1
-            if s0(jCol)==s0(jCol-1)
-                newlu=0;
-                if Rt(:,jCol) == Rt(:,jCol-1)
-                    newtan=0;
+        
+        % build Krylov subspace or just solve lse with current s0, Rt and B
+        switch Opts.krylov
+            case 0
+                tempV=B*Rt(:,jCol);
+                newlu=1;
+                newtan=1;
+                SRsylv(jCol)=s0(jCol);
+                Rsylv=eye(size(B,2));
+                if hermite
+                    SLsylv(jCol)=s0(jCol);
+                    Lsylv=eye(size(C,1));
+                    tempW = C.'*Lt(:,jCol);
                 end
-            end
-        end
-        if hermite
-            [V(:,jCol), W(:,jCol)] = lse(newlu, newtan, jCol, s0, tempV, tempW);
-        else
-            V(:,jCol) = lse(newlu, newtan, jCol, s0, tempV);
-        end
-    case 'standardKrylov'
-        % new basis vector
-        tempV=B*Rt(:,jCol); newlu=1; newtan=1;
-        SRsylv(jCol)=s0(jCol);
-        Rsylv=eye(size(B,2));
-        if hermite
-            SLsylv(jCol)=s0(jCol);
-            Lsylv=eye(size(C,1));
-            tempW = C.'*Lt(:,jCol);
-        end
-        if jCol>1
-            if s0(jCol)==s0(jCol-1)
-                newlu=0;
-                if Rt(:,jCol) == Rt(:,jCol-1)
-                    % Higher order moments, for the SISO and MIMO case
-                    newtan = 0;
-                    tempV = V(:,jCol-1); %overwrite
-                    SRsylv(jCol-1)=1;
-                    Rsylv=zeros(size(B,2));
+                % reuse old factors, but don't build Krylov subspace (tempV ~= E*V(:,jCol-1))
+                if jCol>1
+                    if s0(jCol)==s0(jCol-1)
+                        newlu=0;
+                        if Rt(:,jCol) == Rt(:,jCol-1)
+                            newtan=0;
+                        end
+                    end
+                end
+                if hermite
+                    [V(:,jCol), W(:,jCol)] = lse(newlu, newtan, jCol, s0, tempV, tempW);
+                else
+                    V(:,jCol) = lse(newlu, newtan, jCol, s0, tempV);
+                end
+            case 'standardKrylov'
+                % new basis vector
+                tempV=B*Rt(:,jCol); newlu=1; newtan=1;
+                SRsylv(jCol)=s0(jCol);
+                Rsylv=eye(size(B,2));
+                if hermite
+                    SLsylv(jCol)=s0(jCol);
+                    Lsylv=eye(size(C,1));
+                    tempW = C.'*Lt(:,jCol);
+                end
+                if jCol>1
+                    if s0(jCol)==s0(jCol-1)
+                        newlu=0;
+                        if Rt(:,jCol) == Rt(:,jCol-1)
+                            % Higher order moments, for the SISO and MIMO case
+                            newtan = 0;
+                            tempV = V(:,jCol-1); %overwrite
+                            SRsylv(jCol-1)=1;
+                            Rsylv=zeros(size(B,2));
+                            if hermite
+                                SLsylv(jCol-1)=1;
+                                Lsylv=zeros(size(C,1));
+                                tempW = W(:,jCol-1);
+                            end
+                        else
+                            newtan = 1;
+                        end
+                    end
+                end
+                if hermite
+                    [V(:,jCol), W(:,jCol)] = lse(newlu, newtan, jCol, s0, tempV, tempW);
+                else
+                    V(:,jCol) = lse(newlu, newtan, jCol, s0, tempV);
+                end
+            case 'cascadedKrylov'
+                if size(B,2)==1
+                    newlu=1; newtan=1;
+                    SRsylv(jCol)=s0(jCol);
                     if hermite
-                        SLsylv(jCol-1)=1;
-                        Lsylv=zeros(size(C,1));
-                        tempW = W(:,jCol-1); 
+                        SLsylv(jCol)=s0(jCol);
+                    end
+                    if jCol==1
+                        tempV=B;
+                        Rsylv=1;
+                        if hermite
+                            tempW=C.';
+                            Lsylv=1;
+                        end
+                    else
+                        if s0(jCol)==s0(jCol-1)
+                            newlu=0;
+                            tempV=V(:,jCol-1);
+                            if hermite
+                                tempW=W(:,jCol-1);
+                            end
+                        else
+                            tempV=E*V(:,jCol-1);
+                            if hermite
+                                tempW=E*W(:,jCol-1);
+                            end
+                        end
+                        Rsylv=0;
+                        SRsylv(jCol-1)=1;
+                        if hermite
+                            Lsylv=0;
+                            SLsylv(jCol-1)=1;
+                        end
+                    end
+                    if hermite
+                        [V(:,jCol), W(:,jCol)] = lse(newlu, newtan, jCol, s0, tempV, tempW);
+                    else
+                        V(:,jCol) = lse(newlu, newtan, jCol, s0, tempV);
                     end
                 else
-                    newtan = 1;
+                    error('A cascaded Krylov basis is only available for SISO systems.');
                 end
-            end
-        end
-        if hermite
-            [V(:,jCol), W(:,jCol)] = lse(newlu, newtan, jCol, s0, tempV, tempW);
-        else
-            V(:,jCol) = lse(newlu, newtan, jCol, s0, tempV);
-        end
-    case 'cascadedKrylov'
-        if size(B,2)==1
-            newlu=1; newtan=1;
-            SRsylv(jCol)=s0(jCol);
-            if hermite
-                SLsylv(jCol)=s0(jCol);
-            end
-            if jCol==1
-                tempV=B;
-                Rsylv=1;
-                if hermite 
-                    tempW=C.';
-                    Lsylv=1;
+            case 'init'
+                if ~initLse
+                    error('Wrong Opts.krylov.');
                 end
-            else
-                if s0(jCol)==s0(jCol-1)
-                    newlu=0;
-                    tempV=V(:,jCol-1);
-                    if hermite
-                        tempW=W(:,jCol-1);
-                    end
-                else
-                    tempV=E*V(:,jCol-1);
-                    if hermite
-                        tempW=E*W(:,jCol-1);
-                    end
-                end
-                Rsylv=0;
-                SRsylv(jCol-1)=1;
-                if hermite
-                    Lsylv=0;
-                    SLsylv(jCol-1)=1;
-                end
-            end
-            if hermite
-                [V(:,jCol), W(:,jCol)] = lse(newlu, newtan, jCol, s0, tempV, tempW);
-            else
-                V(:,jCol) = lse(newlu, newtan, jCol, s0, tempV);
-            end
-        else
-            error('A cascaded Krylov basis is only available for SISO systems.');
-        end
-    case 'init'
-        if ~initLse
-            error('Wrong Opts.krylov.');
-        end
-        lse(1, 1, 1, 0, V);
-    otherwise 
-        error('Opts.krylov is invalid.');
-end
-end
-
-function [tempV, tempW] = lse(newlu, newtan, jCol, s0, tempV, tempW)
-%   Solve linear system of equations to obtain the new direction
-%   Moment matching:  newlu=0: tempV=(A-s0_old*E)^-1*(E*tempV)
-%                     newlu=1: tempV=(A-s0*E)^-1*tempV
-%   Markov parameter: newlu=0: tempV=E^-1*(A*tempV)
-%                     newlu=1: tempW=E^-1*tempV
-%   Input:  newlu: new lu decomposition required
-%           newtan: new tangential direction required
-%           jCol: Column to be treated
-%           s0: Vector containing the expansion points
-%           tempV, tempW: previous direction
-%   Output: tempV, tempW: new direction
-persistent R S L U a o;
-
-if isinf(s0(jCol)) %Realization problem (match Markov parameters)
-    % Note: s0=[] for initLse, reuseLU, withoutE -> no isinf(s0) possible
-    
-    % Krylov subspace
-    if (newlu==0 && (size(B,2)==1 || newtan==0) && strcmp(Opts.krylov,'standardKrylov')) || strcmp(Opts.krylov,'cascadedKrylov')
-        tempV=A*tempV;
-        if hermite
-            tempW=A*tempW;
-        end
-    end
-    
-    % check if lu-factors are not empty
-    if newlu==0 && (isempty(R) && isempty(S) && isempty(L) && isempty(U) && isempty(a) && isempty(o))
-        newlu=1;
-    end
-    
-    % compute new lu
-    if newlu==1
-        try
-            % compute Cholesky factors of E
-            U=[];
-            [R,p,S] = chol(E);
-            if p~=0 % different factorization?
-                error('solveLse:cholp','chol: p~=0');
-            end
-        catch err
-            if strcmp(err.identifier,'MATLAB:posdef') || strcmp(err.identifier,'solveLse:cholp')|| ~strcmp(Opts.lse,'sparse')
-                % E is not pos. def -> use LU instead
-                switch Opts.lse
-                    case 'sparse'
-                        [L,U,a,o,S]=lu(E,'vector');
-                    case 'full'
-                        [L,U]=lu(E);
-                end
-            else
-                rethrow(err);
-            end
-        end
-    end
-    
-    % solve lse
-    if ~isempty(U) || strcmp(Opts.lse,'hess') || strcmp(Opts.lse,'gauss') % not cholesky
-        switch Opts.lse
-            case 'sparse'
-                oldV=tempV;
-                tempV(o,:) = U\(L\(S(:,a)\tempV)); %LU x(o,:) = S(:,a)\b 
-                if hermite
-                    oldW=tempW;
-                    tempW(o,:) = U\(L\(S(:,a)\tempW));
-                end
-                % iterative refinement
-                if Opts.refine
-                       if hermite
-                           [tempV,tempW] = iterativeRefinement(E, oldV, tempV, oldW, tempW);
-                       else
-                           tempV = iterativeRefinement(E,oldV, tempV);
-                       end
-               end
-            case 'full'
-                tempV = U\(L\tempV);
-                if hermite
-                    tempW = U\(L\tempW);
-                end
-            case 'hess'
-                tempV = E\tempV;
-                if hermite
-                    tempW = E\tempW;
-                end
-            case 'gauss'
-                tempV = E\tempV;
-                if hermite
-                    tempW = E\tempW;
-                end
+                lse(1, 1, 1, 0, V);
             otherwise
-                error('Lse method not implemented.');
-        end
-    else % cholesky
-        tempV = S*(R\(R.'\(S.'*tempV)));
-        if hermite
-            tempW = S*(R\(R.'\(S.'*tempW)));
+                error('Opts.krylov is invalid.');
         end
     end
-    
-else %Rational Krylov
-    if ~strcmp(Opts.lse,'iterative') %direct methods
+
+    function [tempV, tempW] = lse(newlu, newtan, jCol, s0, tempV, tempW)
+        %   Solve linear system of equations to obtain the new direction
+        %   Moment matching:  newlu=0: tempV=(A-s0_old*E)^-1*(E*tempV)
+        %                     newlu=1: tempV=(A-s0*E)^-1*tempV
+        %   Markov parameter: newlu=0: tempV=E^-1*(A*tempV)
+        %                     newlu=1: tempW=E^-1*tempV
+        %   Input:  newlu: new lu decomposition required
+        %           newtan: new tangential direction required
+        %           jCol: Column to be treated
+        %           s0: Vector containing the expansion points
+        %           tempV, tempW: previous direction
+        %   Output: tempV, tempW: new direction
+        persistent R S L U a o;
         
-        % Krylov subspace
-        if newlu==0
-            if strcmp(Opts.krylov,'standardKrylov') || strcmp(Opts.krylov,'cascadedKrylov')
-                if size(B,2)==1 %SISO
-                    tempV=E*tempV;
-                    if hermite, tempW = E.'*tempW; end
-                elseif newtan==0
-                    % Tangential matching of higher order moments
-                    tempV=E*tempV;
-                    if hermite, tempW = E.'*tempW; end
+        if isinf(s0(jCol)) %Realization problem (match Markov parameters)
+            % Note: s0=[] for initLse, reuseLU, withoutE -> no isinf(s0) possible
+            
+            % Krylov subspace
+            if (newlu==0 && (size(B,2)==1 || newtan==0) && strcmp(Opts.krylov,'standardKrylov')) || strcmp(Opts.krylov,'cascadedKrylov')
+                tempV=A*tempV;
+                if hermite
+                    tempW=A*tempW;
                 end
             end
-        end
-        
-        % check if lu-factors are not empty
-        if newlu==0 && (isempty(R) && isempty(S) && isempty(L) && isempty(U) && isempty(a) && isempty(o))
-            newlu=1;
-        end
-
-        % check if old lu can be reused (only for full/sparse LU)
-        if newlu==1 && Opts.reuseLU && withoutE && ~initLse
-            if strcmp(Opts.lse,'full') && ~isempty(L) && ~isempty(U) && norm(L*U - A,'fro')<Opts.reuseTol
-                newlu=0;
-            elseif (strcmp(Opts.lse,'sparse') && ~isempty(L) && ~isempty(U) ...
-                    && ~isempty(a) && ~isempty(o) && ~isempty(S) && norm(L*U - S(:,a)\A(:,o),'fro')<Opts.reuseTol)
-                newlu=0;
+            
+            % check if lu-factors are not empty
+            if newlu==0 && (isempty(R) && isempty(S) && isempty(L) && isempty(U) && isempty(a) && isempty(o))
+                newlu=1;
             end
-        end
-        
-        if newlu==1
-            if withoutE
+            
+            % compute new lu
+            if newlu==1
+                try
+                    % compute Cholesky factors of E
+                    U=[];
+                    [R,p,S] = chol(E);
+                    if p~=0 % different factorization?
+                        error('solveLse:cholp','chol: p~=0');
+                    end
+                catch err
+                    if strcmp(err.identifier,'MATLAB:posdef') || strcmp(err.identifier,'solveLse:cholp')|| ~strcmp(Opts.lse,'sparse')
+                        % E is not pos. def -> use LU instead
+                        switch Opts.lse
+                            case 'sparse'
+                                [L,U,a,o,S]=lu(E,'vector');
+                            case 'full'
+                                [L,U]=lu(E);
+                        end
+                    else
+                        rethrow(err);
+                    end
+                end
+            end
+            
+            % solve lse
+            if ~isempty(U) || strcmp(Opts.lse,'hess') || strcmp(Opts.lse,'gauss') % not cholesky
                 switch Opts.lse
                     case 'sparse'
-                        % vector LU for sparse matrices
-                        [L,U,a,o,S]=lu(A,'vector');
+                        oldV=tempV;
+                        tempV(o,:) = U\(L\(S(:,a)\tempV)); %LU x(o,:) = S(:,a)\b
+                        if hermite
+                            oldW=tempW;
+                            tempW(o,:) = U\(L\(S(:,a)\tempW));
+                        end
+                        % iterative refinement
+                        if Opts.refine
+                            if hermite
+                                [tempV,tempW] = iterativeRefinement(E, oldV, tempV, oldW, tempW);
+                            else
+                                tempV = iterativeRefinement(E,oldV, tempV);
+                            end
+                        end
                     case 'full'
-                        [L,U] = lu(A);
+                        tempV = U\(L\tempV);
+                        if hermite
+                            tempW = U\(L\tempW);
+                        end
+                    case 'hess'
+                        tempV = E\tempV;
+                        if hermite
+                            tempW = E\tempW;
+                        end
+                    case 'gauss'
+                        tempV = E\tempV;
+                        if hermite
+                            tempW = E\tempW;
+                        end
+                    otherwise
+                        error('Lse method not implemented.');
                 end
-            else
-                switch Opts.lse
-                case 'sparse'
-                    % vector LU for sparse matrices
-                    [L,U,a,o,S]=lu(A-s0(jCol)*E,'vector');
-                case 'full'
-                    [L,U] = lu(A-s0(jCol)*E);
+            else % cholesky
+                tempV = S*(R\(R.'\(S.'*tempV)));
+                if hermite
+                    tempW = S*(R\(R.'\(S.'*tempW)));
                 end
             end
-        end
-        
-        if ~initLse
-            % Solve the linear system of equations
-            switch Opts.lse
-                case 'sparse'
-                    oldV=tempV;
-                    tempV(o,:) = U\(L\(S(:,a)\tempV)); %LU x(o,:) = S(:,a)\b 
-                    if hermite
-                        oldW=tempW;
-                        tempW = (S(:,a)).'\(L.'\(U.'\(tempW(o,:)))); 
-                    end %U'L'S(:,a) x = c'(o,:) 
-                    % iterative refinement
-                    if Opts.refine
-                       if withoutE
-                           if hermite
-                               [tempV,tempW] = iterativeRefinement(A, oldV, tempV, oldW, tempW);
-                           else
-                               tempV = iterativeRefinement(A,oldV, tempV);
-                           end
-                       else
-                           if hermite
-                               [tempV,tempW] = iterativeRefinement(A-s0(jCol)*E, oldV, tempV, oldW, tempW);
-                           else
-                               tempV = iterativeRefinement(A-s0(jCol)*E,oldV, tempV);
-                           end
-                       end
-                   end
-                case 'full'
-                    tempV = U\(L\tempV);
-                    if hermite, tempW = (L.'\(U.'\(tempW))); end 
-                case 'hess'
-                    if withoutE
-                        tempV = A\tempV;
-                    else
-                        tempV = (A-s0(jCol)*E)\tempV;
-                    end
-                    if hermite
-                        if withoutE
-                            tempW = A.'\tempW; 
-                        else
-                            tempW = (A-s0(jCol)*E).'\tempW; 
+            
+        else %Rational Krylov
+            if ~strcmp(Opts.lse,'iterative') %direct methods
+                
+                % Krylov subspace
+                if newlu==0
+                    if strcmp(Opts.krylov,'standardKrylov') || strcmp(Opts.krylov,'cascadedKrylov')
+                        if size(B,2)==1 %SISO
+                            tempV=E*tempV;
+                            if hermite, tempW = E.'*tempW; end
+                        elseif newtan==0
+                            % Tangential matching of higher order moments
+                            tempV=E*tempV;
+                            if hermite, tempW = E.'*tempW; end
                         end
                     end
-                case 'gauss'
-                    if withoutE
-                        tempV = A\tempV;
-                    else
-                        tempV = (A-s0(jCol)*E)\tempV;
+                end
+                
+                % check if lu-factors are not empty
+                if newlu==0 && (isempty(R) && isempty(S) && isempty(L) && isempty(U) && isempty(a) && isempty(o))
+                    newlu=1;
+                end
+                
+                % check if old lu can be reused (only for full/sparse LU)
+                if newlu==1 && Opts.reuseLU && withoutE && ~initLse
+                    if strcmp(Opts.lse,'full') && ~isempty(L) && ~isempty(U) && norm(L*U - A,'fro')<Opts.reuseTol
+                        newlu=0;
+                    elseif (strcmp(Opts.lse,'sparse') && ~isempty(L) && ~isempty(U) ...
+                            && ~isempty(a) && ~isempty(o) && ~isempty(S) && norm(L*U - S(:,a)\A(:,o),'fro')<Opts.reuseTol)
+                        newlu=0;
                     end
-                    if hermite
-                        if withoutE
-                            tempW = A.'\tempW; 
-                        else
-                            tempW = (A-s0(jCol)*E).'\tempW; 
+                end
+                
+                if newlu==1
+                    if withoutE
+                        switch Opts.lse
+                            case 'sparse'
+                                % vector LU for sparse matrices
+                                [L,U,a,o,S]=lu(A,'vector');
+                            case 'full'
+                                [L,U] = lu(A);
+                        end
+                    else
+                        switch Opts.lse
+                            case 'sparse'
+                                % vector LU for sparse matrices
+                                [L,U,a,o,S]=lu(A-s0(jCol)*E,'vector');
+                            case 'full'
+                                [L,U] = lu(A-s0(jCol)*E);
                         end
                     end
-                otherwise
-                    error('Lse method not implemented.');
-            end
-        end
-        
-    else %iterative methods
-        if withoutE
-            [tempV,flag,method] = iterSolve(A,tempV,newlu,hermite);
-            if Opts.verbose, disp(method); end
-            if hermite
-                [tempW,flag,method] = iterSolve((A).',tempW,0,hermite);
-                if Opts.verbose, disp('entering hermite section'); end
-            end
-        else                
-            if newlu
-                [tempV,flag,method] = iterSolve(A-s0(jCol)*E,tempV,newlu,hermite);
-                if Opts.verbose, disp(method); end
-                if hermite
-                    [tempW,flag,method] = iterSolve((A-s0(jCol)*E).',tempW,0,hermite);
-                    if Opts.verbose, disp('entering hermite section'); end
                 end
-            elseif strcmp(Opts.krylov,'standardKrylov') || strcmp(Opts.krylov,'cascadedKrylov')
-                [tempV,flag,method] = iterSolve(A-s0(jCol)*E,E*tempV,newlu,hermite);
-                if Opts.verbose, disp(method); end
-                if hermite
-                    [tempW,flag,method] = iterSolve((A-s0(jCol)*E).',E.'*tempW,0,hermite);
-                    if Opts.verbose, disp('entering hermite section'); end
+                
+                if ~initLse
+                    % Solve the linear system of equations
+                    switch Opts.lse
+                        case 'sparse'
+                            oldV=tempV;
+                            tempV(o,:) = U\(L\(S(:,a)\tempV)); %LU x(o,:) = S(:,a)\b
+                            if hermite
+                                oldW=tempW;
+                                tempW = (S(:,a)).'\(L.'\(U.'\(tempW(o,:))));
+                            end %U'L'S(:,a) x = c'(o,:)
+                            % iterative refinement
+                            if Opts.refine
+                                if withoutE
+                                    if hermite
+                                        [tempV,tempW] = iterativeRefinement(A, oldV, tempV, oldW, tempW);
+                                    else
+                                        tempV = iterativeRefinement(A,oldV, tempV);
+                                    end
+                                else
+                                    if hermite
+                                        [tempV,tempW] = iterativeRefinement(A-s0(jCol)*E, oldV, tempV, oldW, tempW);
+                                    else
+                                        tempV = iterativeRefinement(A-s0(jCol)*E,oldV, tempV);
+                                    end
+                                end
+                            end
+                        case 'full'
+                            tempV = U\(L\tempV);
+                            if hermite, tempW = (L.'\(U.'\(tempW))); end
+                        case 'hess'
+                            if withoutE
+                                tempV = A\tempV;
+                            else
+                                tempV = (A-s0(jCol)*E)\tempV;
+                            end
+                            if hermite
+                                if withoutE
+                                    tempW = A.'\tempW;
+                                else
+                                    tempW = (A-s0(jCol)*E).'\tempW;
+                                end
+                            end
+                        case 'gauss'
+                            if withoutE
+                                tempV = A\tempV;
+                            else
+                                tempV = (A-s0(jCol)*E)\tempV;
+                            end
+                            if hermite
+                                if withoutE
+                                    tempW = A.'\tempW;
+                                else
+                                    tempW = (A-s0(jCol)*E).'\tempW;
+                                end
+                            end
+                        otherwise
+                            error('Lse method not implemented.');
+                    end
                 end
-            else % Opts.krylov==0 and newlu==0 -> tempV instead of E*tempV -> no krylov subspace
-                [tempV,flag,method] = iterSolve(A-s0(jCol)*E,tempV,newlu,hermite);
-                if Opts.verbose, disp(method); end
-                if hermite
-                    [tempW,flag,method] = iterSolve((A-s0(jCol)*E).',tempW,0,hermite);
-                    if Opts.verbose, disp('entering hermite section'); end
-                end
-            end
-        end
-    end
-end
-
-if jCol==length(s0) && ~Opts.reuseLU && ~initLse
-    clear R S L U a o first sym pd flag method failed nolu solver
-end
-
-function [tempV, tempW, rNormVecV, rNormVecW] = iterativeRefinement(AsE, oldV, tempV, oldW, tempW)
-%   ITERATIVEREFINEMENT - Use iterative LSE solver to refine LSE solution
-%
-%   This function takes as input the approximate solution tempV to the
-%   linear system AsE*tempV = oldV and tries to improve its accuracy. oldV is also
-%   allowed to be a matrix, so that tempV is the solution of a set of lse
-%   with common AsE matrix.
-% 
-%   This can be done either by direct methods (compare [1,2]) or 
-%   by feeding the data to an iterative solver (so far, only cgs is 
-%   implemented). In both cases, the algorihm stops when the desired
-%   accuracy, measured as the relative norm of the residual
-%   r = oldV-AsE*tempV is achieved.
-% 
-%   This can be useful when subspecting that a solution X obtained
-%   through direct methods (e.g. lu or chol) may be inaccurate due to
-%   roundoff errors.
-%   Input:    AsE        A-s0(jCol)*E
-%             oldV       tempV before solving lse
-%             tempV      current lse solution
-%   Output:   tempV      improved lse solution
-
-switch Opts.refine
-    case 'wilkinson'
-        oldVNorm = norm(oldV,'fro');
-        k = 0; rNormVecV = zeros(1,Opts.refMaxiter);
-        
-        resV = oldV-AsE*tempV; %residual
-        rNormV = norm(resV,'fro')/oldVNorm;
-        
-        if hermite
-            oldWNorm = norm(oldW,'fro');
-            rNormVecW = zeros(1,Opts.refMaxiter);
-        
-            resW = oldW-AsE.'*tempW; %residual
-            rNormW = norm(resW,'fro')/oldWNorm;
-        end
-        
-        %   Refine!
-        while (rNormV > Opts.refTol || (hermite && rNormW > Opts.refTol)) && k <= Opts.refMaxiter
-            k = k+1;
-
-%             D = o*(U\(L\(a*(S\R)))); %lu(AsE)
-            Dv = zeros(size(resV));
-            Dv(o,:) = U\(L\(S(:,a)\resV));
-            tempV = tempV + Dv;      
-            
-            resV = oldV-AsE*tempV;
-            rNormV = norm(resV,'fro')/oldVNorm;
-            rNormVecV(k) = rNormV;
-            
-            if hermite
-                Dw = (S(:,a)).'\(L.'\(U.'\(resW(o,:)))); 
-                tempW = tempW + Dw;
-                resW = oldW-AsE.'*tempW;
-                rNormW = norm(resW,'fro')/oldWNorm;
-                rNormVecW(k) = rNormW;
-            end
-        end
-        
-        if k <= Opts.refMaxiter
-            rNormVecV(k+1:end) = [];
-            if hermite
-                rNormVecW(k+1:end) = []; 
-            end
-        end
-            
-    case 'cgs'
-        warning('off','MATLAB:cgs:tooSmallTolerance');
-        for iCol = 1:size(tempV,2)
-            %Solve LSE with desired accuracy
-            [tempv,exitFlagv,rNormVecV] = cgs(AsE,oldV(:,iCol),Opts.refTol,Opts.refMaxiter,L,U,tempV(:,iCol));
-            if hermite
-                [tempw,exitFlagw,rNormVecW] = cgs(AsE.',oldW(:,iCol),Opts.refTol,Opts.refMaxiter,U.',L.',tempW(:,iCol));
-            end
-            %replace column if refinement worked
-            if exitFlagv == 0,
-                tempV(:,iCol) = tempv;
-                if hermite && exitFlagw == 0
-                    tempW(:,iCol) = tempw;
+                
+            else %iterative methods
+                if withoutE
+                    [tempV,flag,method] = iterSolve(A,tempV,newlu,hermite);
+                    if Opts.verbose, disp(method); end
+                    if hermite
+                        [tempW,flag,method] = iterSolve((A).',tempW,0,hermite);
+                        if Opts.verbose, disp('entering hermite section'); end
+                    end
                 else
-                    warning('sss:iterativeRefinement:cgsNoConvergence','iterative refinement did not work.');
+                    if newlu
+                        [tempV,flag,method] = iterSolve(A-s0(jCol)*E,tempV,newlu,hermite);
+                        if Opts.verbose, disp(method); end
+                        if hermite
+                            [tempW,flag,method] = iterSolve((A-s0(jCol)*E).',tempW,0,hermite);
+                            if Opts.verbose, disp('entering hermite section'); end
+                        end
+                    elseif strcmp(Opts.krylov,'standardKrylov') || strcmp(Opts.krylov,'cascadedKrylov')
+                        [tempV,flag,method] = iterSolve(A-s0(jCol)*E,E*tempV,newlu,hermite);
+                        if Opts.verbose, disp(method); end
+                        if hermite
+                            [tempW,flag,method] = iterSolve((A-s0(jCol)*E).',E.'*tempW,0,hermite);
+                            if Opts.verbose, disp('entering hermite section'); end
+                        end
+                    else % Opts.krylov==0 and newlu==0 -> tempV instead of E*tempV -> no krylov subspace
+                        [tempV,flag,method] = iterSolve(A-s0(jCol)*E,tempV,newlu,hermite);
+                        if Opts.verbose, disp(method); end
+                        if hermite
+                            [tempW,flag,method] = iterSolve((A-s0(jCol)*E).',tempW,0,hermite);
+                            if Opts.verbose, disp('entering hermite section'); end
+                        end
+                    end
                 end
-            else
-                warning('sss:iterativeRefinement:cgsNoConvergence','iterative refinement did not work.');
             end
         end
-        warning('on','MATLAB:cgs:tooSmallTolerance');
-    otherwise
-        error('Iterative refinement method not implemented.');
-end
-end
-end
-
-function [ x, varargout ] = iterSolve( A, b, newlu, hermite)
-%ITERSOLVE function to solve the linear system A*x=b iteratively
-%   Detailed explanation goes here
-
-persistent first L U sym pd flag method failed nolu solver;   
-
-if isempty(first);
-    first = 1;
-end
-
-if first == 1           % set persistent variables on first call of function
-
-    failed = {};
-
-    if hermite==1 && newlu==0;             % LU factorization for transposed system: A~L*U => A'~U'*L' 
-        if ~isempty(L) && ~isempty(U)      % ilu, not ichol is already computed
-            temp = L;
-            L = U.';
-            U = temp.';
-            clear temp;               
+        
+        if jCol==length(s0) && ~Opts.reuseLU && ~initLse
+            clear R S L U a o first sym pd flag method failed nolu solver
         end
-
-        if sym==1 && pd==1
-            A = -A;
-            b = -b;
-        end            
-
+        
+        function [tempV, tempW, rNormVecV, rNormVecW] = iterativeRefinement(AsE, oldV, tempV, oldW, tempW)
+            %   ITERATIVEREFINEMENT - Use iterative LSE solver to refine LSE solution
+            %
+            %   This function takes as input the approximate solution tempV to the
+            %   linear system AsE*tempV = oldV and tries to improve its accuracy. oldV is also
+            %   allowed to be a matrix, so that tempV is the solution of a set of lse
+            %   with common AsE matrix.
+            %
+            %   This can be done either by direct methods (compare [1,2]) or
+            %   by feeding the data to an iterative solver (so far, only cgs is
+            %   implemented). In both cases, the algorihm stops when the desired
+            %   accuracy, measured as the relative norm of the residual
+            %   r = oldV-AsE*tempV is achieved.
+            %
+            %   This can be useful when subspecting that a solution X obtained
+            %   through direct methods (e.g. lu or chol) may be inaccurate due to
+            %   roundoff errors.
+            %   Input:    AsE        A-s0(jCol)*E
+            %             oldV       tempV before solving lse
+            %             tempV      current lse solution
+            %   Output:   tempV      improved lse solution
+            
+            switch Opts.refine
+                case 'wilkinson'
+                    oldVNorm = norm(oldV,'fro');
+                    k = 0; rNormVecV = zeros(1,Opts.refMaxiter);
+                    
+                    resV = oldV-AsE*tempV; %residual
+                    rNormV = norm(resV,'fro')/oldVNorm;
+                    
+                    if hermite
+                        oldWNorm = norm(oldW,'fro');
+                        rNormVecW = zeros(1,Opts.refMaxiter);
+                        
+                        resW = oldW-AsE.'*tempW; %residual
+                        rNormW = norm(resW,'fro')/oldWNorm;
+                    end
+                    
+                    %   Refine!
+                    while (rNormV > Opts.refTol || (hermite && rNormW > Opts.refTol)) && k <= Opts.refMaxiter
+                        k = k+1;
+                        
+                        %             D = o*(U\(L\(a*(S\R)))); %lu(AsE)
+                        Dv = zeros(size(resV));
+                        Dv(o,:) = U\(L\(S(:,a)\resV));
+                        tempV = tempV + Dv;
+                        
+                        resV = oldV-AsE*tempV;
+                        rNormV = norm(resV,'fro')/oldVNorm;
+                        rNormVecV(k) = rNormV;
+                        
+                        if hermite
+                            Dw = (S(:,a)).'\(L.'\(U.'\(resW(o,:))));
+                            tempW = tempW + Dw;
+                            resW = oldW-AsE.'*tempW;
+                            rNormW = norm(resW,'fro')/oldWNorm;
+                            rNormVecW(k) = rNormW;
+                        end
+                    end
+                    
+                    if k <= Opts.refMaxiter
+                        rNormVecV(k+1:end) = [];
+                        if hermite
+                            rNormVecW(k+1:end) = [];
+                        end
+                    end
+                    
+                case 'cgs'
+                    warning('off','MATLAB:cgs:tooSmallTolerance');
+                    for iCol = 1:size(tempV,2)
+                        %Solve LSE with desired accuracy
+                        [tempv,exitFlagv,rNormVecV] = cgs(AsE,oldV(:,iCol),Opts.refTol,Opts.refMaxiter,L,U,tempV(:,iCol));
+                        if hermite
+                            [tempw,exitFlagw,rNormVecW] = cgs(AsE.',oldW(:,iCol),Opts.refTol,Opts.refMaxiter,U.',L.',tempW(:,iCol));
+                        end
+                        %replace column if refinement worked
+                        if exitFlagv == 0,
+                            tempV(:,iCol) = tempv;
+                            if hermite && exitFlagw == 0
+                                tempW(:,iCol) = tempw;
+                            else
+                                warning('sss:iterativeRefinement:cgsNoConvergence','iterative refinement did not work.');
+                            end
+                        else
+                            warning('sss:iterativeRefinement:cgsNoConvergence','iterative refinement did not work.');
+                        end
+                    end
+                    warning('on','MATLAB:cgs:tooSmallTolerance');
+                otherwise
+                    error('Iterative refinement method not implemented.');
+            end
+        end
     end
 
-
-end
-
-if newlu==1 && first==1            % new L and U required (different s0)
-
-    nolu = 0;        
-    L = [];
-    U = [];
-
-    if isempty(solver)
-        solver = Opts.solver;
-    end
-
-    % check for symmetry and definiteness
-
-    if norm(A-A','fro')/norm(A,'fro') < 1e-10
-        sym = 1;
-    else
-        sym = 0;
-    end
-
-    if ispd(-A)
-        A = -A;
-        b = -b;
-        pd = 1;
-    else
-        pd = 0;
-    end 
-end
-
-first = 0;                   % first round over
-
-solver = selectSolver(solver, failed);
-
-%     analyse = ['maxiterlse: ',num2str(Opts.maxiterlse),', tol: ',num2str(Opts.tollse)];
-%     disp(analyse);
-
-if sym && pd      % pcg
-    if nolu~=1
-        if isempty(L) && isempty(U)
-            try
-                L = ichol(A);
-                [x,flag] = pcg(A,b,Def.tollse,Opts.maxiterlse,L,L.',b);
-                method = 'pcg with ichol';
-            catch 
-                try
-                    [L,U] = ilu(A);
+    function [ x, varargout ] = iterSolve( A, b, newlu, hermite)
+        %ITERSOLVE function to solve the linear system A*x=b iteratively
+        %   Detailed explanation goes here
+        
+        persistent first L U sym pd flag method failed nolu solver;
+        
+        if isempty(first);
+            first = 1;
+        end
+        
+        if first == 1           % set persistent variables on first call of function
+            
+            failed = {};
+            
+            if hermite==1 && newlu==0;             % LU factorization for transposed system: A~L*U => A'~U'*L'
+                if ~isempty(L) && ~isempty(U)      % ilu, not ichol is already computed
+                    temp = L;
+                    L = U.';
+                    U = temp.';
+                    clear temp;
+                end
+                
+                if sym==1 && pd==1
+                    A = -A;
+                    b = -b;
+                end
+                
+            end
+            
+            
+        end
+        
+        if newlu==1 && first==1            % new L and U required (different s0)
+            
+            nolu = 0;
+            L = [];
+            U = [];
+            
+            if isempty(solver)
+                solver = Opts.solver;
+            end
+            
+            % check for symmetry and definiteness
+            
+            if norm(A-A','fro')/norm(A,'fro') < 1e-10
+                sym = 1;
+            else
+                sym = 0;
+            end
+            
+            if ispd(-A)
+                A = -A;
+                b = -b;
+                pd = 1;
+            else
+                pd = 0;
+            end
+        end
+        
+        first = 0;                   % first round over
+        
+        solver = selectSolver(solver, failed);
+        
+        %     analyse = ['maxiterlse: ',num2str(Opts.maxiterlse),', tol: ',num2str(Opts.tollse)];
+        %     disp(analyse);
+        
+        if sym && pd      % pcg
+            if nolu~=1
+                if isempty(L) && isempty(U)
+                    try
+                        L = ichol(A);
+                        [x,flag] = pcg(A,b,Def.tollse,Opts.maxiterlse,L,L.',b);
+                        method = 'pcg with ichol';
+                    catch
+                        try
+                            [L,U] = ilu(A);
+                            [x,flag] = pcg(A,b,Opts.tollse,Opts.maxiterlse,L,U,b);
+                            method = 'pcg with ilu';
+                        catch
+                            [x,flag] = pcg(A,b,Opts.tollse,Opts.maxiterlse,[],[],b);
+                            method = 'cg (no preconditioner)';
+                            nolu = 1;
+                        end
+                    end
+                elseif isempty(U)   % ichol already available
+                    [x,flag] = pcg(A,b,Def.tollse,Opts.maxiterlse,L,L.',b);
+                    method = 'pcg with ichol';
+                else                % ilu already available
                     [x,flag] = pcg(A,b,Opts.tollse,Opts.maxiterlse,L,U,b);
                     method = 'pcg with ilu';
-                catch
-                    [x,flag] = pcg(A,b,Opts.tollse,Opts.maxiterlse,[],[],b);
-                    method = 'cg (no preconditioner)';
-                    nolu = 1;
                 end
+            else
+                [x,flag] = pcg(A,b,Opts.tollse,Opts.maxiterlse,[],[],b);
+                method = 'cg (no preconditioner)';
             end
-        elseif isempty(U)   % ichol already available
-            [x,flag] = pcg(A,b,Def.tollse,Opts.maxiterlse,L,L.',b);
-            method = 'pcg with ichol';
-        else                % ilu already available
-            [x,flag] = pcg(A,b,Opts.tollse,Opts.maxiterlse,L,U,b);
-            method = 'pcg with ilu';
-        end
-    else
-        [x,flag] = pcg(A,b,Opts.tollse,Opts.maxiterlse,[],[],b);
-        method = 'cg (no preconditioner)';
-    end
-else
-    switch solver
-        case 'cgs'
-            if nolu ~= 1                          % LU factorization not yet failed
-                if isempty(L) && isempty(U)        % LU factorization not yet computed
-                    try
-                        [L,U] = ilu(A);
-                        method = 'cgs with ilu';
-                    catch
+        else
+            switch solver
+                case 'cgs'
+                    if nolu ~= 1                          % LU factorization not yet failed
+                        if isempty(L) && isempty(U)        % LU factorization not yet computed
+                            try
+                                [L,U] = ilu(A);
+                                method = 'cgs with ilu';
+                            catch
+                                method = 'cgs (no preconditioner)';
+                                nolu = 1;
+                            end
+                        else
+                            method = 'cgs with ilu';
+                        end
+                    else
                         method = 'cgs (no preconditioner)';
-                        nolu = 1;   
-                    end                          
-                else
-                    method = 'cgs with ilu';                       
-                end
-            else
-                method = 'cgs (no preconditioner)';
-            end
-
-            [x,flag] = cgs(A,b,Opts.tollse,Opts.maxiterlse,L,U,b);
-
-            if flag ~= 0
-                failed{length(failed)+1} = 'cgs';
-
-                if Opts.verbose == 1              % print failure
-                    msg = ['cgs did not converge.'];
-                    warning(msg);
-                end
-            end
-
-        case 'bicgstab'
-            if nolu ~= 1                          % LU factorization not yet failed
-                if isempty(L) && isempty(U)        % LU factorization not yet computed
-                    try
-                        [L,U] = ilu(A);
-                        method = 'bicgstab with ilu';
-                    catch
+                    end
+                    
+                    [x,flag] = cgs(A,b,Opts.tollse,Opts.maxiterlse,L,U,b);
+                    
+                    if flag ~= 0
+                        failed{length(failed)+1} = 'cgs';
+                        
+                        if Opts.verbose == 1              % print failure
+                            msg = ['cgs did not converge.'];
+                            warning(msg);
+                        end
+                    end
+                    
+                case 'bicgstab'
+                    if nolu ~= 1                          % LU factorization not yet failed
+                        if isempty(L) && isempty(U)        % LU factorization not yet computed
+                            try
+                                [L,U] = ilu(A);
+                                method = 'bicgstab with ilu';
+                            catch
+                                method = 'bicgstab (no preconditioner)';
+                                nolu = 1;
+                            end
+                        else
+                            method = 'bicgstab with ilu';
+                        end
+                    else
                         method = 'bicgstab (no preconditioner)';
-                        nolu = 1;   
-                    end                          
-                else
-                    method = 'bicgstab with ilu';                       
-                end
-            else
-                method = 'bicgstab (no preconditioner)';
-            end
-
-            [x,flag] = bicgstab(A,b,Opts.tollse,ceil(Opts.maxiterlse/2),L,U,b);
-
-            if flag ~= 0
-                failed{length(failed)+1} = 'bicgstab';
-                if Opts.verbose == 1              % print failure
-                    msg = ['bicgstab did not converge.'];
-                    warning(msg);
-                end                    
-            end
-
-        case 'bicg'
-            if nolu ~= 1                           % LU factorization not yet failed
-                if isempty(L) && isempty(U)        % LU factorization not yet computed
-                    try
-                        [L,U] = ilu(A);
-                        method = 'bicg with ilu';
-                    catch
+                    end
+                    
+                    [x,flag] = bicgstab(A,b,Opts.tollse,ceil(Opts.maxiterlse/2),L,U,b);
+                    
+                    if flag ~= 0
+                        failed{length(failed)+1} = 'bicgstab';
+                        if Opts.verbose == 1              % print failure
+                            msg = ['bicgstab did not converge.'];
+                            warning(msg);
+                        end
+                    end
+                    
+                case 'bicg'
+                    if nolu ~= 1                           % LU factorization not yet failed
+                        if isempty(L) && isempty(U)        % LU factorization not yet computed
+                            try
+                                [L,U] = ilu(A);
+                                method = 'bicg with ilu';
+                            catch
+                                method = 'bicg (no preconditioner)';
+                                nolu = 1;
+                            end
+                        else
+                            method = 'bicg with ilu';
+                        end
+                    else
                         method = 'bicg (no preconditioner)';
-                        nolu = 1;   
-                    end                          
-                else
-                    method = 'bicg with ilu';                       
-                end
+                    end
+                    
+                    [x,flag] = bicg(A,b,Opts.tollse,ceil(Opts.maxiterlse/2),L,U,b);
+                    
+                    if flag ~= 0
+                        failed{length(failed)+1} = 'bicg';
+                        if Opts.verbose == 1              % print failure
+                            msg = ['bicg did not converge.'];
+                            warning(msg);
+                        end
+                        
+                    end
+            end
+            
+            if flag ~= 0 && length(failed) < 3
+                iterSolve(A,b,newlu,hermite);
+            end
+            
+        end
+        
+        first = [];
+        
+        if(nargout == 2)
+            varargout{1} = flag;
+        end
+        
+        if(nargout == 3)
+            varargout{1} = flag;
+            varargout{2} = method;
+        end
+        
+        if flag ~= 0
+            msg = ['Could not achieve desired tolerance (',num2str(Opts.tollse),') within ',num2str(Opts.maxiterlse),' iterations. Results may be inaccurate!'];
+            if Opts.force == 1;
+                warning(msg);
             else
-                method = 'bicg (no preconditioner)';
+                error(msg);
             end
-
-            [x,flag] = bicg(A,b,Opts.tollse,ceil(Opts.maxiterlse/2),L,U,b);
-
-            if flag ~= 0
-                failed{length(failed)+1} = 'bicg';
-                if Opts.verbose == 1              % print failure
-                    msg = ['bicg did not converge.'];
-                    warning(msg);
-                end                    
-
-            end
+            solver = Opts.solver;
+        end
+        
     end
 
-    if flag ~= 0 && length(failed) < 3
-        iterSolve(A,b,newlu,hermite);
+    function [solver] = selectSolver( solver, failed )
+        solvers = {'cgs','bicgstab','bicg'};
+        switch length(failed)
+            case 0
+            case 1
+                index = strcmp(failed, solvers);
+                solver = solvers{find(index==0,1)};
+                
+            case 2
+                index1 = strcmp(failed{1}, solvers);
+                index2 = strcmp(failed{2}, solvers);
+                solver = solvers{index1==index2};
+        end
+        
     end
-
-end
-
-first = [];
-
-if(nargout == 2)
-    varargout{1} = flag;
-end 
-
-if(nargout == 3)
-    varargout{1} = flag;
-    varargout{2} = method;
-end
-
-if flag ~= 0 
-    msg = ['Could not achieve desired tolerance (',num2str(Opts.tollse),') within ',num2str(Opts.maxiterlse),' iterations. Results may be inaccurate!'];
-    if Opts.force == 1;
-        warning(msg);
-    else
-        error(msg);
-    end
-    solver = Opts.solver;
-end
-
-end
-
-function [solver] = selectSolver( solver, failed )
-   solvers = {'cgs','bicgstab','bicg'}; 
-   switch length(failed)
-       case 0
-       case 1
-           index = strcmp(failed, solvers);
-           solver = solvers{find(index==0,1)};
-
-       case 2
-           index1 = strcmp(failed{1}, solvers);
-           index2 = strcmp(failed{2}, solvers);
-           solver = solvers{index1==index2};
-   end
-
-end
 
 end
