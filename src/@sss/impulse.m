@@ -157,7 +157,7 @@ end
 
 % Call ss/impulse
 if nargout==1 && Opts.tf
-    varargout{1} = TF_;
+    varargout{1} = varargin{1};
 elseif nargout
     [varargout{1},varargout{2},varargout{3},varargout{4}] = impulse(varargin{:},t(end));   
     if ~isempty(t)
