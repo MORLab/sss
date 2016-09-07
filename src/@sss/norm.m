@@ -200,12 +200,13 @@ for nB2=1:size(B,2)
     Rt(nB2,(nB2-1)*3+1:(nB2-1)*3+3)=ones(1,3);
 end
 
-linSolve=solveLse(A,B,E,-ones(1,3)*w*1i, Rt, Opts);
+linSolve=solveLse(A,B,E,-ones(1,3*size(B,2))*w*1i, Rt, Opts);
 
 % sort solutions
 linSolve1=zeros(size(B));
 linSolve2=zeros(size(B));
 linSolve3=zeros(size(B));
+
 for nB2=1:size(B,2)
     linSolve1(:,nB2)=linSolve(:,(nB2-1)*3+1);
     linSolve2(:,nB2)=linSolve(:,(nB2-1)*3+2);
