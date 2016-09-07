@@ -66,22 +66,27 @@ suite13=TestSuite.fromFile(fullfile(testPath,'testFreqresp.m'));
 suite14=TestSuite.fromFile(fullfile(testPath,'testImpulse.m'));
 suite15=TestSuite.fromFile(fullfile(testPath,'testIssd.m'));
 suite16=TestSuite.fromFile(fullfile(testPath,'testIsstable.m'));
-suite17=TestSuite.fromFile(fullfile(testPath,'testMtimes.m'));
-suite18=TestSuite.fromFile(fullfile(testPath,'testNorm.m'));
-suite19=TestSuite.fromFile(fullfile(testPath,'testPoles.m'));
-suite20=TestSuite.fromFile(fullfile(testPath,'testPlus.m'));
-suite21=TestSuite.fromFile(fullfile(testPath,'testPzmap.m'));
-suite22=TestSuite.fromFile(fullfile(testPath,'testResidue.m'));
-suite23=TestSuite.fromFile(fullfile(testPath,'testSigma.m'));
-% suite24=TestSuite.fromFile(fullfile(testPath,'testSim.m'));
-suite25=TestSuite.fromFile(fullfile(testPath,'testSs.m'));
-suite26=TestSuite.fromFile(fullfile(testPath,'testStep.m'));
-suite27=TestSuite.fromFile(fullfile(testPath,'testZeros.m'));
-suite28=TestSuite.fromFile(fullfile(testPath,'testZpk.m'));
+suite17=TestSuite.fromFile(fullfile(testPath,'testIterativeRefinement.m'));
+suite18=TestSuite.fromFile(fullfile(testPath,'testLyapchol'));
+suite19=TestSuite.fromFile(fullfile(testPath,'testMtimes.m'));
+suite20=TestSuite.fromFile(fullfile(testPath,'testNorm.m'));
+suite21=TestSuite.fromFile(fullfile(testPath,'testPlus.m'));
+suite22=TestSuite.fromFile(fullfile(testPath,'testPoles.m'));
+suite23=TestSuite.fromFile(fullfile(testPath,'testPzmap.m'));
+suite24=TestSuite.fromFile(fullfile(testPath,'testResidue.m'));
+suite25=TestSuite.fromFile(fullfile(testPath,'testSigma.m'));
+% suite26=TestSuite.fromFile(fullfile(testPath,'testSim.m'));
+suite27=TestSuite.fromFile(fullfile(testPath,'testSolveLse'));
+suite28=TestSuite.fromFile(fullfile(testPath,'testSpy'));
+suite29=TestSuite.fromFile(fullfile(testPath,'testSs.m'));
+suite30=TestSuite.fromFile(fullfile(testPath,'testStep.m'));
+suite31=TestSuite.fromFile(fullfile(testPath,'testZeros.m'));
+suite32=TestSuite.fromFile(fullfile(testPath,'testZpk.m'));
 
 suiteSss=[suite1,suite2,suite3,suite4,suite5,suite6,suite7,suite8,suite9,suite10,...
 suite11,suite12,suite13,suite14,suite15,suite16,suite17,suite18,suite19,...
-suite20, suite21, suite22, suite23, suite25, suite26, suite27, suite28];
+suite20, suite21, suite22, suite23, suite24, suite25, suite27, suite28, ...
+suite29, suite30, suite31, suite32];
 
 
 %% Run and show results
