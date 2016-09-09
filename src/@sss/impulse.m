@@ -13,6 +13,7 @@ function  varargout = impulse(varargin)
 %   [h, t] = IMPULSE(sys,Tfinal)
 %   [h, t] = IMPULSE(sys,...,Opts)
 %   TF     = IMPULSE(sys,...,struct('tf',true))
+%   [TF,h,t] = IMPULSE(sys,...,struct('tf',true))
 %
 % Description:
 %       Computes and/or plots the impulse response of a sparse LTI system
@@ -158,6 +159,20 @@ end
 % Call ss/impulse
 if nargout==1 && Opts.tf
     varargout{1} = varargin{1};
+elseif nargout==3 && Opts.tf
+    varargout{1} = varargin{1};
+    Ts = varargin{1}(1,1).Ts;
+    n = length(varargin{1}(1,1).num{1})-1;
+    varargout{2} = cell(size(varargin{1}));
+    for i=1:size(varargin{1},1)
+        for j=1:size(varargin{1},2) 
+            varargout{2}{i,j} = varargin{1}(i,j).num{1,1} / Ts;
+        end
+    end
+    varargout{3} = 0:Ts:n*Ts;
+    if size(varargout{2},2)==1 && size(varargout{2},1)==1
+       varargout{2} = varargout{2}{1,1};
+    end
 elseif nargout
     [varargout{1},varargout{2},varargout{3},varargout{4}] = impulse(varargin{:},t(end));   
     if ~isempty(t)
@@ -183,7 +198,7 @@ function [TF,tMax] = gettf(sys, t, Opts)
 Opts.tf = true;
 Opts.htOde = false;
 sys.d = zeros(size(sys.d));
-TF = step(sys,t,Opts);
+[TF,h,~] = step(sys,t,Opts);
 tMax = max(cellfun(@length,TF.num(:)))*TF.Ts;
 
 function [h,t] = getht(sys, te, Opts)

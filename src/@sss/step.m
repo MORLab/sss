@@ -14,6 +14,7 @@ function  varargout = step(varargin)
 %   [h, t] = STEP(sys, Tfinal)
 %   [h, t] = STEP(sys, ..., Opts)
 %   TF = STEP(sys,...,struct('tf',true))
+%   [TF,h,t] = STEP(sys,...,struct('tf',true))
 %
 % Description:
 %       step(sys) plots the step response of the sparse LTI system sys
@@ -135,7 +136,7 @@ for i = 1:length(varargin)
     % Convert sss to frequency response data model
     if isa(varargin{i},'sss')
         if Opts.htOde==0
-            [varargin{i},Tmax] = gettf(varargin{i}, t, Opts);
+            [varargin{i},Tmax,h_] = gettf(varargin{i}, t, Opts);
             Tfinal=max([Tmax,Tfinal]);
         else
             [varargin{i},th] = getht(varargin{i}, t, Opts);
@@ -157,6 +158,15 @@ end
 % Call ss/step
 if nargout==1 && Opts.tf
     varargout{1} = varargin{1};
+elseif nargout==3 && Opts.tf
+    varargout{1} = varargin{1};
+    varargout{2} = h_;
+    Ts = varargin{1}(1,1).Ts;
+    n = length(varargin{1}(1,1).num{1})-1;
+    varargout{3} = 0:Ts:n*Ts;
+    if size(h_,2)==1 && size(h_,1)==1
+       varargout{2} = varargout{2}{1,1};
+    end
 elseif nargout
     [varargout{1},varargout{2},varargout{3},varargout{4}] = step(varargin{:},t);
 else
@@ -165,7 +175,7 @@ end
 
 
 end
-function [TF,Tmax] = gettf(sys, t, Opts)
+function [TF,Tmax,h] = gettf(sys, t, Opts)
 t = t(:);
 Ts=[];
 Tmax=[];
@@ -211,8 +221,8 @@ else
 end
 
 % create tf object
-h = cellfun(@(x) [x(1) diff(x)],h,'UniformOutput',false);
-TF = filt(h,1,Ts,...
+h_ = cellfun(@(x) [x(1) diff(x)],h,'UniformOutput',false);
+TF = filt(h_,1,Ts,...
     'InputName',sys.InputName,'OutputName',sys.OutputName,...
     'Name',sys.Name);
 end
