@@ -79,8 +79,8 @@ classdef testStep < sssTest
                     ODEset = odeset;
                     ODEset.AbsTol = 1e-10;
                     ODEset.RelTol = 1e-10;
-                    [actSolution,t]=step(sys,struct('nMin',0,'odeset',ODEset));
-                    expSolution=step(ss(sys),t);
+                    [expSolution,t]=step(ss(sys));
+                    actSolution=step(sys,t,struct('nMin',0,'odeset',ODEset));
                     verification(testCase,actSolution,expSolution);
                 end
             end

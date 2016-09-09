@@ -77,11 +77,16 @@ classdef testImpulse < sssTest
                 sys=testCase.sysCell{i};
                 if ~sys.isDae && ~strcmp(sys.Name,'CDplayer')
                     ODEset = odeset;
-                    ODEset.AbsTol = 1e-8;
-                    ODEset.RelTol = 1e-8;
-                    [actSolution,t]=impulse(sys,struct('nMin',0,'odeset',ODEset,'tsMin',1e-5));
-                    expSolution=impulse(ss(sys),t);
-                    verifyEqual(testCase,actSolution(9:end-1,:),expSolution(9:end-1,:),'RelTol',0.4,'AbsTol',5e-3,...
+                    if strcmp(sys.Name,'fom')
+                        ODEset.AbsTol = 1e-11;
+                        ODEset.RelTol = 1e-11;
+                    else
+                        ODEset.AbsTol = 1e-8;
+                        ODEset.RelTol = 1e-8;
+                    end
+                    [expSolution,t]=impulse(ss(sys));
+                    actSolution=impulse(sys,t,struct('nMin',0,'odeset',ODEset,'tsMin',1e-5));
+                    verifyEqual(testCase,actSolution(9:end-1,:),expSolution(9:end-1,:),'RelTol',0.4,'AbsTol',8e-3,...
                         'Difference between actual and expected exceeds relative tolerance');
                 end
             end
@@ -91,8 +96,13 @@ classdef testImpulse < sssTest
                 sys=testCase.sysCell{i};
                 if ~sys.isDae
                     ODEset = odeset;
-                    ODEset.AbsTol = 1e-8;
-                    ODEset.RelTol = 1e-8;
+                    if strcmp(sys.Name,'fom')
+                        ODEset.AbsTol = 1e-11;
+                        ODEset.RelTol = 1e-11;
+                    else
+                        ODEset.AbsTol = 1e-8;
+                        ODEset.RelTol = 1e-8;
+                    end
                     
                     % time vector
                     t=0.01:0.01:0.3;
@@ -124,6 +134,6 @@ classdef testImpulse < sssTest
 end
 
 function [] = verification(testCase, actSolution, expSolution)
-verifyEqual(testCase, actSolution,  expSolution,'RelTol',0.1,'AbsTol',5e-3,...
+verifyEqual(testCase, actSolution,  expSolution,'RelTol',0.12,'AbsTol',5e-3,...
     'Difference between actual and expected exceeds relative tolerance');
 end
