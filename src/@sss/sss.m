@@ -403,6 +403,14 @@ classdef sss
             % Returns selected I/O-channel of a sparse LTI MIMO system
             if strcmp(arg(1).type, '()')
                 if length(arg(1).subs)==2
+                    %change ':' to actual indices
+                    if strcmp(arg(1).subs{1},':')
+                        arg(1).subs{1} = 1:sys.p;
+                    end
+                    if strcmp(arg(1).subs{2},':')
+                        arg(1).subs{2} = 1:sys.m;
+                    end
+                            
                     sys = sys.truncate(arg(1).subs{1}, arg(1).subs{2});
                     if length(arg)==1
                         varargout = {sys};
