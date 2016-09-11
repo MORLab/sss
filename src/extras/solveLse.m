@@ -82,12 +82,12 @@ function [varargout] = solveLse(varargin)
 %                           [{1} / 0]
 %           -.force:        force solve iteratively when not converging
 %                           [{0} / 1]
-%           -.refine:       preferred solver in iterSolve
-%                           [{0} / 'wilkinson' / 'cgs']
+%           -.refine:       iterative refinement
+%                           [{false} / 'wilkinson' / 'cgs']
 %           -.refTol:       iterative refinement tolerance
-%                           [{1e-15} / positive float]
+%                           [{1e-8} / positive float]
 %           -.refMaxiter:   iterative refinement maximum number of iterations
-%                           [{1e2} / positive integer]
+%                           [{5} / positive integer]
 %           -.reuseLU:      reuse previously computed lu-factors
 %                           [{0} / 1]
 %           -.reuseTol:     tolerance for reusing lu-factors norm(LU-A)<tol
@@ -154,22 +154,22 @@ function [varargout] = solveLse(varargin)
 % Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-Def.lse = 'sparse'; %use sparse or full LU or lse with Hessenberg decomposition {'sparse', 'full','hess','iterative', 'gauss'}
-Def.dgksTol = 1e-12; %orthogonality tolerance: norm(V'*V-I,'fro')<tol
-Def.krylov = 0; %standard or cascaded krylov basis (only for siso) {0,'cascade'}
+Def.lse         = 'sparse'; %use sparse or full LU or lse with Hessenberg decomposition {'sparse', 'full','hess','iterative', 'gauss'}
+Def.dgksTol     = 1e-12;    %orthogonality tolerance: norm(V'*V-I,'fro')<tol
+Def.krylov      = 0;        %standard or cascaded krylov basis (only for siso) {0,'cascade'}
 
-Def.reuseLU = false; %reuse lu (false/true)
-Def.reuseTol = 1e-10;
+Def.reuseLU     = false;    %reuse lu (false/true)
+Def.reuseTol    = 1e-10;
 
-Def.solver = 'cgs'; %first iterative solver to try
-Def.maxiterlse = 1000; %maximum number of iterations in iterative solver
-Def.tollse = 1e-6; %residual tolerance in iterSolve
-Def.verbose = 1; %display warnings when iterative methods fail
-Def.force = 0;  %not converging in iterSolve leads to error (0) or warning (1)
+Def.solver      = 'cgs';%first iterative solver to try
+Def.maxiterlse  = 1000; %maximum number of iterations in iterative solver
+Def.tollse      = 1e-6; %residual tolerance in iterSolve
+Def.verbose     = 1;    %display warnings when iterative methods fail
+Def.force       = 0;    %not converging in iterSolve leads to error (0) or warning (1)
 
-Def.refine  = 'wilkinson'; % iterative refinement (0, 'wilkinson', 'cgs')
-Def.refTol     = 1e-15;
-Def.refMaxiter = 1e2;
+Def.refine      = false; % iterative refinement (false, 'wilkinson', 'cgs')
+Def.refTol      = 1e-8;
+Def.refMaxiter  = 5;
 
 %% parsing of inputs
 if isa(varargin{end},'struct')
@@ -878,8 +878,8 @@ end
             if Opts.refine
                 % Determine if the condition number of the problem is low enough for
                 % refinement to make sense
-                kU = condest(U); %it seems that cond(U) is close to cond(AsE)
-                if inv(kU)<Opts.refTol
+                kU = log10(condest(U)); %it seems that cond(U) is close to cond(AsE)
+                if log10(Opts.refTol) < log10(eps) + kU
                     warning(['The condition number of the problem is too high for ',...
                              'iterative refinement to make sense (at least with given tolerance). ',...
                              'Switching Opts.refine to 0.'])
