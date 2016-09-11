@@ -109,7 +109,6 @@ elseif p==2
     end
     
     if isstable(sys)~=1
-        warning('System appears to be unstable. The norm will be set to Inf.');
         nrm=Inf;
         return;
     end
