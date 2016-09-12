@@ -113,6 +113,9 @@ else
     Opts = parseOpts(Opts,Def);
 end
 
+% store name of the model
+name = varargin{1}.Name;
+
 % final Time
 t = [];
 tIndex = cellfun(@isfloat,varargin);
@@ -218,12 +221,19 @@ for i = 1:length(varargin)
              end
              
              if nargout==3 && Opts.tf
-                 varargin{i} = cellfun(@(x) [x(1) diff(x)],varargin{i},'UniformOutput',false);
-                 varargout{1} = filt(varargin{i},1,Ts);
-                 varargout{2} = g;
-                 varargout{3} = t;
-             elseif Opts.tf
+                 varargin{1} = cellfun(@(x) [x(1) diff(x')],varargin{1},'UniformOutput',false);
                  varargout{1} = filt(varargin{1},1,Ts);
+                 varargout{1}.Name = name;
+                 varargout{2} = g;
+                 varargout{3} = t';
+             elseif Opts.tf
+                 for k=1:size(varargin{1},1)
+                     for j=1:size(varargin{1},2) 
+                        varargin{1}{k,j} = varargin{1}{k,j}';
+                     end
+                 end
+                 varargout{1} = filt(varargin{1},1,Ts);
+                 varargout{1}.Name = name;
              else
                  varargout{1}=g;
                  varargout{2}=t;
