@@ -74,10 +74,10 @@ function [R,L] = lyapchol(sys, Opts)
 %------------------------------------------------------------------
 
 %   Default execution parameters
-Def.type = 'standard'; % 'adi', 'builtIn'
-Def.lse = 'gauss'; % only for mess ('gauss', 'luChol')
-Def.rctol = 1e-12; % only for mess
-Def.q = 0; % only for mess
+Def.type    = 'standard'; % 'adi', 'builtIn'
+Def.lse     = 'gauss'; % only for mess ('gauss', 'luChol')
+Def.rctol   = 1e-12; % only for mess
+Def.q       = 0; % only for mess
 
 % create the options structure
 if ~exist('Opts','var') || isempty(Opts)
