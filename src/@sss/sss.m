@@ -398,6 +398,15 @@ classdef sss
         end
         function [A,B,C,D,Ts] = ssdata(sys); [A,B,C,D,~,Ts]=dssdata(sys); end
         
+        % Detect empty sss-models
+        function empty = isempty(sys)
+            if sys.n == 0
+                empty = true;
+            else
+                empty = false;
+            end
+        end
+        
         %% Overload Brackets sys.([],[]) to select I/O channels
         function [varargout] = subsref(sys, arg)
             % Returns selected I/O-channel of a sparse LTI MIMO system

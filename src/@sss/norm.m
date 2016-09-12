@@ -70,59 +70,67 @@ function [nrm, varargout] = norm(sys, varargin)
 Def.lyapchol = 0; % ('0','adi','builtIn')
 Def.lse= 'sparse'; %lse 
 
-p=2;    % default: H_2
-if nargin>1
-    if isa(varargin{1}, 'double')
-        p=varargin{1};
-    elseif strcmpi(varargin{1},'inf')
-        p=inf;
-    elseif isa(varargin{1},'struct')
-        Opts=varargin{1};
-    else
-        error('Input must be ''double''.');
-    end
-    if nargin==3
-        Opts=varargin{2};
-    end
-end
-
-% create the options structure
-if ~exist('Opts','var') || isempty(Opts)
-    Opts = Def;
-else
-    Opts = parseOpts(Opts,Def);
-end
-
-if isinf(p)
-    % H_inf-norm
-    [nrm, hInfPeakfreq] = H_Infty(sys);
-    
+%% Computation
+if isempty(sys)
+    nrm = 0;
     if nargout>1
-        varargout{1}=hInfPeakfreq;
-    end
-    
-elseif p==2
-    % when D ~=0, then H2 norm is unbounded
-    if any(any(sys.D))
-        nrm=inf;
-        return
-    end
-    
-    if isstable(sys)~=1
-        nrm=Inf;
-        return;
-    end
-    
-    Opts.type=Opts.lyapchol;
-    R=lyapchol(sys,Opts);
-    
-    nrm=norm(R*sys.C','fro');
-
-    if imag(nrm)~=0
-        nrm=Inf;
+        varargout{1}=0; %hInfPeakfreq
     end
 else
-    error(['H_' num2str(p) '-norm not implemented.'])
+    p=2;    % default: H_2
+    if nargin>1
+        if isa(varargin{1}, 'double')
+            p=varargin{1};
+        elseif strcmpi(varargin{1},'inf')
+            p=inf;
+        elseif isa(varargin{1},'struct')
+            Opts=varargin{1};
+        else
+            error('Input must be ''double''.');
+        end
+        if nargin==3
+            Opts=varargin{2};
+        end
+    end
+
+    % create the options structure
+    if ~exist('Opts','var') || isempty(Opts)
+        Opts = Def;
+    else
+        Opts = parseOpts(Opts,Def);
+    end
+
+    if isinf(p)
+        % H_inf-norm
+        [nrm, hInfPeakfreq] = H_Infty(sys);
+
+        if nargout>1
+            varargout{1}=hInfPeakfreq;
+        end
+
+    elseif p==2
+        % when D ~=0, then H2 norm is unbounded
+        if any(any(sys.D))
+            nrm=inf;
+            return
+        end
+
+        if isstable(sys)~=1
+            nrm=Inf;
+            return;
+        end
+
+        Opts.type=Opts.lyapchol;
+        R=lyapchol(sys,Opts);
+
+        nrm=norm(R*sys.C','fro');
+
+        if imag(nrm)~=0
+            nrm=Inf;
+        end
+    else
+        error(['H_' num2str(p) '-norm not implemented.'])
+    end
 end
 end
 
