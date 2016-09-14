@@ -121,9 +121,14 @@ else
         end
 
         Opts.type=Opts.lyapchol;
-        R=lyapchol(sys,Opts);
-
-        nrm=norm(R*sys.C','fro');
+        try
+            R=lyapchol(sys,Opts);
+            nrm=norm(R*sys.C','fro');
+        catch ex
+            warning(ex.identifier, 'Error solving Lyapunov equation. Trying without Cholesky factorization...')
+            X = lyap(sys.A, sys.B*sys.B', [], sys.E);
+            nrm=sqrt(trace(sys.C*X*sys.C'));
+        end
 
         if imag(nrm)~=0
             nrm=Inf;
