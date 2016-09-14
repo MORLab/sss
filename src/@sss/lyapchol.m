@@ -22,7 +22,7 @@ function [R,L] = lyapchol(sys, Opts)
 %		*Optional Input Arguments:*
 %       -Opts:              a structure containing following options
 %           -.type:         select amongst different tbr algorithms
-%                           [{'standard'} / 'adi' / 'builtIn' ]
+%                           [{''} / 'adi' / 'builtIn' ]
 %           -.lse:          solve linear system of equations (only ADI)
 %                           [{'gauss'} / 'luChol']
 %           -.rctol:        tolerance for difference between ADI iterates
@@ -74,7 +74,7 @@ function [R,L] = lyapchol(sys, Opts)
 %------------------------------------------------------------------
 
 %   Default execution parameters
-Def.type    = 'standard'; % 'adi', 'builtIn'
+Def.type    = ''; % 'adi', 'builtIn'
 Def.lse     = 'gauss'; % only for mess ('gauss', 'luChol')
 Def.rctol   = 1e-12; % only for mess
 Def.q       = 0; % only for mess
@@ -88,15 +88,15 @@ end
 
 if strcmp(Opts.type,'adi') && sys.isDae
     warning('MESS does not support dae-Systems. The built-in lyapchol is used instead.');
-    Opts.type='standard';
+    Opts.type='';
 end
 
 if strcmp(Opts.type,'adi') && sys.n<100
     warning('System is too small for the use of ADI, the built-in lyapchol is used instead.');
-    Opts.type='standard';
+    Opts.type='';
 end
 
-if (strcmp(Opts.type,'standard') && sys.n>500 && ~sys.isDae) || strcmp(Opts.type,'adi')
+if (strcmp(Opts.type,'') && sys.n>500 && ~sys.isDae) || strcmp(Opts.type,'adi')
     %% mess
     % eqn struct: system data
     eqn=struct('A_',sys.A,'E_',sys.E,'B',sys.B,'C',sys.C,'prm',speye(size(sys.A)),'type','N','haveE',sys.isDescriptor);
