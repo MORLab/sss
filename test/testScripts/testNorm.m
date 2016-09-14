@@ -57,7 +57,7 @@ classdef testNorm < sssTest
         function testLyapchol(testCase)
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
-                if ~sys.isDae && sys.n>100
+                if ~sys.isDae && sys.n>300
                         % options for mess
                         % eqn struct: system data
                         eqn=struct('A_',sys.A,'E_',sys.E,'B',sys.B,'C',sys.C,'type','N','haveE',sys.isDescriptor);
@@ -74,14 +74,15 @@ classdef testNorm < sssTest
                         % low rank adi
                         [R,~,eqn]=mess_lradi(eqn,messOpts,oper);
 
-                        expNrmAdi=norm(R'*eqn.C','fro');
+                        actNrmAdi1=norm(R'*eqn.C','fro');
                         Opts.lyapchol='adi';
-                        actNrm=norm(sys,Opts);
+                        actNrmAdi2=norm(sys,Opts);
                         Opts.lyapchol='builtIn';
-                        expNrmLyap=norm(sys,Opts);
+                        actNrmBuiltIn=norm(sys,Opts);
+                        expNrm=norm(ss(sys));
                         
-                        actSolution={actNrm, actNrm};
-                        expSolution={expNrmAdi, expNrmLyap};
+                        actSolution={actNrmAdi1, actNrmAdi2, actNrmBuiltIn};
+                        expSolution={expNrm, expNrm, expNrm};
                         verifyEqual(testCase, actSolution, expSolution,'RelTol',1e-3,...
                         'Difference between actual and expected solution.');
                 end
