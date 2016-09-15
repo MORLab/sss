@@ -1,5 +1,5 @@
 function [isstable,spectralAbscissa] = isstable(sys)
-% ISSTABLE - Check stability of LTI sss system
+% ISSTABLE - Check stability of sparse LTI system
 %
 % Syntax:
 %       ISSTABLE(sys)
@@ -7,14 +7,14 @@ function [isstable,spectralAbscissa] = isstable(sys)
 %       [isstable,spectralAbscissa] = ISSTABLE(sys)
 %
 % Description:
-%       This function determines whether the LTI, sss system "sys" is 
+%       This function determines whether the sparse LTI system |sys| is 
 %       asymptotically stable. The computations are meant to avoid 
 %       operations on full matrices. However, whenever this is not possible,
 %       a warning is issued. 
 % 
 %       The stability check is done by first computing the eigenvalues with 
 %       largest real part ('lr'). Afterwards, the spectral abscissa, i.e.
-%       the largest occurring real part is calculated. The system is
+%       the largest occurring real part, is calculated. The system is
 %       asymptotically stable, if the spectral abscissa is strictly less 
 %       than zero.
 % 
@@ -35,19 +35,20 @@ function [isstable,spectralAbscissa] = isstable(sys)
 %       -spectralAbscissa: i.e. the largest real part of the eigenvalues.
 %
 % Examples:
-%       The following code checks if the benchmark 'building' is
-%       asymptotically stable:
+%       Following example determines the stability of the 'CDplayer' model
+%       (SSS, MIMO):
+%
+%> load CDplayer.mat
+%> sys=sss(A,B,C);
+%> isstable(sys)
+%
+%      To obtain the spectral abscissa the function can be called with two
+%      outputs
 %
 %> load building.mat
 %> sys=sss(A,B,C);
 %> [isstab, spectralAbscissa]=isstable(sys)
 %
-%       Another example, this time using the benchmark 'CDplayer' (SSS,
-%       MIMO):
-%
-%> load CDplayer.mat
-%> sys=sss(A,B,C);
-%> isstable(sys)
 %
 % See Also:
 %       issd, eigs, chol, pzmap
