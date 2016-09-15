@@ -146,14 +146,6 @@ for i = 1:length(varargin)
         else
             [varargin{i},tg] = getht(varargin{i}, [], Opts);
         end
-        
-        % compute impulse response [g,t]
-        for k=1:size(varargin{i},1)
-            for j=1:size(varargin{i},2)
-                varargin{i}{k,j}=gradient(varargin{i}{k,j},tg{k,j});                        
-                varargin{i}{k,j}(isnan(varargin{i}{k,j}))=0;
-            end
-        end
 
         % get Ts and Tfinal
         Ts=Inf;
@@ -175,6 +167,14 @@ for i = 1:length(varargin)
         else
             Ts=min(diff(t));
             Tfinal=t(end);
+        end
+        
+         % compute impulse response [g,t]
+        for k=1:size(varargin{i},1)
+            for j=1:size(varargin{i},2)
+                varargin{i}{k,j}=Ts*gradient(varargin{i}{k,j},tg{k,j});                        
+                varargin{i}{k,j}(isnan(varargin{i}{k,j}))=0;
+            end
         end
 
         if nargout==0
