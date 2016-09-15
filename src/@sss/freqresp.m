@@ -1,33 +1,31 @@
 function [varargout] = freqresp(varargin)
-% FREQRESP - Evaluates complex transfer function of LTI systems
+% FREQRESP - Frequency response of sparse state-space systems.
 % 
+% Syntax:
+%       [G, w] = freqresp(sys)
+%       G = freqresp(sys, w)
+%       G = freqresp(sys, ..., Opts)
+%       frdData = freqresp(sys,..., struct('frd',1))
+%
 % Description:
-%       Evaluates complex transfer function of LTI systems. If the vector
-%       of complex frequencies is not passed, then a range of imaginary
-%       frequencies is automatically selected. 
+%       Evaluates complex transfer function of LTI systems. 
+%
+%       If the vector of complex frequencies is not passed, then a range of 
+%       imaginary frequencies is automatically selected. 
 %       This automatic selection is done through the computation of the
 %       first and second derivatives of the magnitude of the frequency
 %       response. 
-%       Also, one of the steps is the computation of the connection between
-%       inputs and outputs of the system. The value of M(i,j) is one when
-%       the input j is connected to the output i. When it is zero, then a
-%       change in the input j doesn't influence the output i.
 %
 %       If the function is called with only one ouput and the option 'frd'
 %       is specified as last input variable, than an frd object is
 %       returned.
 %
-% Syntax:
-%       G = freqresp(sys, w)
-%       G = freqresp(sys, ..., Opts)
-%       [G, w] = freqresp(sys)
-%       frdData = freqresp(sys,..., struct('frd',1))
 %
 % Inputs:
 %       *Required Input Arguments:*
 %       -sys: an sss-object containing the LTI system
-%       -w: vector of frequencies or cell with {wmin,wmax}
 %       *Optional Input Arguments:*
+%       -w: vector of frequencies or cell with {wmin,wmax}
 %       -Opts:  structure with execution parameters
 %			-.frd:  return frd object;
 %						[{0} / 1]
@@ -37,8 +35,9 @@ function [varargout] = freqresp(varargin)
 %                       [{'sparse'} / 'full' /'gauss' /'hess' / 'iterative']
 %       
 % Outputs:      
-%       -G: vector of complex frequency response values
-%       -omega: vector with the frequencies at which the response was computed
+%       -G: |sys.p| x |sys.m| x |N| array of complex frequency response values,
+%       where |N| is the number of sampling frequencies
+%       -w: vector with the frequencies at which the response was computed
 %       -frdData:   a frd object with the frequency response data
 %
 % Examples:
@@ -119,7 +118,15 @@ sys.A = A(reOrder,reOrder);
 sys.B = B(reOrder,:);
 sys.C = C(:,reOrder);
 sys.E = E(reOrder,reOrder);
-%Verifying relation between Inputs and Outputs
+
+%% Verifying relation between Inputs and Outputs
+
+%{ 
+One of the steps is the computation of the connection between inputs and 
+outputs of the system. The value of M(i,j) is one when the input j is 
+connected to the output i. When it is zero, then a change in the input j 
+doesn't influence the output i.
+%}
 M=InputOutputRelation(sys,reOrderMatrix);
 
 if ~any(any(M))
