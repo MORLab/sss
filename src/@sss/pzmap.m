@@ -28,22 +28,14 @@ function [varargout] = pzmap(varargin)
 %       -z: vector containing invariant zeros
 %
 % Examples:
-%       Create a random descriptor model (DSSS, SISO) and compare the output
-%       of ss/pzmap and sss/pzmap:
+%       Load the benchmark 'building' (SSS, SISO) and use pzmap to plot the
+%       first poles and zeros with largest magnitude. Compare the result to
+%       the built-in function that uses dense (!) operations to compute the
+%       whole spectrum.
 %
-%> A = randn(500,500); B = randn(500,1); C = randn(1,500); D = zeros(1,1);
-%> E = randn(500,500);
-%> sys = dss(A,B,C,D,E);
-%> sysSss = sss(sys);
-%> figure; pzmap(sys);
-%> figure; pzmap(sysSss);
+%> load building.mat, sys = sss(A,B,C);
+%> figure; pzmap(ss(sys));hold on; pzmap(sys);
 %
-%       Load the benchmark 'rail_1357' (DSSS, MIMO) and use pzmap:
-%
-%> load rail_1357.mat
-%> p = size(C,1); m = size(B,2);
-%> sys = sss(A,B,C,zeros(p,m),E)
-%> figure; pzmap(sys);
 %
 % See Also:
 %       ss/pzmap
