@@ -3,14 +3,18 @@ function [varargout] = pzmap(varargin)
 %
 % Syntax:
 %       PZMAP(sys)
-%       PZMAP(sys, opts)
-%       [p,z] = PZMAP(sys)
+%       PZMAP(sys, k)
+%       PZMAP(sys, ..., Opts)
+%       [p,z] = PZMAP(sys, k, Opts)
 %
 % Description:
 %       pzmap(sys) creates a pole-zero plot of the continuous- or discrete-time 
-%       dynamic system model sys. For MIMO systems, pzmap plots the system 
-%       poles and the invariant zeros in one figure. The poles are plotted 
-%       as x's and the invariant zeros are plotted as o's.
+%       dynamic system model sys containing only the 6 poles and zeros with
+%       largest magnitude. This number can be changed with input k. The type
+%       of the computed poles and zeros can be specified with the options 'typeP'
+%       and 'typeZ'. For MIMO systems, pzmap plots the system poles and the 
+%       invariant zeros in one figure. The poles are plotted as x's and the 
+%       invariant zeros are plotted as o's.
 %
 %       [p,z] = pzmap(sys) returns the system poles and invariant zeros in the column 
 %       vectors p and z. No plot is drawn on the screen.
@@ -21,7 +25,12 @@ function [varargout] = pzmap(varargin)
 %
 % Input Arguments:
 %       -sys:      an sss-object containing the LTI system
-%       -opts:     plot options. see <a href="matlab:help plot">PLOT</a>
+%       -k:        number of computed poles and zeros
+%       -Opts:     structure with execution parameters
+%			-.typeP:    type of poles
+%						[{'lm'} / 'sm' / 'la' / 'sa']
+%			-.typeZ:    type of zeros
+%						[{'lm'} / 'sm' / 'la' / 'sa']
 %
 % Output Arguments:
 %       -p: vector containing poles 
@@ -59,11 +68,30 @@ function [varargout] = pzmap(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
-if isa(varargin{end},'double')
-    k=varargin{end};
+%% Parse inputs and options
+Def.typeZ = 'lm'; %eigs type for zeros
+Def.typeP = 'lm'; %eigs type for poles
+
+if isa(varargin{end},'struct')
+    Opts=varargin{end};
     varargin=varargin(1:end-1);
+end
+
+% create the options structure
+if ~exist('Opts','var') || isempty(Opts)
+    Opts = Def;
 else
-    k=6;
+    Opts = parseOpts(Opts,Def);
+end
+
+k=6;
+i=2;
+while(i<=length(varargin))
+    if isa(varargin{i},'double')
+        k=varargin{i};
+        varargin(i)=[];
+    end
+    i=i+1;
 end
 
 for i = 1:length(varargin)
@@ -79,7 +107,8 @@ for i = 1:length(varargin)
         if varargin{i}.isDae
             error('pzmap does not work with DAE systems yet.');
         end
-        varargin{i} = zpk(varargin{i}, k, struct('zpk',true));
+        Opts.zpk='true';
+        varargin{i} = zpk(varargin{i}, k, Opts);
     end
 end
 
