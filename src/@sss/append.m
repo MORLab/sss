@@ -5,7 +5,8 @@ function sys = append(varargin)
 %       sys = APPEND(sys1,sys2,...)
 %
 % Description:
-%       Appends a set of sparse LTI systems (sss)
+%       Create an aggregated model (sss) by concatenating inputs and
+%       outputs
 %
 % Input Arguments:
 %       -sys1,sys2,...: sparse state space (sss)-objects
@@ -18,11 +19,10 @@ function sys = append(varargin)
 %		and groups the models by appending their inputs and outputs:
 %
 %> load building; 
-%> sysBuilding = sss(A,B,C);
+%> sysBuilding = sss(A,B,C)
 %> load CDplayer
-%> sysCdplayer = sss(A,B,C);
-%> sysAppended = append(sysBuilding,sysCdplayer);
-%> spy(sysAppended);
+%> sysCdplayer = sss(A,B,C)
+%> sysAppended = append(sysBuilding,sysCdplayer)
 %
 % See Also:
 %       connect, ss/append, ss/blkdiag
