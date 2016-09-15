@@ -1,5 +1,5 @@
 function sys1 = mtimes(sys1, sys2)
-% MTIMES - Computes the product of two LTI systems: u-->sys2-->sys1-->y
+% MTIMES - Computes the product of two LTI systems.
 %
 % Syntax:
 %       prod = MTIMES(sys1, sys2)
@@ -8,24 +8,13 @@ function sys1 = mtimes(sys1, sys2)
 % Description:
 %       mtimes computes the product of two LTI systems: prod = sys1*sys2,
 %       i.e., the output of sys2 is connected directly to the input
-%       of sys1.
+%       of sys1 accortind to u-->sys2-->sys1-->y.
 %
-% Input Arguments:
-%       sys1, sys2: sss-object containing the LTI system
+% *Required Input Arguments:*
+%		- sys1, sys2:       sss-objects containing the LTI systems
 % 
-% Outputs Arguments:
-%       prod: sss-object representing sys1*sys2
-%
-% Examples:
-%> load building.mat
-%> sysBuilding=sss(A,B,C);
-%> size(sysBuilding)
-%> sysRandom=rss(10); sysRandomSparse=sss(sysRandom);
-%> size(sysRandomSparse);
-%> prodSystems=mtimes(sysBuilding,sysRandomSparse);
-%> size(prodSystems);
-%> prod = sysBuilding*sysRandomSparse; %for comparison reasons
-%> prod.A == prodSystems.A; %for comparison reasons
+% *Outputs Arguments*:
+%       - prod:     sss-object representing sys1*sys2
 %
 % See Also:
 %       plus, minus
