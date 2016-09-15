@@ -22,13 +22,15 @@ function tmax = decayTime(sys)
 %       -tmax: time after which the system has settled down
 %
 % Examples:
-%       This code computes the decay time of the benchmark 'building' and
-%       shows its meaning in a step response plot:
+%       This code computes the decay time of the benchmark 'building':
 %
 %> load building; 
 %> sys = sss(A,B,C);
 %> tmax = decayTime(sys)
-%> step(sys); %confirm in step response
+%
+%       You can visualize the meaning of decay time in a step response plot:
+%
+%> step(sys);
 %> hold on; plot(tmax*[1,1],[-8,8]*1e-4,'r');
 %
 % See Also:
