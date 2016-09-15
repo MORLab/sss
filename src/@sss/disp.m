@@ -1,9 +1,9 @@
-function varargout = disp(sys)
+function infostr = disp(sys)
 % DISP - Displays information about a sparse state-space model
 %
 % Syntax:
 %       DISP(sys)
-%       varargout = DISP(sys)
+%       infostr = DISP(sys)
 %
 % Description:
 %       DISP(sys) displays information about a sparse state-space model:
@@ -17,7 +17,7 @@ function varargout = disp(sys)
 %       -sys: an sss-object containing the LTI system
 %
 % Output Arguments:
-%       -varargout: character (char) containing the information about the sss-object
+%       -infostr: string (char) containing the information about the sss-object
 %
 % Examples:
 %       To display some information about the benchmark "iss" (SSS, MIMO)
@@ -80,7 +80,7 @@ else
     end
 
     if nargout>0
-        varargout = {str};
+        infostr = {str};
     else
         str = strrep(str, char(10), [char(10) '  ']);
         disp(['  ' str char(10)]);
