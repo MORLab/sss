@@ -21,8 +21,9 @@ function varargout = eig(sys, varargin)
 %       [V,D,W] = eig(sys) also returns full matrix W whose columns are the
 %       corresponding left eigenvectors, so that W'*sys.A = sys.E*D*W'.
 %
-%       If the dimension of sys is too large (for instance, sys.n>10000),
-%       then it is preferable to use eigs(sys) instead.
+%       //Note: this function performs dense computations and is hence
+%       suitable only for mid-sized problems. Use <a href="matlab:open eigshelp.html">eigs</a> instead if you
+%       are interested only in some eigenmodes.
 %
 % Input Arguments:
 %       -sys: an sss-object containing the LTI system
