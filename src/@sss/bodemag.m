@@ -3,9 +3,9 @@ function  bodemag(varargin)
 % 
 % Syntax: 
 %       bodemag(sys)
-%       bodemag(sys, omega)
-%       bodemag(sys1, sys2, ..., omega)
-%       bodemag(sys, LineSpec)
+%       bodemag(sys,omega)
+%       bodemag(sys1,...,sysN,omega)
+%       bodemag(sys,LineSpec)
 %
 % Description:
 %       Bode magnitude plot of one or several LTI systems.
