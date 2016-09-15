@@ -12,15 +12,15 @@ function [nrm, varargout] = norm(sys, varargin)
 %       as a sparse state-space (sss) object sys. The value of p can be
 %       passed as a second optional argument to the function and is set to
 %       2 otherwise.
-%       The H_Infinity norm of a system is computed using a Newton Method
+%       The $H_\infty$ norm of a system is computed using a Newton Method
 %       optimization. Firstly, many frequency responses are computed, then, the
-%       maximal found frequency response is locally optimized in order to find the H_Infinity norm.
+%       maximal found frequency response is locally optimized in order to find the $H_\infty$ norm.
 %
 % Input Arguments:
 %       *Required Input Arguments:*
 %       -sys: sss-object containing the LTI system
 %       *Optional Input Arguments:* 
-%       -p: choice of H_2-norm or H_inf-norm 
+%       -p: choice of H_2-norm or H_infty-norm 
 %           [{'2'} / 'inf']
 %       -Opts:              a structure containing following options
 %           -.lyapchol:     try only solution by adi or lyapunov equation
@@ -30,16 +30,16 @@ function [nrm, varargout] = norm(sys, varargin)
 %
 % Output Arguments:
 %       -nrm:             value of norm
-%       -hInfPeakfreq:    peak frequency of magnitude of H_inf norm
+%       -hInfPeakfreq:    peak frequency of magnitude of H_\infty norm
 %
 % Examples:
-%       The following code computes the H2- and the H_inf-norm of the
+%       The following code computes the $H_2$- and the $H_\infty$-norm of the
 %       benchmark 'CDplayer' (SSS, MIMO):
 %
 %> load CDplayer.mat
 %> sys=sss(A,B,C);
-%> h2Norm=norm(sys,2);
-%> h_infNorm=norm(sys,inf);
+%> h2Norm=norm(sys,2)
+%> h_infNorm=norm(sys,inf)
 %
 % See also:
 %       norm, sss, lyapchol
