@@ -1,5 +1,5 @@
 function [issd, numericalAbscissa] = issd(sys)
-% ISSD - Check strict dissipativity of LTI sss system
+% ISSD - Check strict dissipativity of sparse LTI system
 %
 % Syntax:
 %       ISSD(sys)
@@ -7,10 +7,12 @@ function [issd, numericalAbscissa] = issd(sys)
 %       [issd,numericalAbscissa] = ISSD(sys)
 %
 % Description:
-%       This function determines whether the LTI, sss system "sys" is 
-%       given in a strictly dissipative realization. The computations are meant 
-%       to avoid operations on full matrices. However, whenever this is not 
-%       possible, a warning is issued.
+%       This function determines whether the LTI, sss system |sys| is 
+%       given in a strictly dissipative realization, satisfying
+%       $$ E = E^T > 0, \quad A+A^T<0. $$  
+%       The computations are meant 
+%       to avoid dense operations. However, whenever this is not possible, 
+%       a warning is issued.
 %
 %       If no output is defined, then the result is printed on the screen.
 %       Depending on the number of ouputs defined, the function can return.
@@ -26,7 +28,7 @@ function [issd, numericalAbscissa] = issd(sys)
 % Output Arguments:
 %       -issd: a boolean value (1=true, 0=false, NaN= dissipative but not
 %              strictly).
-%       -numericalAbscissa: the 20 largest eigenvalues of sys.
+%       -numericalAbscissa: the largest eigenvalue of A+A'.
 %
 % Examples:
 %       The following code checks the strictly dissipativity of the
