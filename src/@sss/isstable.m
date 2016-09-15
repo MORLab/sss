@@ -27,6 +27,10 @@ function [isstable,spectralAbscissa] = isstable(sys)
 %       might be stable (in the sense of Lyapunov) or unstable if the
 %       multiplicity of the eigenvalues at the origin is greater than one.
 %
+%       //Note: if the computation of the spectral abscissa with eigs
+%       fails, then this function uses eig to determine the eigenvalue with
+%       largest real part. This is possible only for mid-sized problems.
+%
 % Input Arguments:
 %       -sys: sss-object containing the LTI system
 %

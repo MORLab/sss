@@ -1,5 +1,5 @@
 function diff = minus(sys1, sys2)
-% MINUS - Computes difference of two LTI systems: u-->(sys1-sys2)-->y
+% MINUS - Computes difference of two sparse LTI systems.
 % 
 % Syntax:
 %       diff = MINUS(sys1, sys2)
@@ -17,15 +17,21 @@ function diff = minus(sys1, sys2)
 %       -diff: sss-object representing sys1-sys2
 %
 % Examples:
-%       In this example the benchmark 'building' will be reduced and its behaviour 
-%       will be compared with the original model.
+%       In this example the 'building' model will be reduced using the build-in
+%       |balancmr| function. Note that for the reduction of large-scale models,
+%       we recommend using the <https://www.rt.mw.tum.de/?sssMOR sssMOR> toolbox.
+%       we acts directly on |sss| models and exploits sparsity. 
 %
-%> load building.mat
-%> sys=sss(A,B,C);
-%> sysReduced=tbr(sys,12); %original order: 48, reduced order: 12
-%> sysError=minus(sysReduced,sys); %sysError = sysReduced - sys
-%> H2_Norm=norm(sysError,2);
-%> H8_Norm=norm(sysError,inf);
+%> load building.mat, sys=sss(A,B,C);
+%> sysr=sss(balancmr(ss(sys),12)); %reduced order: 12
+%
+%       The reduced model is compared to the original in a bode magnitude
+%       plot. We use the |minus| function to compute the error model |syse|.
+%
+%> syse=minus(sys,sysr); %syse = sys - sysr
+%> figure; bodemag(sys,sysr,'--r',syse,'--g')
+%> legend('original','reduced','error')
+%
 %
 % See Also:
 %       plus, mtimes

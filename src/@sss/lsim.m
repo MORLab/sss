@@ -1,5 +1,5 @@
 function [y,X,tx] = lsim(sys,u,Ts,method,Ts_sample)
-% lsim - Simulates a sss system using a vector as input time series
+% lsim - Simulate time response of sparse dynamic system to arbitrary inputs
 %
 % Syntax:
 %       [y,X,tx] = lsim(sys,u,Ts)
@@ -7,8 +7,7 @@ function [y,X,tx] = lsim(sys,u,Ts,method,Ts_sample)
 %       [y,X,tx] = lsim(sys,u,Ts,Ts_sample,method)
 %
 % Description:
-%       Simulates a sss system using a vector as input time series
-%
+%       Simulates the response in time of sparse LTI systems to arbitrary inputs.
 % Input Arguments:
 %       *Required Input Arguments:*
 %       -sys:   an sss-object containing the LTI system
