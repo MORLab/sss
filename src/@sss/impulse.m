@@ -25,7 +25,7 @@ function  varargout = impulse(varargin)
 %       -t:     vector of time values to plot at
 %       -Tfinal: end time of impulse response
 %       -Opts:  structure with execution parameters
-%			-.odeset:  odeset Settings of ODE solver
+%			-.odeset:  settings of ODE solver
 %           -.tolOutput: Terminate if norm(y_-yFinal)/norm(yFinal)<tolOutput with yFinal = C*xFinal+D;
 %						[1e-3 / positive float]
 %           -.tolState: Terminate if norm(x-xFinal)/norm(xFinal)<tolState with xFinal = -(A\B);
@@ -41,16 +41,16 @@ function  varargout = impulse(varargin)
 %
 % Outputs:
 %       -h, t: vectors containing impulse response and time vector
-%       -tf: discrete time tf object of step response
+%       -TF: discrete time |tf| object of step response
 %
 % Examples:
 %       The following code computes the impulse response of the benchmark
 %       'building' (SSS, SISO) and compares it with the MATLAB built-in function:
 %
-%> load building.mat
-%> sysSparse=sss(A,B,C); %sparse state-space (sss)
-%> sys=ss(sysSparse); %full state-space (ss)
-%> figure; impulse(sys); hold on; impulse(sysSparse);
+%> load beam.mat
+%> sys=sss(A,B,C);    %sparse state-space (sss)
+%> figure; impulse(sys); 
+%> hold on; impulse(ss(sys)); %compare to built-in
 %> legend('ss/impulse','sss/impulse');
 %
 % See Also:
