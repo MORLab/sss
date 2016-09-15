@@ -146,6 +146,15 @@ for i = 1:length(varargin)
         else
             [varargin{i},tg] = getht(varargin{i}, [], Opts);
         end
+        
+        % compute impulse response [g,t]
+        for k=1:size(varargin{i},1)
+            for j=1:size(varargin{i},2)
+                varargin{i}{k,j}=gradient(varargin{i}{k,j},tg{k,j});
+                tg{k,j}(isnan(varargin{i}{k,j}))=[];
+                varargin{i}{k,j}(isnan(varargin{i}{k,j}))=[];
+            end
+        end
 
         % get Ts and Tfinal
         Ts=Inf;
@@ -168,20 +177,12 @@ for i = 1:length(varargin)
             Ts=min(diff(t));
             Tfinal=t(end);
         end
-        
-         % compute impulse response [g,t]
-        for k=1:size(varargin{i},1)
-            for j=1:size(varargin{i},2)
-                varargin{i}{k,j}=Ts*gradient(varargin{i}{k,j},tg{k,j});                        
-                varargin{i}{k,j}(isnan(varargin{i}{k,j}))=0;
-            end
-        end
 
         if nargout==0
             % compute tf object for plotting
             for k=1:size(varargin{i},1)
                  for j=1:size(varargin{i},2)
-                     varargin{i}{k,j}=interp1(tg{k,j},varargin{i}{k,j},0:Ts:Tfinal);
+                     varargin{i}{k,j}=Ts*interp1(tg{k,j},varargin{i}{k,j},0:Ts:Tfinal);
                      varargin{i}{k,j}(isnan(varargin{i}{k,j}))=0;
                  end
             end
@@ -220,19 +221,24 @@ for i = 1:length(varargin)
                  end
              end
              
+             if Opts.tf
+                % compute tf object
+                for k=1:size(varargin{i},1)
+                     for j=1:size(varargin{i},2)
+                         varargin{i}{k,j}=Ts*interp1(tg{k,j},varargin{i}{k,j},t);
+                         varargin{i}{k,j}(isnan(varargin{i}{k,j}))=0;
+                     end
+                end
+                TF=filt(varargin{i},1,Ts);
+             end
+             
              if nargout==3 && Opts.tf
-                 varargin{1} = cellfun(@(x) [x(1) diff(x')],varargin{1},'UniformOutput',false);
-                 varargout{1} = filt(varargin{1},1,Ts);
+                 varargout{1} = TF;
                  varargout{1}.Name = name;
                  varargout{2} = g;
                  varargout{3} = t';
              elseif Opts.tf
-                 for k=1:size(varargin{1},1)
-                     for j=1:size(varargin{1},2) 
-                        varargin{1}{k,j} = varargin{1}{k,j}';
-                     end
-                 end
-                 varargout{1} = filt(varargin{1},1,Ts);
+                 varargout{1} = TF;
                  varargout{1}.Name = name;
              else
                  varargout{1}=g;
