@@ -1,15 +1,10 @@
-# sss - Change Log & Release Notes
+# sss - Changelog
 
 ## Roadmap (changes to come)
 
-## v1.01 [Work in Progress]
-### Changes
+## v1.00 - first Release [16 November 2015]
 
-### Bug Fixes
-
-## v1.00 - first Release [xx March 2016]
-
-## v1.06
+## v1.01 [16 September 2016]
 ### Changes
 - SOLVELSE
 	- **new function: solve linear system of equations**
@@ -18,7 +13,7 @@
 	- **new function: solve Lyapunov equation**
 
 - PZMAP
-	- plot only of the most important poles and zeros
+	- plot only the most important poles and zeros
 
 - ZPK
 	- **new function: create zpk objekt of the most important poles and zeros**
@@ -26,7 +21,7 @@
 - POLES
 	- **new function: compute the most important poles**
 
-- ZEROS 
+- ZEROS
 	- **new function: compute the most important zeros**
 
 - DCGAIN
