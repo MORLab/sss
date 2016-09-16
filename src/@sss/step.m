@@ -23,6 +23,9 @@ function  varargout = step(varargin)
 %       system sys and returns the vectors h and t with the response and
 %       the time series, respectively.
 %
+%       TF = STEP(sys,struct('tf',true)) returns a discrete time |tf| object 
+%       of the FIR-filter with same discrete step response as sys.
+%
 % Input Arguments:
 %       *Required Input Arguments:*
 %       -sys: an sss-object containing the LTI system
@@ -48,14 +51,13 @@ function  varargout = step(varargin)
 % 
 % Output Arguments:
 %       -h, t: vectors containing step response and time vector
-%       -tf: discrete time tf object of step response
+%       -TF: discrete time tf object of step response
 %
 % Examples:
 %       The following code plots the step response of the benchmark
-%       'CDplayer' (SSS, MIMO):
+%       'building' (SSS, SISO):
 %
-%> load CDplayer.mat
-%> sys=sss(A,B,C);
+%> load building.mat; sys=sss(A,B,C);
 %> step(sys);
 %
 % See Also:

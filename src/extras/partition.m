@@ -21,6 +21,8 @@ function [A11,A12,A21,A22] = partition(A,row,col)
 % Output Arguments:
 %       -A11,A12,A21,A22: submatrices resulting from the partition of A
 %
+% See Also:
+%
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

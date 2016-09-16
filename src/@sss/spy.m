@@ -1,10 +1,9 @@
-function fh = spy(sys,name)
+function spy(sys,name)
 % SPY - Plot sparsity pattern of sss system
 % 
 % Syntax:
 %               SPY(sys)
 %               SPY(sys,name)
-%       fh =    SPY(sys)
 % 
 % Description:
 %       This function plots the sparsity pattern of the E and A matrices of
@@ -20,17 +19,14 @@ function fh = spy(sys,name)
 %       *Optional Input Arguments:*
 %       -name: Plot title
 %       
-% Output Arguments:
-%       -fh:    figure handle
 %
 % Examples:
 %		The following code plots the sparsity pattern of the benchmark
 %		'SpiralInductorPeec' (DSSS, SISO):
 %
 %> sys = loadSss('SpiralInductorPeec.mat'); 
-%> spy(sys,'Peec inductor');
+%> figure; spy(sys,'Peec inductor');
 %
-%//Note: The .mat file for the example can be found in the benchmarks folder.
 %
 % See Also: 
 %		spy
@@ -54,7 +50,6 @@ function fh = spy(sys,name)
 % Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-    fh = figure;
     subplot(1,2,1);spy(sys.E); title('spy(E)');
     subplot(1,2,2);spy(sys.A); title('spy(A)');
     

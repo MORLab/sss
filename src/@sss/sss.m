@@ -1,5 +1,5 @@
 classdef sss
-% SSS - Sparse state-space LTI system (sss) class
+% SSS - Create sparse state-space (sss) model, convert to sss model
 %
 % Syntax:
 %       sys = SSS(A,B,C)
@@ -12,7 +12,7 @@ classdef sss
 %       This class allows you to create sparse state-space (sss) objects by
 %       just passing the corresponding sparse system matrices.
 %
-%       The class supports SSS (E=I), descriptor (DSSS, E~=I, E nonsingular)
+%       The class supports sss (E=I), descriptor (dsss, E~=I, E nonsingular)
 %       as well as DAE (E~=I, E singular) systems. You can create both
 %       continous- and discrete-time sss objects. For creating
 %       discrete-time sss objects, one has only to pass the sampling time Ts
@@ -48,8 +48,8 @@ classdef sss
 %> load building.mat
 %> sys = sss(A,B,C)
 %
-%       SSS also supports descriptor (DSSS) and DAE systems. To create a sparse
-%       state-space model of the benchmark 'rail_1357' (DSSS, MIMO) use:
+%       SSS also supports descriptor and DAE systems. To create a sparse
+%       state-space model of the benchmark 'rail_1357' use:
 % 
 %> load rail_1357.mat
 %> sys = sss(A,B,C,[],E)
@@ -58,6 +58,9 @@ classdef sss
 %
 %> sys = rss(1000); %random ss model with 100 state variables
 %> sysSparse = sss(sys); %convert to sss-object
+%
+%       //Note: If the system matrices are sparse, the conversion from ss to sss
+%       can save substantial memory space.
 %
 %       After creating a sss-object, one can get properties and call the
 %       implemented functions by just making use of the .-operator:
