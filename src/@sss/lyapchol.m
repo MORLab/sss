@@ -49,7 +49,7 @@ function [R,L] = lyapchol(sys, Opts)
 %       solveLse, tbr, norm, isrk
 %
 % References:
-%       * *[1] Penzl (2000)*, |lyapack| - A MATLAB Toolbox for Large Lyapunov
+%       * *[1] Penzl (2000)*, LYAPACK - A MATLAB Toolbox for Large Lyapunov
 %       and Riccati Equations, Model Reduction Problems, and Linear-Quadratic 
 %       Optimal Control Problems.
 %
