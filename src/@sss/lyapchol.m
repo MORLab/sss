@@ -15,7 +15,6 @@ function [R,L] = lyapchol(sys, Opts)
 %       specified, then ADI is applied to systems with n>500. The options 
 %       'lse', 'rctol' and 'q' only apply to ADI.
 %
-%
 % Input Arguments:
 %		*Required Input Arguments:*
 %       -sys:   an sss-object containing the LTI system
@@ -35,7 +34,7 @@ function [R,L] = lyapchol(sys, Opts)
 %       -L:     Cholesky factor X=L'*L of lyapunov equation A'*X+X*A+C'*C=0
 %
 % Examples:
-%       Compute the Cholesky factors for both lyapunov equations
+%       Compute the Cholesky factors for both Lyapunov equations
 %
 %> sys = loadSss('building');
 %> [R,L] = lyapchol(sys);
