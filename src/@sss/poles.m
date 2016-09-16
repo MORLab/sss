@@ -1,5 +1,5 @@
 function p = poles(sys,varargin)
-% ZEROS - Compute largest poles of an LTI system
+% POLES - Compute largest poles of an LTI system
 %
 % Syntax:
 %       p = poles(sys)

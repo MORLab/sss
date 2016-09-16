@@ -1,5 +1,5 @@
 function [varargout] = zpk(sys,varargin)
-% ZPKDATA - Compute largest poles and zeros or zpk object of an LTI system
+% ZPK - Compute largest poles and zeros or zpk object of an LTI system
 %
 % Syntax:
 %       [p,z] = ZPK(sys)
@@ -46,14 +46,15 @@ function [varargout] = zpk(sys,varargin)
 %> E = randn(500,500);
 %> sys = dss(A,B,C,D,E);
 %> sysSss = sss(sys);
-%> [p,z]=zpk(sys);
+%> [p,z]=zpk(sysSss)
 %
-%       Load the benchmark 'rail_1357' (DSSS, MIMO) and use zpk:
+%       Load the benchmark 'CDplayer' (SSS, MIMO) and use zpk:
 %
-%> load rail_1357.mat
+%> load CDplayer.mat
 %> p = size(C,1); m = size(B,2);
-%> sys = sss(A,B,C,zeros(p,m),E)
-%> [p,z]=zpkData(sys);
+%> sys = sss(A,B,C,zeros(p,m))
+%> [p,z]=zpk(sys)   %computing poles and zeros
+%> zpkData=zpk(sys) %computing zpkData (numerator and denominator data)
 %
 % See Also:
 %       pzmap, zeros, poles

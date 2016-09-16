@@ -34,10 +34,10 @@ function z = zeros(sys,varargin)
 %       Load the benchmark 'rail_1357' (DSSS, MIMO) and compute the first 6
 %       zeros with largest magnitude:
 %
-%> load rail_1357.mat
+%> load CDplayer.mat
 %> p = size(C,1); m = size(B,2);
-%> sys = sss(A,B,C,zeros(p,m),E)
-%> z=zeros(sys);
+%> sys = sss(A,B,C,zeros(p,m))
+%> z=zeros(sys)
 %
 % See Also:
 %       pzmap, zpk, poles
