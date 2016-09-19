@@ -130,6 +130,22 @@ classdef testImpulse < sssTest
                 end
             end
         end
+        function testImpulseTF(testCase)
+        %Compare the impulse response recovered from the tf-object with the
+        %solution from impulse
+            sys = loadSss('beam');
+            
+            %recover impulse response from the tf-object
+            tf = impulse(sys,struct('tf',1));
+            h_ = tf.num{1,1}/tf.Ts;
+            
+            %calculate the impusle response at the same sample points as
+            %for the tf-object
+            t_ = 0:tf.Ts:tf.Ts*(size(tf.num{1,1},2)-1);
+            [h,~] = impulse(sys,t_);
+
+            verification(testCase,h,h_');
+        end
     end
 end
 
