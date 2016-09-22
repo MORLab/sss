@@ -65,8 +65,8 @@ classdef sss
 %       After creating a sss-object, one can get properties and call the
 %       implemented functions by just making use of the .-operator:
 %
-%> load peec
-%> sys = sss(A,B,C,[],E);
+%> load CDplayer
+%> sys = sss(A,B,C);
 %> p = sys.p %get the number of outputs
 %> isMimo = sys.isMimo %get if the system is MIMO
 %> isDae = sys.isDae %get if the system is DAE
