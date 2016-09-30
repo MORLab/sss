@@ -1,31 +1,23 @@
-function f_new = bodeToFig(closeBode,defPos,subM,subN)
+function fNew = bodeToFig(closeBode,defPos,subM,subN)
 % BODETOFIG - Transforms MATLAB bode/step/impulse plot into normal figure
 %
 % Syntax: 
 %       BODETOFIG(closeBode,defPos,subM,subN)
 %
 % Description:
-%       TODO
+%       Transforms MATLAB bode/step/impulse plot into normal figure
 %
 % Input Arguments:
-%       *Required Input Arguments:*
 %           -closeBode: closes bode figure if true
 %           -defPos:    sets axis position to default if true
 %           -subM:      m as in subplot
 %           -subN:      n as in subplot
 %
 % Output Arguments:
-%       -f_new: handle to figure
-%
-% Examples:
-%       TODO
+%           -fNew:     handle to figure
 %
 % See Also:
-%       TODO
-%
-% References:
-%       TODO
-%
+%       
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
 % Toolbox developed at the Chair of Automatic Control in collaboration

@@ -12,6 +12,7 @@ Def.cond = 'good'; % condition of benchmarks: 'good','bad','all'
 Def.minSize = 0; % test benchmarks with sys.n >= minSize
 Def.maxSize = 400; % test benchmarks with sys.n <= minSize
 Def.number = 3; % choose maximum number of tested benchmarks
+Def.dae = 'all'; % 'all', 'withoutDae', 'onlyDae'
 
 % create the options structure
 if ~exist('Opts','var') || isempty(Opts)
@@ -52,7 +53,10 @@ warning('off');
 for i=1:length(files)
     if nLoaded<Opts.number+1
         sys = loadSss(files{i});
-        if size(sys.A,1)<=Opts.maxSize && size(sys.A,1)>=Opts.minSize
+        if (size(sys.A,1)<=Opts.maxSize && size(sys.A,1)>=Opts.minSize &&...
+            ((strcmp(Opts.dae,'all') ||...
+             (strcmp(Opts.dae,'withoutDae') && ~sys.isDae)||...
+             (strcmp(Opts.dae,'onlyDae') && sys.isDae))))
             switch(Opts.cond)
                 case 'good'
                      if ~any(strcmp(files{i},badBenchmarks))
@@ -80,5 +84,5 @@ benchmarksSysCell(nLoaded:end)=[];
 warning('on');
 
 % save loaded systems
-save([fullfile(testpath),'\benchmarksSysCell.mat']);
+save(fullfile(fullfile(testpath),'benchmarksSysCell.mat'));
 end

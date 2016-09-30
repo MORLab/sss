@@ -20,8 +20,6 @@ function ispd = ispd(A)
 % Output Arguments:
 %       -ispd: a boolean value (1=true, 0=false)
 %
-% Examples:
-%       TODO
 %
 % See Also:
 %       chol, issd

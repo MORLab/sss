@@ -19,15 +19,17 @@ function sys = truncate(sys, idxOut, idxIn)
 %
 % Examples:
 %       The following code loads the benchmark 'CDplayer' (SSS, MIMO),
-%       creates a sss-object and then truncates this system to obtain
-%       sys12:
+%       creates a sss-object and then truncates this system by taking the
+%       transfer behaviro from the 2nd input to the 1st output:
 %
 %> load CDplayer.mat
 %> sys=sss(A,B,C); %(SSS, MIMO)
 %> TruncatedSys=truncate(sys,1,2); %taking sys12 (SSS, SISO)
-%> figure; impulse(sys); %impulse response of the MIMO sss-system
-%> figure; impulse(TruncatedSys); %impulse response of sys12
-
+%
+%       You can compare the results by plotting the frequency response:
+%
+%> figure; bodemag(sys); %impulse response of the MIMO sss-system
+%> figure; bodemag(TruncatedSys); %impulse response of sys12
 %
 % See Also:
 %       sss, plus, minus, mtimes

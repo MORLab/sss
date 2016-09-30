@@ -1,9 +1,9 @@
-function varargout = disp(sys)
+function infostr = disp(sys)
 % DISP - Displays information about a sparse state-space model
 %
 % Syntax:
 %       DISP(sys)
-%       varargout = DISP(sys)
+%       infostr = DISP(sys)
 %
 % Description:
 %       DISP(sys) displays information about a sparse state-space model:
@@ -17,7 +17,7 @@ function varargout = disp(sys)
 %       -sys: an sss-object containing the LTI system
 %
 % Output Arguments:
-%       -varargout: character (char) containing the information about the sss-object
+%       -infostr: string (char) containing the information about the sss-object
 %
 % Examples:
 %       To display some information about the benchmark "iss" (SSS, MIMO)
@@ -49,38 +49,42 @@ function varargout = disp(sys)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-mc = metaclass(sys);
-str = [];
-if ~isempty(mc.Name) && ~isempty(sys.Name)
-    str = [mc.Name ' Model ' sys.Name, ' '];
-end
-
-if sys.isDae;            str = [str '(DAE)'];
-elseif sys.isDescriptor; str = [str '(DSSS)'];
-else                     str = [str '(SSS)'];
-end
-
-if sys.isSiso;       str = [str '(SISO)'];
-elseif sys.isSimo;   str = [str '(SIMO)'];
-elseif sys.isMiso;   str = [str '(MISO)'];
-elseif sys.isMimo;   str = [str '(MIMO)'];
-end
-
-str = [str  char(10), num2str(sys.n) ' states, ' num2str(sys.m) ...
-    ' inputs, ' num2str(sys.p) ' outputs'];
-
-if sys.Ts==0
-    str = [str  char(10) 'Continuous-time state-space model.'];
+if isempty(sys)
+    fprintf(1,'  Empty sparse state-space model.\n\n');
 else
-    str = [str  char(10) 'Sample time: ' num2str(sys.Ts) ' seconds'];
-    str = [str  char(10) 'Discrete-time state-space model.'];
-end
+    mc = metaclass(sys);
+    str = [];
+    if ~isempty(mc.Name) && ~isempty(sys.Name)
+        str = [mc.Name ' Model ' sys.Name, ' '];
+    end
 
-if nargout>0
-    varargout = {str};
-else
-    str = strrep(str, char(10), [char(10) '  ']);
-    disp(['  ' str char(10)]);
+    if sys.isDae;            str = [str '(DAE)'];
+    elseif sys.isDescriptor; str = [str '(DSSS)'];
+    else                     str = [str '(SSS)'];
+    end
+
+    if sys.isSiso;       str = [str '(SISO)'];
+    elseif sys.isSimo;   str = [str '(SIMO)'];
+    elseif sys.isMiso;   str = [str '(MISO)'];
+    elseif sys.isMimo;   str = [str '(MIMO)'];
+    end
+
+    str = [str  char(10), num2str(sys.n) ' states, ' num2str(sys.m) ...
+        ' inputs, ' num2str(sys.p) ' outputs'];
+
+    if sys.Ts==0
+        str = [str  char(10) 'Continuous-time state-space model.'];
+    else
+        str = [str  char(10) 'Sample time: ' num2str(sys.Ts) ' seconds'];
+        str = [str  char(10) 'Discrete-time state-space model.'];
+    end
+
+    if nargout>0
+        infostr = {str};
+    else
+        str = strrep(str, char(10), [char(10) '  ']);
+        disp(['  ' str char(10)]);
+    end
 end
 
 end

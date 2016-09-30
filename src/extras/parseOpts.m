@@ -23,7 +23,7 @@ function Opts = parseOpts(Opts,Def)
 %
 %> Opts=struct('field1','value1Opts');
 %> Def=struct('field1','value1Def','field2','value2Def');
-%> Opts=parseOpts(Opts,Def);
+%> Opts=parseOpts(Opts,Def)
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

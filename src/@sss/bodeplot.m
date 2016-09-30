@@ -4,8 +4,9 @@ function  h = bodeplot(varargin)
 % Syntax: 
 %       bodeplot(sys)
 %       bodeplot(sys, omega)
-%       H = bodeplot(sys)
-%       bodeplot(sys1, sys2, ..., omega, options)
+%       h = bodeplot(sys)
+%       bodeplot(sys1, sys2, ..., omega)
+%       bodeplot(sys, LineSpec)
 %
 % Description:
 %       Bode plot of one or several LTI systems. If an output is defined, a handle to
@@ -16,7 +17,7 @@ function  h = bodeplot(varargin)
 %       -sys: an sss-object containing the LTI system
 %       *Optional Input Arguments*
 %       -omega:     vector of frequencies or cell with {wmin,wmax}
-%       -options:   plot options. see <a href="matlab:doc plot">PLOT</a>
+%       -LineSpec: String with line style, marker symbol, and color. See <a href="matlab:doc plot">plot</a>
 %
 % Output Arguments:      
 %       -h:     plot handle
@@ -48,7 +49,7 @@ function  h = bodeplot(varargin)
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
 % Last Change:  06 Apr 2016
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Copyright (c) 2015, 2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
 %% Evaluate options

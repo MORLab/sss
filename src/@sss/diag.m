@@ -23,6 +23,9 @@ function sysd = diag(sys)
 %       During the diagonalization, the C-vector is normalized to contain
 %       ones.
 %
+%       //Note: this function performs dense computations and is hence
+%       suitable only for mid-sized problems
+%
 % Input Arguments:
 %       -sys: an sss-object containing the LTI system
 %

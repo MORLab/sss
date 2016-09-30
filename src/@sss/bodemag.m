@@ -3,8 +3,9 @@ function  bodemag(varargin)
 % 
 % Syntax: 
 %       bodemag(sys)
-%       bodemag(sys, omega)
-%       bodemag(sys1, sys2, ..., omega, options)
+%       bodemag(sys,omega)
+%       bodemag(sys1,...,sysN,omega)
+%       bodemag(sys,LineSpec)
 %
 % Description:
 %       Bode magnitude plot of one or several LTI systems.
@@ -14,7 +15,7 @@ function  bodemag(varargin)
 %       -sys: an sss-object containing the LTI system
 %       *Optional Input Arguments*
 %       -omega:     vector of frequencies or cell with {wmin,wmax}
-%       -options:   plot options. see <a href="matlab:help plot">PLOT</a>
+%       -LineSpec: String with line style, marker symbol, and color. See <a href="matlab:doc plot">plot</a>
 %
 % Examples:
 %       The following code plots the magnitude of the frequency 
@@ -22,7 +23,7 @@ function  bodemag(varargin)
 %
 %> load CDplayer.mat
 %> sys=sss(A,B,C);
-%> bodemag(sys);
+%> bodemag(sys,'-r');
 %
 % See Also:
 %       bode, freqresp, sigma, bodeplot
@@ -44,7 +45,7 @@ function  bodemag(varargin)
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
 % Last Change:  06 Apr 2016
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Copyright (c) 2015, 2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
 

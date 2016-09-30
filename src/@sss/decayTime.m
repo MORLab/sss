@@ -28,6 +28,11 @@ function tmax = decayTime(sys)
 %> sys = sss(A,B,C);
 %> tmax = decayTime(sys)
 %
+%       You can visualize the meaning of decay time in a step response plot:
+%
+%> step(sys);
+%> hold on; plot(tmax*[1,1],[-8,8]*1e-4,'r');
+%
 % See Also:
 %       residue, step, impulse
 %

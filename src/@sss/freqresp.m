@@ -1,42 +1,43 @@
 function [varargout] = freqresp(varargin)
-% FREQRESP - Evaluates complex transfer function of LTI systems
+% FREQRESP - Frequency response of sparse state-space systems.
 % 
+% Syntax:
+%       [G, w] = freqresp(sys)
+%       G = freqresp(sys, w)
+%       G = freqresp(sys, ..., Opts)
+%       frdData = freqresp(sys,..., struct('frd',1))
+%
 % Description:
-%       Evaluates complex transfer function of LTI systems. If the vector
-%       of complex frequencies is not passed, then a range of imaginary
-%       frequencies is automatically selected. 
+%       Evaluates complex transfer function of LTI systems. 
+%
+%       If the vector of complex frequencies is not passed, then a range of 
+%       imaginary frequencies is automatically selected. 
 %       This automatic selection is done through the computation of the
 %       first and second derivatives of the magnitude of the frequency
 %       response. 
-%       Also, one of the steps is the computation of the connection between
-%       inputs and outputs of the system. The value of M(i,j) is one when
-%       the input j is connected to the output i. When it is zero, then a
-%       change in the input j doesn't influence the output i.
 %
 %       If the function is called with only one ouput and the option 'frd'
 %       is specified as last input variable, than an frd object is
 %       returned.
 %
-% Syntax:
-%       G = freqresp(sys, w)
-%       G = freqresp(sys, ..., Opts)
-%       [G, w] = freqresp(sys)
-%       frdData = freqresp(sys,..., struct('frd',1))
 %
 % Inputs:
 %       *Required Input Arguments:*
 %       -sys: an sss-object containing the LTI system
-%       -w: vector of frequencies or cell with {wmin,wmax}
 %       *Optional Input Arguments:*
+%       -w: vector of frequencies or cell with {wmin,wmax}
 %       -Opts:  structure with execution parameters
 %			-.frd:  return frd object;
 %						[{0} / 1]
 %           -.maxPoints: Maximum number of refinement points
 %                       [{1500} / positive integer]
+%           -.lse:  solve linear system of equations
+%                       [{'sparse'} / 'full' /'gauss' /'hess' / 'iterative']
 %       
 % Outputs:      
-%       -G: vector of complex frequency response values
-%       -omega: vector with the frequencies at which the response was computed
+%       -G: |sys.p| x |sys.m| x |N| array of complex frequency response values,
+%       where |N| is the number of sampling frequencies
+%       -w: vector with the frequencies at which the response was computed
 %       -frdData:   a frd object with the frequency response data
 %
 % Examples:
@@ -74,6 +75,7 @@ function [varargout] = freqresp(varargin)
 %% Parse inputs and options
 Def.maxPoints = 1500; % maximum number of refinement points
 Def.frd = 0; %return magnitude instead of frd object as in bult-in case 
+Def.lse = 'sparse'; % solveLse
 
 % create the options structure
 if ~isempty(varargin) && isstruct(varargin{end})
@@ -116,25 +118,52 @@ sys.A = A(reOrder,reOrder);
 sys.B = B(reOrder,:);
 sys.C = C(:,reOrder);
 sys.E = E(reOrder,reOrder);
-%Verifying relation between Inputs and Outputs
+
+%% Verifying relation between Inputs and Outputs
+
+%{ 
+One of the steps is the computation of the connection between inputs and 
+outputs of the system. The value of M(i,j) is one when the input j is 
+connected to the output i. When it is zero, then a change in the input j 
+doesn't influence the output i.
+%}
 M=InputOutputRelation(sys,reOrderMatrix);
 
-if not(exist('omega','var')) || isempty(omega)
-    if any(any(M))
-        %Finding mininum and maximum frequencies
+if ~any(any(M))
+    %Disconnected, but static gain
+    if not(exist('omega','var')) || isempty(omega)
         if isempty(omegaCellIndex) || ~nnz(omegaCellIndex)
-            minW=findminW(sys,M);
-            maxW=findmaxW(sys,M);
+            maxW=1;
+            minW=0;
         end
-        %Compute first points of frequency response
         qttyPoints=ceil(log(10^(maxW-minW))/log(2))+1;
-        omega=logspace(minW,maxW,qttyPoints)'; %w should be a column according to built-in MATLAB function
-        [firstDerivLog,secondDerivLog,magnitude,resp]=ComputeFreqResp(sys,omega*1i,M);
-        %Refine the frequency response points
-        [G,omega]=FreqRefinement(sys,omega,firstDerivLog,secondDerivLog,magnitude,resp,M,Opts);
+        omega=logspace(minW,maxW,qttyPoints)';
     else
-        error('All the inputs of the system are disconnected to all outputs');
+        %make sure it's a column vector
+        if size(omega,2)>size(omega,1)
+            omega = omega.';
+        end
     end
+    G=zeros(nOutputs,nInputs,size(omega,1));
+    for i=1:nOutputs
+        for j=1:nInputs
+            G(i,j,:)=ones(size(omega,1),1)*sys.D(i,j);
+        end
+    end
+    
+elseif not(exist('omega','var')) || isempty(omega)
+    %Finding mininum and maximum frequencies
+    if isempty(omegaCellIndex) || ~nnz(omegaCellIndex)
+        minW=findminW(sys,M);
+        maxW=findmaxW(sys,M);
+    end
+    %Compute first points of frequency response
+    qttyPoints=ceil(log(10^(maxW-minW))/log(2))+1;
+    omega=logspace(minW,maxW,qttyPoints)'; %w should be a column according to built-in MATLAB function
+    [firstDerivLog,secondDerivLog,magnitude,resp]=ComputeFreqResp(sys,omega*1i,M);
+    %Refine the frequency response points
+    [G,omega]=FreqRefinement(sys,omega,firstDerivLog,secondDerivLog,magnitude,resp,M,Opts);
+    
 else
     %%  Compute the value of the transfer function at selected freq.
     %make sure it's a column vector
@@ -238,7 +267,7 @@ nOutputs=sys.p;
 resp=zeros(nOutputs,nInputs,numel(wEval));
 respp=zeros(nOutputs,nInputs,numel(wEval));
 resppp=zeros(nOutputs,nInputs,numel(wEval));
-if length(M)==1 && M~=0
+if length(M)==1 && nnz(M)
     M=zeros(1,1,numel(wEval));
 else
     M=repmat(not(M),1,1,numel(wEval));
@@ -250,24 +279,35 @@ for i=1:numel(wEval)
         respp(:,:,i)=nan(size(D));
         resppp(:,:,i)=nan(size(D));
     else
-    %Computation of the frequency response for w=wEval(i)
-    [L,U,k,l,S]=lu(minusA+E*w,'vector');
-    warning('OFF', 'MATLAB:nearlySingularMatrix');
-    b=S\B; b=b(k,:);
-    linSolve0=L\b;
-    linSolve0(l,:)=U\linSolve0;
-    resp(:,:,i)=(C*linSolve0)+D;
-    %Computation of the first derivative (Respp) of the frequency response for w=wEval(i)
-    b=S\(E*linSolve0); b=b(k,:);
-    linSolve1=L\b;
-    linSolve1(l,:)=U\linSolve1;
-    respp(:,:,i)=-w*C*linSolve1;
-    %Computation of the second derivative (Resppp) of the frequency response for w=wEval(i)
-    b=S\(E*linSolve1); b=b(k,:);
-    linSolve2=L\b;
-    linSolve2(l,:)=U\linSolve2;
-    warning('ON', 'MATLAB:nearlySingularMatrix');
-    resppp(:,:,i)=2*C*linSolve2;
+        %Computation of the frequency response for w=wEval(i)
+        Opts.krylov='standardKrylov';
+
+        % tangential directions
+        Rt=zeros(size(B,2),size(B,2)*3);
+        for nB2=1:size(B,2)
+            Rt(nB2,(nB2-1)*3+1:(nB2-1)*3+3)=ones(1,3);
+        end
+        
+        % solve lse
+        linSolve=solveLse(minusA,B,E,-ones(1,3*size(B,2))*w,Rt,Opts);
+
+        % sort solutions
+        linSolve1=zeros(size(B));
+        linSolve2=zeros(size(B));
+        linSolve3=zeros(size(B));
+        for nB2=1:size(B,2)
+            linSolve1(:,nB2)=linSolve(:,(nB2-1)*3+1);
+            linSolve2(:,nB2)=linSolve(:,(nB2-1)*3+2);
+            linSolve3(:,nB2)=linSolve(:,(nB2-1)*3+3);
+        end
+        
+        resp(:,:,i)=(C*linSolve1)+D;
+        
+        %Computation of the first derivative (Respp) of the frequency response for w=wEval(i)
+        respp(:,:,i)=-w*C*linSolve2;
+
+        %Computation of the second derivative (Resppp) of the frequency response for w=wEval(i)
+        resppp(:,:,i)=2*C*linSolve3;
     end
 end
 %Computation of the first two derivatives for a log-log of the magnitude plot

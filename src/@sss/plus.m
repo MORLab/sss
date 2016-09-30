@@ -1,5 +1,5 @@
 function sum = plus(sys1, sys2)
-% PLUS - Computes sum of two LTI systems: u-->(sys1+sys2)-->y
+% PLUS - Computes sum of two sparse LTI systems.
 % 
 % Syntax:
 %       sum = PLUS(sys1, sys2)
@@ -10,7 +10,7 @@ function sum = plus(sys1, sys2)
 %       different systems sys1 and sys2 that have the same number of inputs/outputs. 
 %       The output of the system sum will be equivalent to the sum of the 
 %       outputs from sys1 and sys2, considering that they are excited with 
-%       the same input u.
+%       the same input u (u-->(sys1+sys2)-->y).
 %
 % Input Arguments:
 %       -sys1, sys2: summand sss-object
@@ -18,16 +18,6 @@ function sum = plus(sys1, sys2)
 % Output Arguments:      
 %       -sum: sss-object representing sys1+sys2
 %
-% Examples:
-%> load building.mat
-%> sysBuilding=sss(A,B,C);
-%> size(sysBuilding);
-%> sysRandom=rss(10); sysRandomSparse=sss(sysRandom);
-%> size(sysRandomSparse);
-%> plusSystems=plus(sysBuilding,sysRandomSparse);
-%> size(plusSystems);
-%> plus = sysBuilding+sysRandomSparse; %for comparison reasons
-%> plus.A == plusSystems.A; %for comparison reasons
 %
 % See Also:
 %       minus, mtimes

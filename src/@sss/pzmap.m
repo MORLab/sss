@@ -1,16 +1,20 @@
-function [p, z] = pzmap(sys, varargin)
+function [varargout] = pzmap(varargin)
 % PZMAP - Pole-zero plot of sparse state-space system
 %
 % Syntax:
 %       PZMAP(sys)
-%       PZMAP(sys, opts)
-%       [p,z] = PZMAP(sys)
+%       PZMAP(sys, k)
+%       PZMAP(sys, ..., Opts)
+%       [p,z] = PZMAP(sys, k, Opts)
 %
 % Description:
 %       pzmap(sys) creates a pole-zero plot of the continuous- or discrete-time 
-%       dynamic system model sys. For MIMO systems, pzmap plots the system 
-%       poles and the invariant zeros in one figure. The poles are plotted 
-%       as x's and the invariant zeros are plotted as o's.
+%       dynamic system model sys containing only the 6 poles and zeros with
+%       largest magnitude. This number can be changed with input k. The type
+%       of the computed poles and zeros can be specified with the options 'typeP'
+%       and 'typeZ'. For MIMO systems, pzmap plots the system poles and the 
+%       invariant zeros in one figure. The poles are plotted as x's and the 
+%       invariant zeros are plotted as o's.
 %
 %       [p,z] = pzmap(sys) returns the system poles and invariant zeros in the column 
 %       vectors p and z. No plot is drawn on the screen.
@@ -21,29 +25,26 @@ function [p, z] = pzmap(sys, varargin)
 %
 % Input Arguments:
 %       -sys:      an sss-object containing the LTI system
-%       -opts:     plot options. see <a href="matlab:help plot">PLOT</a>
+%       -k:        number of computed poles and zeros
+%       -Opts:     structure with execution parameters
+%			-.typeP:    type of poles
+%						[{'lm'} / 'sm' / 'la' / 'sa']
+%			-.typeZ:    type of zeros
+%						[{'lm'} / 'sm' / 'la' / 'sa']
 %
 % Output Arguments:
 %       -p: vector containing poles 
 %       -z: vector containing invariant zeros
 %
 % Examples:
-%       Create a random descriptor model (DSSS, SISO) and compare the output
-%       of ss/pzmap and sss/pzmap:
+%       Load the benchmark 'building' (SSS, SISO) and use pzmap to plot the
+%       first poles and zeros with largest magnitude. Compare the result to
+%       the built-in function that uses dense (!) operations to compute the
+%       whole spectrum.
 %
-%> A = randn(500,500); B = randn(500,1); C = randn(1,500); D = zeros(1,1);
-%> E = randn(500,500);
-%> sys = dss(A,B,C,D,E);
-%> sysSss = sss(sys);
-%> figure; pzmap(sys);
-%> figure; pzmap(sysSss);
+%> load building.mat, sys = sss(A,B,C);
+%> figure; pzmap(ss(sys));hold on; pzmap(sys);
 %
-%       Load the benchmark 'rail_1357' (DSSS, MIMO) and use pzmap:
-%
-%> load rail_1357.mat
-%> p = size(C,1); m = size(B,2);
-%> sys = sss(A,B,C,zeros(p,m),E)
-%> figure; pzmap(sys);
 %
 % See Also:
 %       ss/pzmap
@@ -67,118 +68,55 @@ function [p, z] = pzmap(sys, varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
-% no, they are not. solve for eigenvalues of system
-p = eig(sys);
-    
-% ensure column vector
-if size(p,1)<size(p,2)
-    p=transpose(p);
+%% Parse inputs and options
+Def.typeZ = 'lm'; %eigs type for zeros
+Def.typeP = 'lm'; %eigs type for poles
+
+if isa(varargin{end},'struct')
+    Opts=varargin{end};
+    varargin=varargin(1:end-1);
 end
 
-
-if sys.m==sys.p
-        z=eig(full([sys.A,sys.B;sys.C,sys.D]), ...
-                   [full(sys.E),zeros(sys.n,sys.m);zeros(sys.p,sys.n),zeros(sys.p,sys.m)]);
+% create the options structure
+if ~exist('Opts','var') || isempty(Opts)
+    Opts = Def;
 else
-    z=zeros(0,1);
+    Opts = parseOpts(Opts,Def);
 end
 
-% remove zeros and poles at infinity
-z=z(~isinf(z));
-z=z(abs(real(z))<1e6);
-
-p=p(~isinf(p));
-p=p(abs(real(p))<1e6);
-
-
-if nargout>0
-    return
+k=6;
+i=2;
+while(i<=length(varargin))
+    if isa(varargin{i},'double')
+        k=varargin{i};
+        varargin(i)=[];
+    end
+    i=i+1;
 end
 
-% --------------- PLOT ---------------
-
-options=varargin;
-fig_handle=gcf; %generate figure
-
-% set random color if figure is not empty
-if isempty(options)
-    if ~isempty(get(fig_handle, 'Children'))
-        c=rand(3,1); c=c/norm(c);
-        options = {'Color', c};
+for i = 1:length(varargin)
+    % Set name to input variable name if not specified
+    if isprop(varargin{i},'Name')
+        if isempty(varargin{i}.Name) % Cascaded if is necessary && does not work
+            varargin{i}.Name = inputname(i);
+        end
+    end
+    
+    % Convert sss to frequency response data model
+    if isa(varargin{i},'sss')
+        if varargin{i}.isDae
+            error('pzmap does not work with DAE systems yet.');
+        end
+        Opts.zpk='true';
+        varargin{i} = zpk(varargin{i}, k, Opts);
     end
 end
-        axes_handle=subplot(1,1,1);
-        box on
-        
-        % plot o for zeros
-        plot_handle=plot(real(z), imag(z), options{:}); 
-        set(plot_handle, 'Marker', 'o', 'LineStyle', 'none');
-        hold on
-        % plot x for poles, remove legend entry
-        plot_handle=plot(real(p), imag(p), options{:});
-        set(plot_handle, 'Marker', 'x', 'LineStyle', 'none');
-        hAnnotation = get(plot_handle,'Annotation');
-        hLegendEntry = get(hAnnotation','LegendInformation');
-        set(hLegendEntry,'IconDisplayStyle','off')
 
-        % determine x and y boundary
-        mni=min(imag([p;z])); mxi=max(imag([p;z]));
-        limy=[mni*1.05,mxi*1.05];
-        if mni*mxi<0 
-            limy = [mni-(mxi-mni)/20 mxi+(mxi-mni)/20];
-        elseif mni*mxi>0 
-            limy = sort([0 1.05*max(abs([mni mxi]))]*sign(mni));
-        elseif mni==0 && mxi==0
-            limy = [-1 1];
-        end
-        if sys.Ts ~= 0 %adjust the y-axis so that the unitary circle is visible
-            if limy(1)>-1
-                limy(1) = -1;
-            end
-            if limy(2)<1
-                limy(2) = 1;
-            end
-        end
+if nargout
+    [varargout{1}, varargout{2}]=pzmap(varargin{:});
+else
+    pzmap(varargin{:});
+end
+end
 
-        mnr=min(real([p;z])); mxr=max(real([p;z]));
-        limx=[mnr*1.05,mxr*1.05];
-        if mnr*mxr<0 
-            limx = [mnr-(mxr-mnr)/20 mxr+(mxr-mnr)/20];
-        elseif mnr*mxr>0
-            limx = sort([0 1.05*max(abs([mnr mxr]))]*sign(mnr));
-        elseif mnr==0 && mxr==0
-            limx = [-1 1];
-        end 
-        if sys.Ts ~= 0 %adjust the x-axis so that the unitary circle is visible
-            if limx(1)>-1
-                limx(1) = -1;
-            end
-            if limx(2)<1
-                limx(2) = 1;
-            end
-        end
-        % plot dashed axes through origin, remove legend entry
-        plot_handle=plot([0 0],limy,':k');
-        hAnnotation = get(plot_handle,'Annotation');
-        hLegendEntry = get(hAnnotation','LegendInformation');
-        set(hLegendEntry,'IconDisplayStyle','off')
-        plot_handle=plot(limx,[0 0],':k');
-        hAnnotation = get(plot_handle,'Annotation');
-        hLegendEntry = get(hAnnotation','LegendInformation');
-        set(hLegendEntry,'IconDisplayStyle','off')
-        set(axes_handle(1,1), 'XLim', limx, 'YLim', limy);
-        xlabel('Real Axis (seconds^{-1})');
-        ylabel('Imaginary Axis (seconds^{-1})');
-        title('Pole-Zero Map');
-        
-        if sys.Ts ~= 0 %plot unitary circle in case of discrete system
-            r=1; %radius
-            circlePoints=0:0.01:2*pi;
-            plot_handle=plot(r*cos(circlePoints),r*sin(circlePoints),':k');
-        end
 
-% make subplots content of the figure
-set(fig_handle,'UserData',axes_handle)
-
-% avoid output
-clear p z

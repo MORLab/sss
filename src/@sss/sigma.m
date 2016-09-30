@@ -1,21 +1,28 @@
 function  [s, omega] = sigma(varargin)
-% sigma - Plots the singular values of the frequency response of an LTI system
+% sigma - Plots the singular values of the frequency response of a sparse LTI system
 % 
 % Syntax: 
-%       s = sigma(sys, omega)
+%       sigma(sys)
+%       sigma(sys, omega)
 %       [s, omega] = sigma(sys)
-%       [s, omega] = sigma(sys1, sys2, ..., omega, options)
+%       sigma(sys1,...,sysN)
+%       sigma(sys1,...,sysN, omega)
+%       sigma(sys1,LineSpec,...,sysN,omega)
 %
 % Description:
-%       Plots the singular values of the frequency response of one or 
-%       several  LTI systems
+%       Computes and plots the singular values of the frequency response of one or 
+%       several sparse LTI systems. The frequency vector is automatically
+%       chosen by calling |freqresp|, if not provided. 
+%
+%       The function allows the usage of several |sss| and |ss| objects,
+%       including optional LineSpecs.
 %
 % Input Arguments:       
 %       *Required Input Arguments*
 %       -sys: an sss-object containing the LTI system
 %       *Optional Input Arguments*
 %       -omega:     vector of frequencies or cell with {wmin,wmax}
-%       -options:   plot options. see <a href="matlab:help plot">PLOT</a>
+%       -LineSpec: String with line style, marker symbol, and color. See <a href="matlab:doc plot">plot</a>
 %
 % Output Arguments:      
 %       -s:     vector of singular values of complex frequency response
@@ -25,9 +32,8 @@ function  [s, omega] = sigma(varargin)
 %       The following code plots the singular values of the frequency 
 %       response of the benchmark 'CDplayer' (SSS, MIMO):
 %
-%> load CDplayer.mat
-%> sys=sss(A,B,C);
-%> sigma(sys);
+%> load CDplayer.mat; sys=sss(A,B,C);
+%> figure; sigma(sys);
 %
 % See Also:
 %       bode, freqresp, bodemag, bodeplot

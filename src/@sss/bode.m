@@ -6,13 +6,17 @@ function  [varargout] = bode(varargin)
 %   BODE(sys)
 %   BODE(sys,omega)
 %   BODE(sys1, sys2, ..., omega)
-%   BODE(sys1,'-r',sys2,'--k',w);
+%   BODE(sys1,'-r',sys2,'--k');
+%   BODE(sys1,'-r',sys2,'--k',omega);
 %   [mag, phase, omega] = BODE(sys)
 %
 % Description:
 %       This function computes the bode plot of one or several LTI systems
 %       given as sss objects. If no ouput is specified, then a plot is
-%       generated.
+%       generated. 
+%
+%       The first model passed to BODE needs to be an sss object, any other 
+%       may be a built-in object of classes ss and frd.
 %
 %       If the frequency range is not specified, the function will
 %       determine it. It is also possible to pass several systems or
@@ -55,7 +59,7 @@ function  [varargout] = bode(varargin)
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
 % Last Change:  06 Apr 2016
-% Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
+% Copyright (c) 2015, 2016 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
 % Make sure the function is used in a correct way before running compts.

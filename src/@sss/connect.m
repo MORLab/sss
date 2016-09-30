@@ -1,13 +1,19 @@
-function sys_S = connect(varargin)
-% CONNECT - Connects a set of sparse LTI system (sss) by evaluating the names of in- and outputs
+function sysC = connect(varargin)
+% CONNECT - Block diagram interconnections of dynamic systems sparse LTI system (sss) 
 %
 % Syntax:
-%       sys_S = CONNECT(sys1,sys2,...)
-%       sys_S = CONNECT(sys1,sys2,...,inputNames,outputNames)
+%       sysC = CONNECT(sys1,...,sysN)
+%       sysC = CONNECT(sys1,...,sysN,inputNames,outputNames)
 %
 % Description:
 %       Connects a set of sparse LTI system (sss) by evaluating the names 
-%       of in- and outputs.
+%       of in- and outputs. 
+%       
+%       The connect command interconnects the block diagram
+%       elements by matching the input and output signals specified in
+%       InputName and OutputName properties of sys1,...,sysN. 
+%       The aggregate model sysC is a dynamic system model having inputs 
+%       and outputs specified by inputNames and outputNames respectively.
 %
 % Input Arguments:
 %       *Required Input Arguments:*
@@ -17,21 +23,17 @@ function sys_S = connect(varargin)
 %       -outputNames:   cell array of output names of the closed loop system
 %
 % Output Arguments:
-%       -sys_S: closed loop sparse state space (sss)-object
+%       -sysC: closed loop sparse state space (sss)-object
 %
 % Examples:
 %> load building.mat
-%> sys=sss(A,B,C);
-%> sys.y={'y'};
-%> sys.u={'u'};
+%> sys=sss(A,B,C); sys.y={'y'}; sys.u={'u'};
 %> Controller=sss(tf(pid(10^3,0,0)));
-%> Controller.u={'e'};
-%> Controller.y={'u'};
+%> Controller.u={'e'}; Controller.y={'u'};
 %> Subtract=sss(zeros(1,1),zeros(1,2),zeros(1,1),[1 -1]);
-%> Subtract.u={'desired';'y'};
-%> Subtract.y={'e'};
-%> connectedSys=connect(sys,Controller,Subtract,{'desired'},{'y'});
-%> step(connectedSys);
+%> Subtract.u={'desired';'y'}; Subtract.y={'e'};
+%> sysC=connect(sys,Controller,Subtract,{'desired'},{'y'});
+%> inp = sysC.InputName, out = sysC.OutputName
 %            
 % See Also:
 %       connectSss, append
@@ -86,7 +88,7 @@ vals = ones(size(rows));
 K= sparse(rows,cols,vals,sys_ap.m,sys_ap.p);
 
 % Connect internal open loop feedbacks to obtain closed loop model
-sys_S = connectSss(sys_ap, K);
+sysC = connectSss(sys_ap, K);
 
 % Truncate internally absorbed and rearrange order of inputs
 idx = zeros(length(inputname),1);
@@ -97,16 +99,16 @@ for i = 1: length(inputname)
     end
     idx(i) = id(1); % TODO: special treatment for one output to multiple inputs (?)
 end
-idx = [idx; find(cellfun(@isempty,sys_S.u))]; % Add inputs with empty Inputnames
-u = sys_S.u(idx);
-Groups = sys_S.InputGroup;
+idx = [idx; find(cellfun(@isempty,sysC.u))]; % Add inputs with empty Inputnames
+u = sysC.u(idx);
+Groups = sysC.InputGroup;
 if not(isempty(Groups))
     for group = fieldnames(Groups)'
         j=1;
         mapping=[];
         for targetidx = 1: length(idx)
             
-            sourceIdx = find(sys_S.InputGroup.(char(group))==idx(targetidx));
+            sourceIdx = find(sysC.InputGroup.(char(group))==idx(targetidx));
             if not(isempty(sourceIdx))
                 mapping(1,j) = sourceIdx;
                 mapping(2,j) = targetidx;
@@ -115,17 +117,17 @@ if not(isempty(Groups))
             end
         end
         if not(isempty(mapping))
-            sys_S.InputGroup.(char(group))(mapping(1,:)) = mapping(2,:);
-            sys_S.InputGroup.(char(group)) = sort(unique(sys_S.InputGroup.(char(group))));
+            sysC.InputGroup.(char(group))(mapping(1,:)) = mapping(2,:);
+            sysC.InputGroup.(char(group)) = sort(unique(sysC.InputGroup.(char(group))));
         else
-            sys_S.InputGroup.(char(group)) = [];
+            sysC.InputGroup.(char(group)) = [];
         end
     end
 end
 
-sys_S.b = sys_S.b(:,idx);
-sys_S.d = sys_S.d(:,idx);
-sys_S.u = u;
+sysC.b = sysC.b(:,idx);
+sysC.d = sysC.d(:,idx);
+sysC.u = u;
 
 % Truncate internally absorbed and rearrange order of outputs 
 idx = zeros(length(outputname),1);
@@ -136,17 +138,17 @@ for i = 1: length(outputname)
     end
     idx(i) = id(1);
 end
-idx = [idx; find(cellfun(@isempty,sys_S.y))]; % Add outputs with empty Outputnames
-y = sys_S.y(idx);
+idx = [idx; find(cellfun(@isempty,sysC.y))]; % Add outputs with empty Outputnames
+y = sysC.y(idx);
 
-Groups = sys_S.OutputGroup;
+Groups = sysC.OutputGroup;
 if not(isempty(Groups))
     for group = fieldnames(Groups)'
         j=1;
         mapping=[];
         for targetidx = 1: length(idx)
             
-            sourceIdx = find(sys_S.OutputGroup.(char(group))==idx(targetidx));
+            sourceIdx = find(sysC.OutputGroup.(char(group))==idx(targetidx));
             if not(isempty(sourceIdx))
                 mapping(1,j) = sourceIdx;
                 mapping(2,j) = targetidx;
@@ -155,16 +157,16 @@ if not(isempty(Groups))
             end
         end
         if not(isempty(mapping))
-            sys_S.OutputGroup.(char(group))(mapping(1,:)) = mapping(2,:);
-            sys_S.OutputGroup.(char(group)) = sort(unique(sys_S.OutputGroup.(char(group))));
+            sysC.OutputGroup.(char(group))(mapping(1,:)) = mapping(2,:);
+            sysC.OutputGroup.(char(group)) = sort(unique(sysC.OutputGroup.(char(group))));
         else
-            sys_S.OutputGroup.(char(group)) = [];
+            sysC.OutputGroup.(char(group)) = [];
         end
     end
 end
 
-sys_S.c = sys_S.c(idx,:);
-sys_S.d = sys_S.d(idx,:);
-sys_S.y = y;
+sysC.c = sysC.c(idx,:);
+sysC.d = sysC.d(idx,:);
+sysC.y = y;
 
 end

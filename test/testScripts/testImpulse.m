@@ -72,10 +72,84 @@ classdef testImpulse < sssTest
             impulse(sysSss,sysSssE,sys1_1,sys12_3,sysSS,tFinal)
             title('testImpulsePlot');
         end
+        function testImpulseBasic(testCase)
+            for i=1:length(testCase.sysCell)
+                sys=testCase.sysCell{i};
+                if ~sys.isDae && ~strcmp(sys.Name,'CDplayer')
+                    ODEset = odeset;
+                    if strcmp(sys.Name,'fom')
+                        ODEset.AbsTol = 1e-11;
+                        ODEset.RelTol = 1e-11;
+                    else
+                        ODEset.AbsTol = 1e-8;
+                        ODEset.RelTol = 1e-8;
+                    end
+                    [expSolution,t]=impulse(ss(sys));
+                    actSolution=impulse(sys,t,struct('nMin',0,'odeset',ODEset,'tsMin',1e-5));
+                    verifyEqual(testCase,actSolution(9:end-1,:),expSolution(9:end-1,:),'RelTol',0.4,'AbsTol',8e-3,...
+                        'Difference between actual and expected exceeds relative tolerance');
+                end
+            end
+        end
+        function testImpulseTime(testCase)
+            for i=1:length(testCase.sysCell)
+                sys=testCase.sysCell{i};
+                if ~sys.isDae
+                    ODEset = odeset;
+                    if strcmp(sys.Name,'fom')
+                        ODEset.AbsTol = 1e-11;
+                        ODEset.RelTol = 1e-11;
+                    else
+                        ODEset.AbsTol = 1e-8;
+                        ODEset.RelTol = 1e-8;
+                    end
+                    
+                    % time vector
+                    t=0.01:0.01:0.3;
+                    [actSolution]=impulse(sys,t,struct('nMin',0,'odeset',ODEset));
+                    expSolution=impulse(ss(sys),t);
+                    verification(testCase,actSolution(2:end-1,:),expSolution(2:end-1,:));
+
+                    % final time
+                    Tfinal=0.1;
+                    [~,t]=impulse(sys,Tfinal,struct('nMin',0,'odeset',ODEset));
+                    verifyEqual(testCase,t(end),Tfinal,'AbsTol',0.06);
+                end
+            end
+        end
+        function testImpulseMultiSys(testCase)
+            for i=1:length(testCase.sysCell)
+                sys=testCase.sysCell{i};
+                if ~sys.isDae
+                    sys2=loadSss('building');
+                    sys3=loadSss('CDplayer');
+                    Tfinal=0.05;
+                    
+                    % test call
+                    impulse(sys,'b-',ss(sys2),'r--',sys3,'g:',Tfinal,struct('nMin',0,'tsMin',1e-3));
+                end
+            end
+        end
+        function testImpulseTF(testCase)
+        %Compare the impulse response recovered from the tf-object with the
+        %solution from impulse
+            sys = loadSss('beam');
+            
+            %recover impulse response from the tf-object
+            tf = impulse(sys,struct('tf',1));
+            h_ = tf.num{1,1}/tf.Ts;
+            
+            %calculate the impusle response at the same sample points as
+            %for the tf-object
+            t_ = 0:tf.Ts:tf.Ts*(size(tf.num{1,1},2)-1);
+            [h,~] = impulse(sys,t_);
+
+            verification(testCase,h,h_');
+        end
     end
 end
 
 function [] = verification(testCase, actSolution, expSolution)
-verifyEqual(testCase, actSolution,  expSolution,'RelTol',0.6e-2,...
+verifyEqual(testCase, actSolution,  expSolution,'RelTol',0.12,'AbsTol',5e-3,...
     'Difference between actual and expected exceeds relative tolerance');
 end

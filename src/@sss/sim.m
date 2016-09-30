@@ -25,21 +25,16 @@ function [data,X,tx] = sim(sys,data,method,Ts_sample)
 %       -tx: time vector for X
 %
 % Examples:
-%       The following code simulates the benchmark "building" (SSS, SISO) for
-%       different integration methods:
+%       The following code simulates the benchmark "building" (SSS, SISO) 
+%       using the backward Euler method
 %
-%> load building.mat
-%> sys=sss(A,B,C);
+%> load building.mat; sys=sss(A,B,C);
 %> Ts = 1e-4; %sampling time
 %> t = 0:Ts:10; %time vector
 %> u = idinput(length(t),'rgs',[0 0.5/(1/2/Ts)])'; %random gaussian input signal
 %> datau = iddata([],u',Ts); %create an iddata object with the input information
-%> dataRK = sim(sys,datau,'RK4'); %simulation with RK4
-%> dataForward = sim(sys,datau,'forwardEuler'); %simulation with explicit Euler
 %> dataBackward = sim(sys,datau,'backwardEuler'); %simulation with implicit Euler
-%> figure; plot(t,dataRK.y,'r');
-%> hold on, plot(t,dataForward.y,'b'); plot(t,dataBackward.y,'k');
-%> xlabel('Time [s]'); ylabel('Amplitude');legend('RK4','Forward','Backward');
+%> plot(t,dataBackward.y); xlabel('Time [s]'); ylabel('Amplitude');
 %
 % See Also:
 %       iddata/sim, lsim, simForwardEuler, simDiscrete, simBackwardEuler
