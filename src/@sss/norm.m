@@ -27,6 +27,8 @@ function [nrm, varargout] = norm(sys, varargin)
 %                           [{'0'} / 'adi' / 'builtIn']
 %           -.lse:          solve linear system of equations
 %                           [{'sparse'} / 'full' / 'gauss' / 'hess' / 'iterative']
+%           -.stabcheck:    perform a stability check
+%                           [{true},false]
 %
 % Output Arguments:
 %       -nrm:             value of norm
@@ -114,8 +116,8 @@ else
             nrm=inf;
             return
         end
-
-        if isstable(sys)~=1
+        
+        if Opts.stabcheck && isstable(sys)~=1
             nrm=Inf;
             return;
         end
