@@ -2,7 +2,10 @@
 
 ## Roadmap (changes to come)
 
-## v1.00 - first Release [16 November 2015]
+## v1.02 [05 October 2016]
+### Changes
+- NORM
+	- Adding a "stabcheck" option to be able to avoid the (sometimes expensive) stability check before the norm computation
 
 ## v1.01 [16 September 2016]
 ### Changes
@@ -26,3 +29,5 @@
 
 - DCGAIN
 	- **new function: compute dc gain of lti system**
+
+## v1.00 - first Release [16 November 2015]
