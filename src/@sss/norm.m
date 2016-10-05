@@ -71,6 +71,7 @@ function [nrm, varargout] = norm(sys, varargin)
 %%  Define execution parameters
 Def.lyapchol = 0; % ('0','adi','builtIn')
 Def.lse= 'sparse'; %lse 
+Def.stabcheck = false;
 
 %% Computation
 if isempty(sys)
