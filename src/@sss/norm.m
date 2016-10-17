@@ -27,6 +27,8 @@ function [nrm, varargout] = norm(sys, varargin)
 %                           [{'0'} / 'adi' / 'builtIn']
 %           -.lse:          solve linear system of equations
 %                           [{'sparse'} / 'full' / 'gauss' / 'hess' / 'iterative']
+%           -.stabcheck:    perform a stability check
+%                           [{true},false]
 %
 % Output Arguments:
 %       -nrm:             value of norm
@@ -69,6 +71,7 @@ function [nrm, varargout] = norm(sys, varargin)
 %%  Define execution parameters
 Def.lyapchol = 0; % ('0','adi','builtIn')
 Def.lse= 'sparse'; %lse 
+Def.stabcheck = false;
 
 %% Computation
 if isempty(sys)
@@ -114,8 +117,8 @@ else
             nrm=inf;
             return
         end
-
-        if isstable(sys)~=1
+        
+        if Opts.stabcheck && isstable(sys)~=1
             nrm=Inf;
             return;
         end
