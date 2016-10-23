@@ -1,4 +1,4 @@
-function varargout = eig(varargin)
+function varargout = eig(sys, varargin)
 % EIG - Compute eigenvalues and eigenvectors of a sparse state-space model
 %
 % Syntax:
@@ -71,5 +71,26 @@ function varargout = eig(varargin)
 % Last Change:  29 Oct 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
+if sys.isBig
+    warning(['System order is very large: ',num2str(sys.n),'. You may want to try eigs(sys) instead.'])
+end
 
-[varargout{1:nargout}] = sss.eig(varargin{:});
+if sys.isDescriptor
+    if nargout==1||nargout==0
+        [varargout{1}] = eig(full(sys.a), full(sys.e),varargin{:});
+    elseif nargout == 2
+        [varargout{1}, varargout{2}] = eig(full(sys.a), full(sys.e),varargin{:});
+    elseif nargout == 3
+        [varargout{1}, varargout{2}, varargout{3}]  = eig(full(sys.a), full(sys.e),varargin{:});
+    end
+else
+    if nargout==1||nargout==0
+        [varargout{1}] = eig(full(sys.a),varargin{:});
+    elseif nargout == 2
+        [varargout{1}, varargout{2}] = eig(full(sys.a),varargin{:});
+    elseif nargout == 3
+        [varargout{1}, varargout{2}, varargout{3}]  = eig(full(sys.a),varargin{:});
+    end
+end
+
+end

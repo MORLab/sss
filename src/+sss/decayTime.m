@@ -1,4 +1,4 @@
-function varargout = decayTime(varargin)
+function tmax = decayTime(sys)
 % DECAYTIME - Computes the time period in which a sparse LTI system levels off
 %
 % Syntax:
@@ -54,5 +54,38 @@ function varargout = decayTime(varargin)
 % Last Change:  04 Nov 2015
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
+[res,p]=residue(sys);
 
-[varargout{1:nargout}] = sss.decayTime(varargin{:});
+% is system stable?
+if any(real(p)>0 & real(p)<1e6) % larger than 0 but, smaller than infinity-threshold
+    % no -> tmax=NaN
+    tmax=NaN;
+    warning('sss:decayTime:UnstableSys','The system is not stable. The decay time is set to tmax=NaN.');
+    return
+end
+
+tmax=0; temp = cat(3,res{:}); 
+for i=1:sys.p
+    for j=1:sys.m
+        % how much does each pole contribute to energy flow?
+        h2=zeros(size(p));
+        for k=1:length(p)
+            %we need the siso residual for all poles into on vectors
+            resIJvec = squeeze(temp(i,j,:)).';
+            h2(k)=res{k}(i,j)*sum(resIJvec./(-p(k)-p));
+        end
+        
+        [h2_sorted, I] = sort(real(h2));
+        % which pole contributes more than 1% of total energy?
+        I_dom = I( h2_sorted > 0.01*sum(h2_sorted) );
+        if isempty(I_dom)
+            % no poles are dominant, use slowest
+            I_dom = 1:length(p);
+        end
+        % use slowest among dominant poles
+        [h2_dom, I2] = sort(abs(real(p(I_dom))));
+
+        % when has slowest pole decayed to 1% of its maximum amplitude?
+        tmax=max([tmax, log(100)/abs(real(p(I_dom(I2(1)))))]);
+    end
+end

@@ -1,4 +1,4 @@
-function varargout = residue(varargin)
+function [r,p,d] = residue(sys, Opts)
 % RESIDUE - Computes residues, poles and feedthrough of an LTI system
 % 
 % Syntax:
@@ -88,5 +88,43 @@ function varargout = residue(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-[varargout{1:nargout}] = sss.residue(varargin{:});
+Def.rType = 'res';
 
+if ~exist('Opts','var') || isempty(Opts)
+    Opts = Def;
+else
+    Opts = parseOpts(Opts,Def);
+end
+
+%perform eigen-decomposition of system
+try
+    [T,J] = eig(sys);
+catch err
+    error('Computation of the eigenvalues and eigenvectors failed with message:%s',err.message);
+end
+
+% transform system to diagonal form
+p=diag(J).';
+if issparse(T)
+    rcondNumber = 1/condest(T);
+else
+    rcondNumber=rcond(T);
+end
+if rcondNumber<eps
+    warning(['Matrix of eigenvectors is close to singular or badly scaled. Results may be inaccurate. RCOND =',num2str(rcondNumber)]);
+end
+B=(sys.E*T)\sys.B;
+C=sys.C*T;
+d=sys.D;
+
+% calculate residues
+if strcmp(Opts.rType,'dir')
+    % return the residual directions instead of the residuals
+    r = {C, B};  
+else
+    % return the residuals
+    r = cell(1,sys.n);
+    for i=1:sys.n
+        r{i} = full(C(:,i)*B(i,:));
+    end
+end
