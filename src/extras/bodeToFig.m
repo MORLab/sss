@@ -47,9 +47,12 @@ for i = 1:length(fig.Children)
     childFig = fig.Children(i);
     switch childFig.Type
         case 'axes'
-            ax_new = copyobj(childFig,f_new);
-            if defPos
-                set(ax_new,'Position','default')
+            %copy only visible axes
+            if strcmp(childFig.Visible,'on')
+                ax_new = copyobj(childFig,f_new);
+                if defPos
+                    set(ax_new,'Position','default')
+                end
             end
     end
 end
