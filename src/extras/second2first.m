@@ -1,9 +1,11 @@
-function sys = second2first(M, D, K, B, Cx, Cv, Opts)
+function varargout = second2first(M, D, K, B, Cx, Cv, Opts)
 %SECOND2FIRST - Convert a 2nd order system to state space representation
 %
 % Syntax:
-%       sys = SECOND2FIRST(M,D,K,B,Cx,Cv)
-%       sys = SECOND2FIRST(M,D,K,B,Cx,Cv,Opts)
+%       sys         = SECOND2FIRST(M,D,K,B)
+%       sys         = SECOND2FIRST(M,D,K,B,Cx,Cv)
+%       sys         = SECOND2FIRST(M,D,K,B,Cx,Cv,Opts)
+%       [A,B,C,D,E] = SECOND2FIRST(M,D,K,B,Cx,Cv,Opts)
 %
 % Description:
 %       This function takes the system matrices of a 2nd order system and
@@ -21,14 +23,21 @@ function sys = second2first(M, D, K, B, Cx, Cv, Opts)
 %       <<img/second2first.png>>
 %
 %       The conversion from second order to first order allows some freedom
-%       in the choise of the matrix F. Which value from the possible
+%       in the choice of the matrix F. Which value from the possible
 %       options should be used to create the matrix F can be specified by
-%       passing a option-structure with the desired choise as an additional
+%       passing a option-structure with the desired choice as an additional
 %       input argument to the function. 
 %
 %       If the representation of the system to convert contains some
 %       matrices which are all zero (i.e. no damping), then the value [] 
 %       can be specified for these matrices.
+% 
+%       If neither output matrix Cx or Cv are specified, then the input and
+%       outputs are assuemd to be collocated.
+%
+%       If only one ouput is specified, then SECOND2FIRST return an
+%       sss-object. Otherwise, it returns the system matrices of the
+%       respective first order model.
 %
 % Input Arguments:
 %       *Required Input Arguments:*
@@ -36,16 +45,17 @@ function sys = second2first(M, D, K, B, Cx, Cv, Opts)
 %       -D:     Damping matrix of the second order system
 %       -K:     Stiffness matrix of the second order system
 %       -B:     Input matrix of the second order system
+%       *Optional Input Arguments:*
 %       -Cx:    Output matrix of the second order system 
 %       -Cv:    Output matrix of the second order system
-%       *Optional Input Arguments:*
 %       -Opts:	a structure containing following options
 %			-transf2nd:     Type of transformation from 2nd to
 %                           1st order form: 
 %                           [{'I'}, 'K', '-K', 'alpha']
 %
 % Output Arguments:
-%       -sys: Sparse State Space Model (1st order form)
+%       -sys:       Sparse State Space Model (1st order form)
+%       -A,B,C,D,E: System matrices in 1st order form
 %
 % Examples:
 %       The following code converts a randomly created 2nd order system
@@ -71,11 +81,12 @@ function sys = second2first(M, D, K, B, Cx, Cv, Opts)
 % More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Heiko Panzer, Rudy Eid 
+% Authors:      Heiko Panzer, Rudy Eid, Niklas Kochdumper,
+%               Alessandro Castagnotto
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  21 Mar 2016
+% Last Change:  27 Oct 2016
 % Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
@@ -151,5 +162,10 @@ B = [sparse(n,size(B,2)); B];
 C = [Cx, Cv];
 D = zeros(size(C,1),size(B,2));
 
-% create the first-order-system
-sys = sss(A, B, C, D, E);
+if nargout == 1
+    % create the first-order-system
+    varargout{1} = sss(A, B, C, D, E);
+else
+    % return system matrices
+    varargout = {A,B,C,D,E};
+end
