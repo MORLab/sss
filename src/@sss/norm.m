@@ -23,8 +23,8 @@ function [nrm, varargout] = norm(sys, varargin)
 %       -p: choice of H_2-norm or H_infty-norm 
 %           [{'2'} / 'inf']
 %       -Opts:              a structure containing following options
-%           -.lyapchol:     try only solution by adi or lyapunov equation
-%                           [{'0'} / 'adi' / 'builtIn']
+%           -.lyapchol:     choose lyapunov equation solver
+%                           [{'auto'} / 'adi' / 'hammarling']
 %           -.lse:          solve linear system of equations
 %                           [{'sparse'} / 'full' / 'gauss' / 'hess' / 'iterative']
 %           -.stabcheck:    perform a stability check
@@ -69,9 +69,9 @@ function [nrm, varargout] = norm(sys, varargin)
 % Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 %%  Define execution parameters
-Def.lyapchol = 0; % ('0','adi','builtIn')
-Def.lse= 'sparse'; %lse 
-Def.stabcheck = false;
+Def.lyapchol    = 'auto'; 
+Def.lse         = 'sparse'; %lse 
+Def.stabcheck   = true;
 
 %% Computation
 if isempty(sys)
@@ -123,7 +123,7 @@ else
             return;
         end
 
-        Opts.type=Opts.lyapchol;
+        Opts.type=Opts.lyapchol; %translate option for lyapchol function
         try
             R=lyapchol(sys,Opts);
             nrm=norm(R*sys.C','fro');

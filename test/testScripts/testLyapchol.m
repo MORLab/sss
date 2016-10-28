@@ -21,7 +21,7 @@ classdef testLyapchol < sssTest
             end
         end
         function testLyapcholOpts(testCase)
-            Opts.type='adi';
+            Opts.method='adi';
             Opts.q=120;
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};

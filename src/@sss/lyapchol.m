@@ -20,8 +20,8 @@ function [R,L] = lyapchol(sys, Opts)
 %       -sys:   an sss-object containing the LTI system
 %		*Optional Input Arguments:*
 %       -Opts:              a structure containing following options
-%           -.type:         select amongst different tbr algorithms
-%                           [{''} / 'adi' / 'builtIn' ]
+%           -.method:       select solver for lyapunov equation 
+%                           [{'auto'} / 'adi' / 'hammaerling' ]
 %           -.lse:          solve linear system of equations (only ADI)
 %                           [{'gauss'} / 'luChol']
 %           -.rctol:        tolerance for difference between ADI iterates
@@ -72,11 +72,12 @@ function [R,L] = lyapchol(sys, Opts)
 % Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-%   Default execution parameters
-Def.type    = ''; % 'adi', 'builtIn'
-Def.lse     = 'gauss'; % only for mess ('gauss', 'luChol')
-Def.rctol   = 1e-12; % only for mess
-Def.q       = 0; % only for mess
+%% Option parsing
+%  Default execution parameters
+Def.method  = 'auto';   % 'auto', 'adi', 'hammarling'
+Def.lse     = 'gauss';  % only for MESS ('gauss', 'luChol')
+Def.rctol   = 1e-12;    % only for MESS
+Def.q       = 0;        % only for MESS
 
 % create the options structure
 if ~exist('Opts','var') || isempty(Opts)
@@ -85,22 +86,33 @@ else
     Opts = parseOpts(Opts,Def);
 end
 
-if strcmp(Opts.type,'adi') && sys.isDae
-    warning('MESS does not support dae-Systems. The built-in lyapchol is used instead.');
-    Opts.type='';
+%% check "method" option or make automatic selection
+
+if strcmp(Opts.method,'adi')
+    if sys.isDae %DAEs are not supported in sss yet
+        warning('Dae-System detected. Using built-in lyapchol instead of ADI.');
+        Opts.method='hammarling';
+    elseif sys.n<100
+        warning('System is small (n<100). Using built-in lyapchol instead of ADI.');
+        Opts.method='hammarling';
+    end
+elseif strcmp(Opts.method,'auto')
+    %   Automatic selection of method depending on order and model method
+    if sys.n>500 && ~sys.isDae
+        Opts.method = 'adi'; %set ADI as default
+    else
+        Opts.method = 'hammarling';
+    end
 end
 
-if strcmp(Opts.type,'adi') && sys.n<100
-    warning('System is too small for the use of ADI, the built-in lyapchol is used instead.');
-    Opts.type='';
-end
-
-if (strcmp(Opts.type,'') && sys.n>500 && ~sys.isDae) || strcmp(Opts.type,'adi')
-    %% mess
+%% Solve the lyapunov equation
+switch Opts.method
+    case 'adi'
+    %% M-MESS ADI
     % eqn struct: system data
     eqn=struct('A_',sys.A,'E_',sys.E,'B',sys.B,'C',sys.C,'prm',speye(size(sys.A)),'type','N','haveE',sys.isDescriptor);
     
-    % opts struct: mess options
+    % opts struct: MESS options
     messOpts.adi=struct('shifts',struct('l0',20,'kp',50,'km',25,'b0',ones(sys.n,1),...
         'info',0),'maxiter',300,'restol',0,'rctol',1e-12,...
         'info',0,'norm','fro');
@@ -182,20 +194,22 @@ if (strcmp(Opts.type,'') && sys.n>500 && ~sys.isDae) || strcmp(Opts.type,'adi')
     if nargout>1
         L=L';
     end
-else
-    %% built-in
-    if sys.isDescriptor
-        R = lyapchol(sys.A,sys.B,sys.E);
-    else
-        R = lyapchol(sys.A,sys.B);
-    end
-
-    if nargout>1
+    case 'hammarling'
+        %% built-in lyapchol (hammarling)
         if sys.isDescriptor
-            L = lyapchol(sys.A', sys.C',sys.E');
+            R = lyapchol(sys.A,sys.B,sys.E);
         else
-            L = lyapchol(sys.A',sys.C');
+            R = lyapchol(sys.A,sys.B);
         end
-    end    
+
+        if nargout>1
+            if sys.isDescriptor
+                L = lyapchol(sys.A', sys.C',sys.E');
+            else
+                L = lyapchol(sys.A',sys.C');
+            end
+        end    
+    otherwise 
+        error('sss:lyapchol:invalidMethod','The chosen method for lyapchol is invalid.')
 end
 end
