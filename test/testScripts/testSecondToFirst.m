@@ -1,36 +1,46 @@
 classdef testSecondToFirst < sssTest
     
     methods (Test)  
-        function testEig1(testCase)
-            for i=1:length(testCase.sysCell)
-                sys_sss=testCase.sysCell{i};
-                
-                [actD]=eig(sys_sss);
-                [expD]=eig(full(sys_sss.A), full(sys_sss.E));
-                
-                %sort eigenvalues on real part
-                actD_real=real(actD);
-                actD_imag=imag(actD);
-                tbl=table(actD_real, actD_imag);
-                tbl=sortrows(tbl);
-                actD_real=tbl.actD_real;
-                actD_imag=tbl.actD_imag;
-
-                expD_real=real(expD);
-                expD_imag=imag(expD);
-                tbl=table(expD_real, expD_imag);
-                tbl=sortrows(tbl);
-                expD_real=tbl.expD_real;
-                expD_imag=tbl.expD_imag;
-                
-                actSolution={full(actD_real), sort(full(actD_imag))};
-                expSolution={expD_real, sort(expD_imag)};
-                
-                verification (testCase, actSolution, expSolution);
-                verifyInstanceOf(testCase, actD , 'double', 'Instances not matching');
-                verifySize(testCase, actD, size(expD), 'Size not matching');
-            end
+        function testDifferentOptions(testCase)
+            % test the differnt options for the F-matrix
+            
+            % option 'I'
+            Opts.transf2nd = 'I';
+            sys_I = loadSss('LF10',Opts);
+            
+            % option 'K'
+            Opts.transf2nd = 'K';
+            sys_K = loadSss('LF10',Opts);
+            
+            % option '-K'
+            Opts.transf2nd = '-K';
+            sys_minK = loadSss('LF10',Opts);
+            
+            % optoin 'alpha'
+            Opts.transf2nd = 'alpha';
+            sys_alpha = loadSss('LF10',Opts);
+            
+            % create bode-plots
+            [mag_I,phase_I,omega] = bode(sys_I);
+            [mag_K,phase_K] = bode(sys_K,omega);
+            [mag_minK,phase_minK] = bode(sys_minK,omega);
+            [mag_alpha,phase_alpha] = bode(sys_alpha,omega);
+            
+            % check if the bode-plots are equal
+            verifyEqual(testCase,mag_I,mag_K,'AbsTol',1e-8, ...
+                'Verification failed for option "K" (magnitude)!');
+            verifyEqual(testCase,phase_I,phase_K,'AbsTol',1e-8, ...
+                'Verification failed for option "K" (phase)!');
+            verifyEqual(testCase,mag_I,mag_minK,'AbsTol',1e-8, ...
+                'Verification failed for option "-K" (magnitude)!');
+            verifyEqual(testCase,phase_I,phase_minK,'AbsTol',1e-8, ...
+                'Verification failed for option "-K" (phase)!');
+            verifyEqual(testCase,mag_I,mag_alpha,'AbsTol',1e-8, ...
+                'Verification failed for option "alpha" (magnitude)!');
+            verifyEqual(testCase,phase_I,phase_alpha,'AbsTol',1e-8, ...
+                'Verification failed for option "alpha" (phase)!');           
         end
+        
         function testMatrixOutput(testCase)
             load('gyro')
             sys         =   second2first(M,1e-6*K,K,B,C);
@@ -40,9 +50,4 @@ classdef testSecondToFirst < sssTest
             verifyEqual(testCase, sys, sys2);        
         end
     end
-end
-    
-function [] = verification (testCase, actSolution, expSolution)
-          verifyEqual(testCase, actSolution, expSolution, 'RelTol', 0.2,'AbsTol',0.00001, ...
-               'Difference between actual and expected exceeds relative tolerance');
 end
