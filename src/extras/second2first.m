@@ -125,7 +125,7 @@ switch Opts.transf2nd
             % Panzer
             warning('alpha option not implemented yet, using K instead');
             alpha = 1; 
-            F = alpha*LoadData.K;
+            F = alpha*K;
 end
 
 % create the matrices A and E for the first-order-system
