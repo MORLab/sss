@@ -139,7 +139,7 @@ for i = 1:length(varargin)
     end
     
     % Convert sss to frequency response data model
-    if isa(varargin{i},'sss')
+    if isa(varargin{i},'sss') || isa(varargin{i},'ssRed')
         % get h,t from ode in cell
         if ~isempty(t)
             [varargin{i},tg] = getht(varargin{i}, t(end),Opts);
