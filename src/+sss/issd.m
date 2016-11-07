@@ -1,4 +1,4 @@
-function varargout = issd(varargin)
+function [issd, numericalAbscissa] = issd(sys)
 % ISSD - Check strict dissipativity of sparse LTI system
 %
 % Syntax:
@@ -64,5 +64,37 @@ function varargout = issd(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
-[varargout{1:nargout}] = sss.issd(varargin{:});
+%%  Parse input
+if condest(sys.e)>1e16, error('issd does not support DAEs'),end
+
+%%  Perform computations
+% E >0?
+if sys.isDescriptor
+    isPosDef = ispd(sys.e);
+    if ~isPosDef
+        if nargout == 0, warning('System is not strictly dissipative (E~>0).'); 
+        else issd = 0; end
+        return
+    end
+end
+
+% A + A' <0?  
+isNegDef = ispd(-sys.a-sys.a');
+if isNegDef
+    if nargout == 0, fprintf('System is strictly dissipative.\n'); else issd = 1; end
+else
+    if nargout == 0, warning('System is not strictly dissipative (E>0, A+A''~<0)'); else issd = 0; end
+end
+    
+if nargout==2 % computation of the numerical abscissa required
+    p    = 20;		% number of Lanczos vectors
+    tol  = 1e-10;	% convergence tolerance
+    opts = struct('issym',true, 'p',p, 'tol',tol, 'v0',sum(sys.e,2));
+    try
+        numericalAbscissa = eigs((sys.a+sys.a')/2, sys.e, 1, 'la', opts);
+    catch err
+        warning('Computation of the numerical abscissa failed with message:%s',err.message);
+        numericalAbscissa = NaN;
+    end
+end
 

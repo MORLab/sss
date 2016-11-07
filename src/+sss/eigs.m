@@ -1,4 +1,4 @@
-function varargout = eigs(varargin)
+function varargout = eigs(sys, varargin)
 % EIGS - Compute eigenvalues of the sparse state space system using sparse matrices.
 %
 % Syntax:
@@ -68,4 +68,18 @@ function varargout = eigs(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-[varargout{1:nargout}] = sss.eigs(varargin{:});
+if sys.isDescriptor
+    if nargout==1||nargout==0
+        [varargout{1}] = eigs(sys.a, sys.e, varargin{:});
+    else
+        [varargout{1}, varargout{2}, varargout{3}]  = eigs(sys.a, sys.e, varargin{:});
+    end
+else
+    if nargout==1||nargout==0
+        [varargout{1}] = eigs(sys.a, varargin{:});
+    else
+        [varargout{1}, varargout{2}, varargout{3}]  = eigs(sys.a, varargin{:});
+    end
+end
+
+end
