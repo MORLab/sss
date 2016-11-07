@@ -60,7 +60,7 @@ else
     m = round(Ts_sample/Ts);
     x_ = zeros(length(A),round(size(u,1)/m));    
     k = 1;
-    index = [];
+    index = 1;
 end
 if isDescriptor
     [L,U,p] = lu(E,'vector');

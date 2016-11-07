@@ -60,7 +60,7 @@ else
     m = round(Ts_sample/Ts);
     x_ = zeros(length(A),round(size(u,1)/m));    
     k = 1;
-    index = [];
+    index = 1;
 end
 
 y(:,1) = C*x + D*u(1,:)';
