@@ -1,4 +1,4 @@
-function varargout = plus(varargin)
+function sum = plus(sys1, sys2)
 % PLUS - Computes sum of two sparse LTI systems.
 % 
 % Syntax:
@@ -41,4 +41,23 @@ function varargout = plus(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-[varargout{1:nargout}] = sss.plus(varargin{:});
+if sys1.n == 0
+    sum = sss(sys2.A, sys2.B, sys2.C, sys2.D, sys2.E);
+    return
+end
+if sys2.n == 0
+    sum = sss(sys1.A, sys1.B, sys1.C, sys1.D, sys1.E);
+    return
+end
+if sys1.p ~= sys2.p
+    error('sys1 and sys2 must have same number of inputs.')
+end
+if sys1.m ~= sys2.m
+    error('sys1 and sys2 must have same number of outputs.')
+end
+
+sum = sss([sys1.A sparse(sys1.n,sys2.n); sparse(sys2.n,sys1.n) sys2.A], ...
+          [sys1.B; sys2.B], ...
+          [sys1.C, sys2.C], ...
+          sys1.D + sys2.D, ...
+          [sys1.E sparse(sys1.n,sys2.n); sparse(sys2.n,sys1.n) sys2.E]);
