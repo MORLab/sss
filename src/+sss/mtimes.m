@@ -1,4 +1,4 @@
-function varargout = mtimes(varargin)
+function prod = mtimes(sys1, sys2)
 % MTIMES - Computes the product of two LTI systems.
 %
 % Syntax:
@@ -38,4 +38,61 @@ function varargout = mtimes(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-[varargout{1:nargout}] = sss.mtimes(varargin{:});
+
+%% Convert numeric gain to sss
+if isnumeric(sys1)
+    D = sparse(sys1);
+    if isvector(D)
+        % Apply static gain to all channels
+        D = speye(sys2.p)*diag(D);
+    end
+    % Give all properties to the returned model
+    sys1 = sys2.clear;
+    sys1.D = D;
+    sys1.y = sys2.y;
+end
+if isnumeric(sys2)
+    D = sparse(sys2);
+    if isvector(D)
+        % Apply static gain to all channels
+        D = speye(sys1.m)*diag(D);
+    end
+    sys2 = sss(D);
+    sys2.u = sys1.u;
+end
+
+% Define system size, because sys.m, sys.n and sys.p are not defined for
+% ss-objects
+sys1n = size(sys1.A,1);
+sys2n = size(sys2.A,1);
+sys2p = size(sys2.B,2);
+sys1m = size(sys1.C,1);
+
+% change sys.E = [] to sys.E = eye(n)
+if isempty(sys1.E) sys1.E=sparse(eye(sys1n)); end
+if isempty(sys2.E) 
+    if isa(sys2,'sss')
+        sys2.E=sparse(eye(sys2n));
+    else
+        sys2.E=eye(sys2n);
+    end
+end
+
+if sys1m ~= sys2p
+    error('Number of inputs of sys1 does not match number of outputs of sys2.')
+end
+
+% Store input and output names of the resulting system
+u = sys2.u;
+
+A = [sys1.A sys1.B*sys2.C; sparse(sys2n,sys1n) sys2.A];
+B = [sys1.B*sys2.D; sys2.B];
+C = [sys1.C, sys1.D*sys2.C];
+D = sys1.D*sys2.D;
+E = [sys1.E sparse(sys1n,sys2n); sparse(sys2n,sys1n) sys2.E];
+
+prod = sss(A,B,C,D,E);
+
+prod.u = u;
+
+end
