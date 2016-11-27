@@ -1,4 +1,4 @@
-function varargout = spy(varargin)
+function spy(sys,name)
 % SPY - Plot sparsity pattern of sss system
 % 
 % Syntax:
@@ -50,4 +50,20 @@ function varargout = spy(varargin)
 % Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-[varargout{1:nargout}] = sss.spy(varargin{:});
+    subplot(1,2,1);spy(sys.E); title('spy(E)');
+    subplot(1,2,2);spy(sys.A); title('spy(A)');
+    
+    if nargin > 1
+        onetitle(name);
+    elseif ~isempty(sys.Name)
+        onetitle(sys.Name);
+    end
+end
+
+function onetitle(str)
+    %   Create one common title for different subplots
+    set(gcf,'NextPlot','add');
+    ha = axes; h = title(str,'Interpreter','none');
+    set(ha,'Visible','off');
+    set(h,'Visible','on'); 
+end
