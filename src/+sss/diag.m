@@ -1,4 +1,4 @@
-function varargout = diag(varargin)
+function sys = diag(sys)
 % DIAG - Transforms an LTI system to (block)-diagonal representation
 %
 % Syntax:
@@ -80,4 +80,63 @@ function varargout = diag(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-[varargout{1:nargout}] = sss.diag(varargin{:});
+
+%perform eigen-decomposition of system
+if sys.isDescriptor
+    [T,A] = eig(full(sys.A),full(sys.E));
+    if max(max(A))==inf %isDae == 1
+        error('System contains algebraic states (DAE).')
+    end
+else
+    [T,A] = eig(full(sys.A));
+end
+if rcond(T)<100*eps
+    warning('Autovector matrix is nearly singular or badly scaled: results might be innacurate.');
+end
+% transform system to diagonal form
+B = (sys.E*T)\sys.B;
+C = sys.C*T;
+
+if sys.isSimo || sys.isMiso || sys.isMimo
+    %simo, miso or mimo
+    r = cell(sys.p, sys.m);
+    for j=1:sys.m
+        for i=1:sys.p
+            r{i,j} = C(i,:) .* conj(B(:,j)');
+        end
+    end
+else
+    %siso
+    r = {C .* conj(B')};
+end
+sys.residues = r;
+
+% find real system representation
+i = 0;
+while i<length(B)
+    i=i+1;
+    if i<length(B)
+        if abs(real(A(i,i)+A(i+1,i+1))) >= abs(imag(A(i,i)+A(i+1,i+1)))*10^3 && ...
+           abs(imag(A(i,i)-A(i+1,i+1)))/abs(real(A(i,i)+A(i+1,i+1))) >= 10^(-3)
+            delta = real(A(i,i) + A(i+1,i+1))/2;
+            omega = imag(A(i,i) - A(i+1,i+1))/2;
+            A(i:i+1,i:i+1) = [delta, omega; -omega, delta];
+            
+            % residues are shifted to input vector
+            pc = real(B(i)*C(i)+B(i+1)*C(i+1))/2;
+            pd = imag(B(i)*C(i)-B(i+1)*C(i+1))/2;
+            B(i) = pc+pd;
+            B(i+1) = pc-pd;
+            i=i+1;
+            continue
+        end
+    end
+    B(i) = B(i) * C(i);
+end
+
+% remove remaining imaginary components (resulting from numerical noise)
+B = real(B);
+
+sys.A = A;
+sys.B = B;
+sys.C = ones(size(C));
