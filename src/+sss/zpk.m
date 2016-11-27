@@ -1,4 +1,4 @@
-function [varargout] = zpk(varargin)
+function [varargout] = zpk(sys,varargin)
 % ZPK - Compute largest poles and zeros or zpk object of an LTI system
 %
 % Syntax:
@@ -79,4 +79,92 @@ function [varargout] = zpk(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
-[varargout{1:nargout}] = sss.zpk(varargin{:});
+%% Parse inputs and options
+Def.zpk = false; %return zpk object instead of p and z
+Def.typeZ = 'lm'; %eigs type for zeros
+Def.typeP = 'lm'; %eigs type for poles
+
+for i=1:length(varargin)
+    if isa(varargin{i},'double')
+        k=varargin{i};
+    elseif isa(varargin{i},'struct')
+        Opts=varargin{i};
+    end
+end
+
+% create the options structure
+if ~exist('Opts','var') || isempty(Opts)
+    Opts = Def;
+else
+    Opts = parseOpts(Opts,Def);
+end
+
+if ~exist('k','var')
+    k=6;
+end
+
+pTemp=poles(sys,k,struct('type',Opts.typeP));
+
+p=cell(sys.m,sys.p);
+z=cell(sys.m,sys.p);
+c=zeros(sys.m,sys.p);
+
+if strcmp(Opts.typeZ,'lm')
+    Opts.type=max(pTemp);
+    Opts.sortLm=true;
+end
+
+% remove single complex element
+if ~isreal(pTemp)
+    temp=pTemp(abs(imag(pTemp)-imag(sum(pTemp)))<1e-16);
+    if ~isempty(temp) && any(abs(imag(temp))>1e-16)
+        pTemp(end+1)=temp;
+    end
+end
+
+for i=1:sys.m
+    for j=1:sys.p
+        % call zeros and moments for each siso transfer function
+        tempSys=sss(sys.A,sys.B(:,j),sys.C(i,:),sys.D(i,j),sys.E);
+        zTemp=zeros(tempSys,k,Opts);
+        
+        if Opts.zpk
+            % remove not converged eigenvalues
+            pTemp(isnan(pTemp))=[];
+            zTemp(isnan(zTemp))=[];
+
+            % avoid infinity
+            pTemp(abs(pTemp)>1e6)=1e6*sign(real(pTemp(abs(pTemp)>1e6)));
+            zTemp(abs(zTemp)>1e6)=1e6*sign(real(zTemp(abs(zTemp)>1e6)));
+            
+            % add second element of single complex element
+            if ~isreal(zTemp)
+                temp=zTemp(abs(imag(zTemp)-imag(sum(zTemp)))<1e-16);
+                if ~isempty(temp)
+                    for k=1:size(temp,1)
+                       zTemp(end+1)=conj(temp(k));
+                    end
+                end
+            end
+        end
+
+        p{i,j}=pTemp;
+        z{i,j}=zTemp;
+
+        % gain c is the first nonzero markov parameter
+        ctemp=moments(tempSys,Inf,2);
+        c(i,j)=ctemp(:,:,2);
+    end
+end
+
+if Opts.zpk    
+    varargout{1}=zpk(z,p,c);
+    varargout{1}.name=sys.Name;
+elseif sys.isSiso
+    varargout{1}=p{1,1};
+    varargout{2}=z{1,1};
+else
+    varargout{1}=p;
+    varargout{2}=z;
+end
+end
