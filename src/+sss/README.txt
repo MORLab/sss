@@ -1,0 +1,1 @@
+THis folder contains the implementations of all functions which are used from mutliple classes inside the toolbox. The outsourcing of these functions to a seperate directory avoids the problem of having the same code on two different locations inside the toolbox. 
