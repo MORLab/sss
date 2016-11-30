@@ -135,6 +135,7 @@ else
     M=InputOutputRelation(sys,reOrderMatrix);
 end
 
+
 if ~any(any(M))
     %Disconnected, but static gain
     if not(exist('omega','var')) || isempty(omega)

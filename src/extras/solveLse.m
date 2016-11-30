@@ -878,8 +878,8 @@ end
             if Opts.refine
                 % Determine if the condition number of the problem is low enough for
                 % refinement to make sense
-                kU = log10(condest(U)); %it seems that cond(U) is close to cond(AsE)
-                if log10(Opts.refTol) < log10(eps) + kU
+                kU = condest(U); %it seems that cond(U) is close to cond(AsE)
+                if inv(kU)<Opts.refTol
                     warning(['The condition number of the problem is too high for ',...
                              'iterative refinement to make sense (at least with given tolerance). ',...
                              'Switching Opts.refine to 0.'])
