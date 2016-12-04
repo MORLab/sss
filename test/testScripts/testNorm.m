@@ -69,7 +69,7 @@ classdef testNorm < sssTest
                         oper = operatormanager('default');
                         
                         % get adi shifts
-                        [messOpts.adi.shifts.p, eqn]=mess_para(eqn,messOpts,oper);
+                        [messOpts.adi.shifts.p,~,~,~,~,~,~,eqn]=mess_para(eqn,messOpts,oper);
 
                         % low rank adi
                         [R,~,eqn]=mess_lradi(eqn,messOpts,oper);

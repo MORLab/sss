@@ -1,0 +1,6 @@
+Matlab function for generation of a simple single chain mass spring damper system with random Problem data. 
+
+dimension: arbitrary
+inputs and outputs: matrices are not generated
+
+

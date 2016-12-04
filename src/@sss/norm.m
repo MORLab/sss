@@ -123,7 +123,7 @@ else
             return;
         end
 
-        Opts.type=Opts.lyapchol; %translate option for lyapchol function
+        Opts.method=Opts.lyapchol; %translate option for lyapchol function
         try
             R=lyapchol(sys,Opts);
             nrm=norm(R*sys.C','fro');

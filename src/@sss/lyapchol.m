@@ -10,10 +10,10 @@ function [R,L] = lyapchol(sys, Opts)
 %       This function returns the Cholesky factorization X=R'*R of the 
 %       solution of the Lyapunov equation A*X+X*A'+B*B'=0.
 %
-%       If the option 'type' is set to 'adi',then a low rank approximation 
-%       of the Cholesky factor [1] is performed. If this option is not 
-%       specified, then ADI is applied to systems with n>500. The options 
-%       'lse', 'rctol' and 'q' only apply to ADI.
+%       If the option 'method' is set to 'adi',then a low rank approximation 
+%       of the Cholesky factor [1] is performed. If this option is 
+%       specified as 'auto', then ADI is applied to systems with n>500. The  
+%       options 'lse', 'rctol' and 'q' only apply to ADI.
 %
 % Input Arguments:
 %		*Required Input Arguments:*
@@ -21,13 +21,17 @@ function [R,L] = lyapchol(sys, Opts)
 %		*Optional Input Arguments:*
 %       -Opts:              a structure containing following options
 %           -.method:       select solver for lyapunov equation 
-%                           [{'auto'} / 'adi' / 'hammaerling' ]
+%                           [{'auto'} / 'adi' / 'hammarling' ]
 %           -.lse:          solve linear system of equations (only ADI)
 %                           [{'gauss'} / 'luChol']
 %           -.rctol:        tolerance for difference between ADI iterates
 %                           [{'1e-12'} / positive float]
 %           -.q:            size of Cholesky factor (only ADI)
 %                           [{'0'} / positive integer]
+%           -.checkQ:       warn, if smaller q is sufficient for rctol (only ADI)
+%                           [{'true'} / 'false']
+%           -.maxiter:      maximum number of iterations (only ADI)
+%                           [{300} / positive integer]
 %
 % Output Arguments:
 %       -R:     Cholesky factor X=R'*R of lyapunov equation A*X+X*A'+B*B'=0
@@ -75,9 +79,11 @@ function [R,L] = lyapchol(sys, Opts)
 %% Option parsing
 %  Default execution parameters
 Def.method  = 'auto';   % 'auto', 'adi', 'hammarling'
-Def.lse     = 'gauss';  % only for MESS ('gauss', 'luChol')
+Def.lse     = 'gauss';  % only for MESS (see solveLse)
 Def.rctol   = 1e-12;    % only for MESS
 Def.q       = 0;        % only for MESS
+Def.checkQ  = true;     % only for MESS
+Def.maxiter = 300;      % only for MESS
 
 % create the options structure
 if ~exist('Opts','var') || isempty(Opts)
@@ -105,6 +111,21 @@ elseif strcmp(Opts.method,'auto')
     end
 end
 
+if strcmp(Opts.method, 'adi') % check if MESS is available
+    if ~exist('operatormanager.m','file')||~exist('mess_para.m','file')||~exist('mess_lradi.m','file') 
+        warning('MESS toolbox not found. Using built-in lyapchol instead of ADI.');
+        Opts.method='hammarling';
+    end
+    pathUsfs=which('operatormanager');
+    if strcmp(Opts.method, 'adi') && ~exist(strrep(pathUsfs,'operatormanager.m','solveLse'),'dir')
+        warning('MESS user function (usfs) "solveLse" not found. Using usfs "default" instead of "solveLse".');
+        Opts.method='hammarling';
+        lseType='default';
+    else
+        lseType='solveLse';
+    end
+end
+
 %% Solve the lyapunov equation
 switch Opts.method
     case 'adi'
@@ -114,21 +135,25 @@ switch Opts.method
     
     % opts struct: MESS options
     messOpts.adi=struct('shifts',struct('l0',20,'kp',50,'km',25,'b0',ones(sys.n,1),...
-        'info',0),'maxiter',300,'restol',0,'rctol',1e-12,...
+        'info',0),'maxiter',Opts.maxiter,'restol',0,'rctol',1e-12,...
         'info',0,'norm','fro');
     
-    oper = operatormanager('solveLse');
+    oper = operatormanager(lseType);
     messOpts.solveLse.lse=Opts.lse;
     messOpts.solveLse.krylov=0;
     
     if Opts.q>0 %size of cholesky factor [sys.n x q] -> qmax=q
         messOpts.adi.maxiter=Opts.q;
         messOpts.adi.restol=0;
-        messOpts.adi.rctol=1e-30;
+        if Opts.checkQ && nargout>1
+            messOpts.adi.rctol=1e-30; % compute rc (relative change) of iterations
+        else
+            messOpts.adi.rctol=0;
+        end
     end
     
     % get adi shifts
-    [messOpts.adi.shifts.p, eqn]=mess_para(eqn,messOpts,oper);
+    [messOpts.adi.shifts.p,~,~,~,~,~,~,eqn]=mess_para(eqn,messOpts,oper);
     
     % low rank adi
     [R,Rout,eqn]=mess_lradi(eqn,messOpts,oper);
@@ -142,7 +167,7 @@ switch Opts.method
         end
     end
     
-    if Opts.q>0 % warn user if rctol is satisfied before q_user
+    if Opts.q>0 && Opts.checkQ && nargout>1% warn user if rctol is satisfied before q_user
         qminR=Opts.q;
         qminL=Opts.q;
         nStop=0;
@@ -194,6 +219,7 @@ switch Opts.method
     if nargout>1
         L=L';
     end
+    
     case 'hammarling'
         %% built-in lyapchol (hammarling)
         if sys.isDescriptor
