@@ -15,6 +15,10 @@ function [R,L] = lyapchol(sys, Opts)
 %       specified as 'auto', then ADI is applied to systems with n>500. The  
 %       options 'lse', 'rctol' and 'q' only apply to ADI.
 %
+%       If the option 'rctol' is set, the resulting order can be smaller than
+%       specified by the option 'q'. If the option 'forceOrder' is true, the
+%       'rctol' is ignored and the result is of order 'q' (not recommended).
+%
 % Input Arguments:
 %		*Required Input Arguments:*
 %       -sys:   an sss-object containing the LTI system
@@ -28,8 +32,8 @@ function [R,L] = lyapchol(sys, Opts)
 %                           [{'1e-12'} / positive float]
 %           -.q:            size of Cholesky factor (only ADI)
 %                           [{'0'} / positive integer]
-%           -.checkQ:       warn, if smaller q is sufficient for rctol (only ADI)
-%                           [{'true'} / 'false']
+%           -.forceOrder:   return order q
+%                           [{'false'} / 'true']
 %           -.maxiter:      maximum number of iterations (only ADI)
 %                           [{300} / positive integer]
 %
@@ -72,7 +76,7 @@ function [R,L] = lyapchol(sys, Opts)
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  02 Aug 2016
+% Last Change:  11 Dec 2016
 % Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
@@ -82,7 +86,7 @@ Def.method  = 'auto';   % 'auto', 'adi', 'hammarling'
 Def.lse     = 'gauss';  % only for MESS (see solveLse)
 Def.rctol   = 1e-12;    % only for MESS
 Def.q       = 0;        % only for MESS
-Def.checkQ  = true;     % only for MESS
+Def.forceOrder  = false;     % only for MESS
 Def.maxiter = 300;      % only for MESS
 
 % create the options structure
@@ -129,34 +133,40 @@ end
 %% Solve the lyapunov equation
 switch Opts.method
     case 'adi'
+    if Opts.q>0 %size of cholesky factor [sys.n x q] -> qmax=q
+        Opts.maxiter=Opts.q;
+        if Opts.forceOrder
+            Opts.rctol=0;
+        end
+    end   
+        
     %% M-MESS ADI
     % eqn struct: system data
     eqn=struct('A_',sys.A,'E_',sys.E,'B',sys.B,'C',sys.C,'prm',speye(size(sys.A)),'type','N','haveE',sys.isDescriptor);
     
     % opts struct: MESS options
     messOpts.adi=struct('shifts',struct('l0',20,'kp',50,'km',25,'b0',ones(sys.n,1),...
-        'info',0),'maxiter',Opts.maxiter,'restol',0,'rctol',1e-12,...
+        'info',0),'maxiter',Opts.maxiter,'restol',0,'rctol',Opts.rctol,...
         'info',0,'norm','fro');
     
     oper = operatormanager(lseType);
     messOpts.solveLse.lse=Opts.lse;
     messOpts.solveLse.krylov=0;
     
-    if Opts.q>0 %size of cholesky factor [sys.n x q] -> qmax=q
-        messOpts.adi.maxiter=Opts.q;
-        messOpts.adi.restol=0;
-        if Opts.checkQ && nargout>1
-            messOpts.adi.rctol=1e-30; % compute rc (relative change) of iterations
-        else
-            messOpts.adi.rctol=0;
-        end
-    end
-    
     % get adi shifts
     [messOpts.adi.shifts.p,~,~,~,~,~,~,eqn]=mess_para(eqn,messOpts,oper);
     
     % low rank adi
     [R,Rout,eqn]=mess_lradi(eqn,messOpts,oper);
+    
+    if Opts.q && size(R,2)<Opts.q
+        warning(['Because of small relative changes in the last ADI iterations,',...
+            ' the size of R is set to q_R = ',num2str(size(R,2),'%i'),'.']);
+    end
+    if Rout.rc(end)>Opts.rctol
+        warning(['Maximum number of ADI iterations reached (maxiter = ',num2str(Opts.maxiter,'%d'),...
+                '). rctol is not satisfied for R: ',num2str(Rout.rc(end),'%d'),' > rctol (',num2str(Opts.rctol,'%d'),').']);
+    end
     
     if nargout>1
         if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
@@ -165,52 +175,13 @@ switch Opts.method
             eqn.type='T';
             [L,Lout]=mess_lradi(eqn,messOpts,oper);
         end
-    end
-    
-    if Opts.q>0 && Opts.checkQ && nargout>1% warn user if rctol is satisfied before q_user
-        qminR=Opts.q;
-        qminL=Opts.q;
-        nStop=0;
-
-        % rctol is satisfied if rc<tol for 10 times consecutively
-        for i=1:length(Rout.rc)
-            if Rout.rc(i)<Opts.rctol
-                nStop=nStop+1;
-            else
-                nStop=0;
-            end
-            if nStop==10
-                qminR=i;
-                break
-            end
+        if Opts.q && size(L,2)<Opts.q
+            warning(['Because of small relative changes in the last ADI iterations,',...
+                ' the size of L is set to q_L = ',num2str(size(L,2),'%i'),'.']);
         end
-
-        if nargout>1
-            if ~(sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0) && qminR<Opts.q
-                qminL=Opts.q;
-                nStop=0;
-                for i=1:length(Lout.rc)
-                    if Lout.rc(i)<Opts.rctol
-                        nStop=nStop+1;
-                    else
-                        nStop=0;
-                    end
-                    if nStop==10
-                        qminL=i;
-                        break
-                    end
-                end
-            elseif sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
-                qminL=qminR;
-            end
-        else
-            qminL=qminR;
-        end
-        q_min_in=max(qminR,qminL);
-
-        if q_min_in>0 && q_min_in < Opts.q
-            warning(['After q=', num2str(q_min_in,'%d'),...
-            ' the contribution of the ADI iterates was very small. Consider reducing the desired order accordingly.']);
+        if Lout.rc(end)>Opts.rctol
+            warning(['Maximum number of ADI iterations reached (maxiter = ',num2str(Opts.maxiter,'%d'),...
+                '). rctol is not satisfied for L: ',num2str(Lout.rc(end),'%d'),' > rctol (',num2str(Opts.rctol,'%d'),').']);
         end
     end
     
