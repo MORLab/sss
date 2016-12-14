@@ -13,53 +13,35 @@ function zpkData = zpk(sys,varargin)
 %       zpkData = ZPK(sys,type)
 %
 % Description:
-%       [p,z] = zpk(sys) returns the 6 system poles and invariant zeros 
-%       with largest magnitude of in the column vectors p and z of the 
-%       continuous- or discrete-time dynamic system model sys. The type of 
-%       the computed poles and zeros can be specified with the options 
-%       'typeP' and 'typeZ'.
-%
-%       [p,z] = zpk(sys,k) returns the first k poles and zeros of the system.
-%       
-%       If the option 'zpk' is true, a zpk-object is returned instead of
-%       the poles and zeros.
-%
-%//Note: If the system is MIMO, the zeros are computed for all combination
-%       of inputs and outputs and z is returned in a cell array.
+%       zkpData = zpk(sys,k) converts a sparse state space model sys to
+%       the zpk representation by computing the k largest poles and zeros.
+%       The type of the computed poles and zeros can be specified with the  
+%       options 'typeP' and 'typeZ'. The resulting zpkData object is of 
+%       class @zpk.
 %
 % Input Arguments:
 %       -sys:      an sss-object containing the LTI system
 %       *Optional Input Arguments:*
-%       -k:     number of computed poles and zeros
-%       -Opts:  structure with execution parameters
-%			-.zpk:  return zpk object;
-%						[{0} / 1]
-%			-.typeP: eigs type of poles
-%						[{'lm'} / 'sm' / 'la' / 'sa']
-%			-.typeZ: eigs type of zeros
-%						[{'lm'} / 'sm' / 'la' / 'sa']
+%       -kP:     number of computed poles
+%       -kZ:     number of computed zeros
+%       -typeP:  eigs type of poles
+%				 [{'lm'} / 'sm' / 'la' / 'sa']
+%       -typeZ:  eigs type of zeros
+%                [{'lm'} / 'sm' / 'la' / 'sa']
 %
 % Output Arguments:
-%       -p: vector containing poles 
-%       -z: vector/cell array containing invariant zeros
+%       -zpkData:  object of class @zpk
 %
 % Examples:
-%       Create a random descriptor model (DSSS, SISO) and compute the poles
-%       and zeros.
+%       Create a random descriptor model (DSSS, SISO) and compute the
+%       corresponding zpk object by using the six poles and zeros with the
+%       largest magnitude:
 %
 %> A = randn(500,500); B = randn(500,1); C = randn(1,500); D = zeros(1,1);
 %> E = randn(500,500);
 %> sys = dss(A,B,C,D,E);
 %> sysSss = sss(sys);
-%> [p,z]=zpk(sysSss)
-%
-%       Load the benchmark 'CDplayer' (SSS, MIMO) and use zpk:
-%
-%> load CDplayer.mat
-%> p = size(C,1); m = size(B,2);
-%> sys = sss(A,B,C,zeros(p,m))
-%> [p,z]=zpk(sys)   %computing poles and zeros
-%> zpkData=zpk(sys) %computing zpkData (numerator and denominator data)
+%> zpkData=zpk(sysSss,6,'lm')
 %
 % See Also:
 %       pzmap, zeros, poles
