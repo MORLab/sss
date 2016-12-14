@@ -107,8 +107,7 @@ for i = 1:length(varargin)
         if varargin{i}.isDae
             error('pzmap does not work with DAE systems yet.');
         end
-        Opts.zpk='true';
-        varargin{i} = zpk(varargin{i}, k, Opts);
+        varargin{i} = zpk(varargin{i}, k, Opts.typeP, Opts.typeZ);
     end
 end
 
