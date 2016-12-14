@@ -1,4 +1,4 @@
-function varargout = poles(varargin)
+function p = poles(sys,varargin)
 % POLES - Compute largest poles of an LTI system
 %
 % Syntax:
@@ -58,4 +58,46 @@ function varargout = poles(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
-[varargout{1:nargout}] = sss.poles(varargin{:});
+%% Parse inputs and options
+Def.type = 'lm'; %eigs type
+
+for i=1:length(varargin)
+    if isa(varargin{i},'double')
+        k=varargin{i};
+    elseif isa(varargin{i},'struct')
+        Opts=varargin{i};
+    end
+end
+
+% create the options structure
+if ~exist('Opts','var') || isempty(Opts)
+    Opts = Def;
+else
+    Opts = parseOpts(Opts,Def);
+end
+
+if ~exist('k','var')
+    k=6;
+end
+
+if ~sys.isDae
+    try
+        [~,p,flag] = eigs(sys.A,sys.E,k,Opts.type);
+        if flag~=0
+            error('Not all eigenvalues converged');
+        end
+        p=diag(p);
+    catch
+        opts.p=4*k; %double number of lanczos vectors (default: 2*k)
+        p = eigs(sys.A,sys.E,k,Opts.type,opts);
+    end
+else
+    error('Poles does not work with DAE systems yet.');
+end
+
+% ensure column vector
+if size(p,1)<size(p,2)
+    p=transpose(p);
+end
+
+end
