@@ -133,12 +133,9 @@ end
 %% Solve the lyapunov equation
 switch Opts.method
     case 'adi'
-    if Opts.q>0 %size of cholesky factor [sys.n x q] -> qmax=q
-        Opts.maxiter=Opts.q;
-        if Opts.forceOrder
-            Opts.rctol=0;
-        end
-    end   
+    if Opts.forceOrder
+        Opts.rctol=0;
+    end  
         
     %% M-MESS ADI
     % eqn struct: system data
