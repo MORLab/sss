@@ -1,23 +1,29 @@
-function [R,L] = lyapchol(sys, Opts)
+function [S,R] = lyapchol(sys, Opts)
 % LYAPCHOL - Solve Lyapunov equations
 %
 % Syntax:
-%       R				= LYAPCHOL(sys)
-%       [R,L]			= LYAPCHOL(sys)
-%       [R,L]  		    = LYAPCHOL(sys,Opts)
+%       S				= LYAPCHOL(sys)
+%       [S,R]			= LYAPCHOL(sys)
+%       [S,R]  		    = LYAPCHOL(sys,Opts)
 %
 % Description:
-%       This function returns the Cholesky factorization X=R'*R of the 
-%       solution of the Lyapunov equation A*X+X*A'+B*B'=0.
+%       This function returns the Cholesky factorization X=S*S' of the 
+%       solution of the Lyapunov equation A*X+X*A'+B*B'=0 or the generalized 
+%       Lyapunov equation A*X*E'+E*X*A'+B*B'=0.
 %
-%       If the option 'method' is set to 'adi',then a low rank approximation 
-%       of the Cholesky factor [1] is performed. If this option is 
-%       specified as 'auto', then ADI is applied to systems with n>500. The  
-%       options 'lse', 'rctol' and 'q' only apply to ADI.
+%       If the number of output arguments is 2, then the low rank factor 
+%       Y = R*R' of the dual (generalized) lyapunov equation 
+%       A'*Y*E+E'*Y*A+C'*C=0 is solved as well.
 %
-%       If the option 'rctol' is set, the resulting order can be smaller than
-%       specified by the option 'q'. If the option 'forceOrder' is true, the
-%       'rctol' is ignored and the result is of order 'q' (not recommended).
+%       If the option 'type' is set to 'adi',then a low rank approximation 
+%       of the Cholesky (like) factor is performed [1]. If this option is not 
+%       specified, then ADI is applied to systems with n>500. The options 
+%       'lse', 'rctol' and 'q' only apply to ADI.
+%
+%       //Note: the definition of the Cholesky factors X = S*S' is
+%       different from built-in lyapchol, where X = S'*S. However, our
+%       definition is consistent both with standard literature (cp [3]) and
+%       the low-rank approximation if R has fewer columns than rows.
 %
 % Input Arguments:
 %		*Required Input Arguments:*
@@ -38,27 +44,30 @@ function [R,L] = lyapchol(sys, Opts)
 %                           [{300} / positive integer]
 %
 % Output Arguments:
-%       -R:     Cholesky factor X=R'*R of lyapunov equation A*X+X*A'+B*B'=0
-%       -L:     Cholesky factor X=L'*L of lyapunov equation A'*X+X*A+C'*C=0
+%       -S:     Cholesky factor X=S*S' of lyapunov equation A*X*E'+E*X*A'+B*B'=0
+%       -R:     Cholesky factor Y=R*R' of lyapunov equation A'*X*E+E'*Y*A+C'*C=0
 %
 % Examples:
 %       Compute the Cholesky factors for both Lyapunov equations
 %
 %> sys = loadSss('building');
-%> [R,L] = lyapchol(sys);
+%> [S,R] = lyapchol(sys);
 %
 %       To compute a single Cholesky factor, use
 %
-%> R = lyapchol(sys);
-%> L = lyapchol(sys');
+%> S = lyapchol(sys);
+%> R = lyapchol(sys');
 %
 % See Also:
-%       solveLse, tbr, norm, isrk
+%       solveLse, tbr, norm, numerics/lyapchol
 %
 % References:
 %       * *[1] Penzl (2000)*, LYAPACK - A MATLAB Toolbox for Large Lyapunov
 %       and Riccati Equations, Model Reduction Problems, and Linear-Quadratic 
 %       Optimal Control Problems.
+%       * *[2] Saak, Köhler, Benner (2016)*, M-M.E.S.S. - The Matrix 
+%       Equation Sparse Solver Library.
+%       * *[3] Golub, Van Loan (1996)*, Matrix computations
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis
@@ -71,12 +80,11 @@ function [R,L] = lyapchol(sys, Opts)
 % More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Alessandro Castagnotto, 
-%               Lisa Jeschek
+% Authors:      Alessandro Castagnotto, Lisa Jeschek
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  11 Dec 2016
+% Last Change:  15 Dec 2016
 % Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
@@ -154,7 +162,7 @@ switch Opts.method
     [messOpts.adi.shifts.p,~,~,~,~,~,~,eqn]=mess_para(eqn,messOpts,oper);
     
     % low rank adi
-    [R,Rout,eqn]=mess_lradi(eqn,messOpts,oper);
+    [S,Sout,eqn]=mess_lradi(eqn,messOpts,oper);
     
     if Opts.q && size(R,2)<Opts.q
         warning(['Because of small relative changes in the last ADI iterations,',...
@@ -167,14 +175,11 @@ switch Opts.method
     
     if nargout>1
         if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
-            L=R;
+            R=S;
         else
             eqn.type='T';
-            [L,Lout]=mess_lradi(eqn,messOpts,oper);
+            [R,Rout]=mess_lradi(eqn,messOpts,oper);
         end
-        if Opts.q && size(L,2)<Opts.q
-            warning(['Because of small relative changes in the last ADI iterations,',...
-                ' the size of L is set to q_L = ',num2str(size(L,2),'%i'),'.']);
         end
         if Lout.rc(end)>Opts.rctol
             warning(['Maximum number of ADI iterations reached (maxiter = ',num2str(Opts.maxiter,'%d'),...
@@ -182,27 +187,23 @@ switch Opts.method
         end
     end
     
-    % make sure cholesky factorization is like built-in (X=R'*R)
-    R=R';
-    if nargout>1
-        L=L';
-    end
-    
     case 'hammarling'
         %% built-in lyapchol (hammarling)
         if sys.isDescriptor
-            R = lyapchol(sys.A,sys.B,sys.E);
+            S = lyapchol(sys.A,sys.B,sys.E);
         else
-            R = lyapchol(sys.A,sys.B);
+            S = lyapchol(sys.A,sys.B);
         end
+        S = S';
 
         if nargout>1
             if sys.isDescriptor
-                L = lyapchol(sys.A', sys.C',sys.E');
+                R = lyapchol(sys.A', sys.C',sys.E');
             else
-                L = lyapchol(sys.A',sys.C');
+                R = lyapchol(sys.A',sys.C');
             end
-        end    
+            R = R';
+        end  
     otherwise 
         error('sss:lyapchol:invalidMethod','The chosen method for lyapchol is invalid.')
 end
