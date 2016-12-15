@@ -82,12 +82,12 @@ function [R,L] = lyapchol(sys, Opts)
 
 %% Option parsing
 %  Default execution parameters
-Def.method  = 'auto';   % 'auto', 'adi', 'hammarling'
-Def.lse     = 'gauss';  % only for MESS (see solveLse)
-Def.rctol   = 1e-12;    % only for MESS
-Def.q       = 0;        % only for MESS
-Def.forceOrder  = false;     % only for MESS
-Def.maxiter = 300;      % only for MESS
+Def.method  = 'auto';           % 'auto', 'adi', 'hammarling'
+Def.lse     = 'gauss';          % only for MESS (see solveLse)
+Def.rctol   = 1e-12;            % only for MESS
+Def.q       = 0;                % only for MESS
+Def.forceOrder  = false;        % only for MESS
+Def.maxiter = min([150,sys.n]); % only for MESS
 
 % create the options structure
 if ~exist('Opts','var') || isempty(Opts)
