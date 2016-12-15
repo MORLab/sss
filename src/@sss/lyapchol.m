@@ -160,7 +160,7 @@ switch Opts.method
         [messOpts.adi.shifts.p,~,~,~,~,~,~,eqn]=mess_para(eqn,messOpts,oper);
 
         % low rank adi
-        [S,Sout,eqn]=mess_lradi(eqn,messOpts,oper);
+        [S,Sout]=mess_lradi(eqn,messOpts,oper);
 
         if Opts.q && size(S,2)<Opts.q
             warning(['Because of small relative changes in the last ADI iterations,',...
@@ -177,14 +177,14 @@ switch Opts.method
             else
                 eqn.type='T';
                 [R,Rout]=mess_lradi(eqn,messOpts,oper);
+                if Rout.rc(end)>Opts.rctol
+                    warning(['Maximum number of ADI iterations reached (maxiter = ',num2str(Opts.maxiter,'%d'),...
+                        '). rctol is not satisfied for R: ',num2str(Rout.rc(end),'%d'),' > rctol (',num2str(Opts.rctol,'%d'),').']);
+                end
             end
             if Opts.q && size(R,2)<Opts.q
                 warning(['Because of small relative changes in the last ADI iterations,',...
                 ' the size of R is set to q_R = ',num2str(size(R,2),'%i'),'.']);
-            end
-            if Rout.rc(end)>Opts.rctol
-                warning(['Maximum number of ADI iterations reached (maxiter = ',num2str(Opts.maxiter,'%d'),...
-                    '). rctol is not satisfied for R: ',num2str(Rout.rc(end),'%d'),' > rctol (',num2str(Opts.rctol,'%d'),').']);
             end
         end
     
