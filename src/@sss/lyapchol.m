@@ -141,51 +141,52 @@ end
 %% Solve the lyapunov equation
 switch Opts.method
     case 'adi'
-    if Opts.forceOrder
-        Opts.rctol=0;
-    end  
+        if Opts.forceOrder, Opts.rctol=0; end  
         
-    %% M-MESS ADI
-    % eqn struct: system data
-    eqn=struct('A_',sys.A,'E_',sys.E,'B',sys.B,'C',sys.C,'prm',speye(size(sys.A)),'type','N','haveE',sys.isDescriptor);
-    
-    % opts struct: MESS options
-    messOpts.adi=struct('shifts',struct('l0',20,'kp',50,'km',25,'b0',ones(sys.n,1),...
-        'info',0),'maxiter',Opts.maxiter,'restol',0,'rctol',Opts.rctol,...
-        'info',0,'norm','fro');
-    
-    oper = operatormanager(lseType);
-    messOpts.solveLse.lse=Opts.lse;
-    messOpts.solveLse.krylov=0;
-    
-    % get adi shifts
-    [messOpts.adi.shifts.p,~,~,~,~,~,~,eqn]=mess_para(eqn,messOpts,oper);
-    
-    % low rank adi
-    [S,Sout,eqn]=mess_lradi(eqn,messOpts,oper);
-    
-    if Opts.q && size(R,2)<Opts.q
-        warning(['Because of small relative changes in the last ADI iterations,',...
-            ' the size of R is set to q_R = ',num2str(size(R,2),'%i'),'.']);
-    end
-    if Rout.rc(end)>Opts.rctol
-        warning(['Maximum number of ADI iterations reached (maxiter = ',num2str(Opts.maxiter,'%d'),...
-                '). rctol is not satisfied for R: ',num2str(Rout.rc(end),'%d'),' > rctol (',num2str(Opts.rctol,'%d'),').']);
-    end
-    
-    if nargout>1
-        if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
-            R=S;
-        else
-            eqn.type='T';
-            [R,Rout]=mess_lradi(eqn,messOpts,oper);
+        %% M-MESS ADI
+        % eqn struct: system data
+        eqn=struct('A_',sys.A,'E_',sys.E,'B',sys.B,'C',sys.C,'prm',speye(size(sys.A)),'type','N','haveE',sys.isDescriptor);
+
+        % opts struct: MESS options
+        messOpts.adi=struct('shifts',struct('l0',20,'kp',50,'km',25,'b0',ones(sys.n,1),...
+            'info',0),'maxiter',Opts.maxiter,'restol',0,'rctol',Opts.rctol,...
+            'info',0,'norm','fro');
+
+        oper = operatormanager(lseType);
+        messOpts.solveLse.lse=Opts.lse;
+        messOpts.solveLse.krylov=0;
+
+        % get adi shifts
+        [messOpts.adi.shifts.p,~,~,~,~,~,~,eqn]=mess_para(eqn,messOpts,oper);
+
+        % low rank adi
+        [S,Sout,eqn]=mess_lradi(eqn,messOpts,oper);
+
+        if Opts.q && size(S,2)<Opts.q
+            warning(['Because of small relative changes in the last ADI iterations,',...
+                ' the size of S is set to q_S = ',num2str(size(S,2),'%i'),'.']);
         end
-        end
-        if Lout.rc(end)>Opts.rctol
+        if Sout.rc(end)>Opts.rctol
             warning(['Maximum number of ADI iterations reached (maxiter = ',num2str(Opts.maxiter,'%d'),...
-                '). rctol is not satisfied for L: ',num2str(Lout.rc(end),'%d'),' > rctol (',num2str(Opts.rctol,'%d'),').']);
+                    '). rctol is not satisfied for S: ',num2str(Sout.rc(end),'%d'),' > rctol (',num2str(Opts.rctol,'%d'),').']);
         end
-    end
+
+        if nargout>1
+            if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
+                R=S;
+            else
+                eqn.type='T';
+                [R,Rout]=mess_lradi(eqn,messOpts,oper);
+            end
+            if Opts.q && size(R,2)<Opts.q
+                warning(['Because of small relative changes in the last ADI iterations,',...
+                ' the size of R is set to q_R = ',num2str(size(R,2),'%i'),'.']);
+            end
+            if Rout.rc(end)>Opts.rctol
+                warning(['Maximum number of ADI iterations reached (maxiter = ',num2str(Opts.maxiter,'%d'),...
+                    '). rctol is not satisfied for R: ',num2str(Rout.rc(end),'%d'),' > rctol (',num2str(Opts.rctol,'%d'),').']);
+            end
+        end
     
     case 'hammarling'
         %% built-in lyapchol (hammarling)
