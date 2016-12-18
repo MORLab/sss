@@ -2,57 +2,34 @@ classdef testZpk < sssTest
     % testZpk - testing of zpk.m
    
     methods(Test)
-        function testLM(testCase)
-            
-            systemsToTest{1} = loadSss('building');
-            systemsToTest{2} = loadSss('heat-cont');
-            systmesToTest{3} = loadSss('beam');
-            
-            for i=1:length(systemsToTest)
-                sys=systemsToTest{i};
-                sys_ss=ss(sys);
-
-                if ~sys.isDae
-                    k=20;
-                    zpkData=zpk(sys,k,'lm');
-                    zpkData_ss=zpk(sys_ss);
-                    
-                    %% verification of z
-                    for j=1:sys.m
-                        for l=1:sys.p      
-                            if sys.isSiso
-                                z=cell2mat(zpkData.z);
-                                z_ss=cell2mat(zpkData_ss.z);
-                            else
-                                z=cell2mat(zpkData(j,l).z);
-                                z_ss=cell2mat(zpkData_ss(j,l).z);
-                            end
-                            
-                            z_ss = sort(z_ss,'descend');
-                            z_ss = cplxpair(z_ss);
-                            z = sort(z,'descend');
-                            z = cplxpair(z);
-                            
-                            verification(testCase, z,z_ss(1:k));
+        function testZpkObject(testCase)
+            for i=1:length(testCase.sysCell)
+                sys=testCase.sysCell{i};
+                
+                % call zpk for the sys
+                kP = 8;
+                kZ = 8;
+                zpkData = zpk(sys,kP,'sm',kZ,'la');
+                
+                % check class
+                if ~isa(zpkData,'zpk')
+                   error('Wrong class!. Object should be of class "zpk"') 
+                end
+                
+                % check correct number of zeros and poles
+                for l = 1:sys.p
+                    for j = 1:sys.m                        
+                        % check correct number of zeros   
+                        if length(zpkData(l,j).z{1,1}) ~= kZ
+                            error('Wrong number of zeros!');
+                        end
+                        
+                        % check correct number of poles                        
+                        if length(zpkData(l,j).p{1,1}) ~= kP
+                            error('Wrong number of poles!');
                         end
                     end
-                    
-                    
-                    %% verification of p
-                    if ~sys.isSiso
-                        p=cell2mat(zpkData(1,1).p);
-                        p_ss=cell2mat(zpkData_ss(1,1).p);
-                    else
-                        p=cell2mat(zpkData.p);
-                        p_ss=cell2mat(zpkData_ss.p);
-                    end
-                    p_ss = sort(p_ss,'descend');
-                    p_ss = cplxpair(p_ss);
-                    p = sort(p,'descend');
-                    p = cplxpair(p);
-                            
-                    verification(testCase, p,p_ss(1:k));            
-                end
+                end  
             end
         end
     end
