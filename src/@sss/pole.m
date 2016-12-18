@@ -1,19 +1,19 @@
-function p = poles(sys,varargin)
-% POLES - Compute largest poles of an LTI system
+function p = pole(sys,varargin)
+% POLE - Compute largest poles of an LTI system
 %
 % Syntax:
-%       p = poles(sys)
-%       p = poles(sys,k)
-%       p = poles(sys,Opts)
-%       p = poles(sys,k,Opts)
+%       p = pole(sys)
+%       p = pole(sys,k)
+%       p = pole(sys,Opts)
+%       p = pole(sys,k,Opts)
 %
 % Description:
-%       p = poles(sys) returns the 6 poles with largest magnitude of in the
+%       p = pole(sys) returns the 6 poles with largest magnitude of in the
 %       column vectors z of the continuous- or discrete-time dynamic system
 %       model sys. The type of the computed poles can be specified with the
 %       option 'type'.
 %
-%       p = poles(sys,k) returns the first k poles of the system.
+%       p = pole(sys,k) returns the first k poles of the system.
 %
 % Input Arguments:
 %       -sys:      an sss-object containing the LTI system
@@ -33,10 +33,10 @@ function p = poles(sys,varargin)
 %> load rail_1357.mat
 %> p = size(C,1); m = size(B,2);
 %> sys = sss(A,B,C,zeros(p,m),E)
-%> p=poles(sys);
+%> p=pole(sys)
 %
 % See Also:
-%       pzmap, zpk, zeros
+%       pzmap, zpk, zero
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

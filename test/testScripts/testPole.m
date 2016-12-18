@@ -1,5 +1,5 @@
-classdef testPoles < sssTest
-    % testPoles - testing of poles.m
+classdef testPole < sssTest
+    % testPoles - testing of pole.m
    
     methods(Test)
         function testLM(testCase)
@@ -9,7 +9,7 @@ classdef testPoles < sssTest
                 if ~sys.isDae
                     Opts.type='lm';
                     k=20;
-                    p=poles(sys,k,Opts);     
+                    p=pole(sys,k,Opts);     
                     
                     % compare results of eig and eigs
                     pEig=eig(full(sys.A),full(sys.E));
@@ -43,7 +43,7 @@ classdef testPoles < sssTest
                 if ~sys.isDae
                     Opts.type='sm';
                     k=10;
-                    p=poles(sys,k,Opts);
+                    p=pole(sys,k,Opts);
 
                     % compare results of eig and eigs
                     pEig=eig(full(sys.A),full(sys.E));

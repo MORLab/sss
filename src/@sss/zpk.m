@@ -44,7 +44,7 @@ function zpkData = zpk(sys,varargin)
 %> zpkData=zpk(sysSss,6,'lm')
 %
 % See Also:
-%       pzmap, zeros, poles
+%       pzmap, zero, pole
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
@@ -117,7 +117,7 @@ catch ex
 end
 
 %% Calculate poles and zeros
-pTemp=poles(sys,kP,struct('type',Opts.typeP));
+pTemp=pole(sys,kP,struct('type',Opts.typeP));
 
 p=cell(sys.p,sys.m);
 z=cell(sys.p,sys.m);
@@ -140,7 +140,7 @@ for i=1:sys.m
     for j=1:sys.p
         % call zeros and moments for each siso transfer function
         tempSys=sss(sys.A,sys.B(:,i),sys.C(j,:),sys.D(j,i),sys.E);
-        zTemp=zeros(tempSys,kZ,Opts);
+        zTemp=zero(tempSys,kZ,Opts);
 
         % remove not converged eigenvalues
         pTemp(isnan(pTemp))=[];

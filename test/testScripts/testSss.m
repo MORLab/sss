@@ -71,7 +71,7 @@ suite18=TestSuite.fromFile(fullfile(testPath,'testLyapchol.m'));
 suite19=TestSuite.fromFile(fullfile(testPath,'testMtimes.m'));
 suite20=TestSuite.fromFile(fullfile(testPath,'testNorm.m'));
 suite21=TestSuite.fromFile(fullfile(testPath,'testPlus.m'));
-suite22=TestSuite.fromFile(fullfile(testPath,'testPoles.m'));
+suite22=TestSuite.fromFile(fullfile(testPath,'testPole.m'));
 suite23=TestSuite.fromFile(fullfile(testPath,'testPzmap.m'));
 suite24=TestSuite.fromFile(fullfile(testPath,'testResidue.m'));
 suite25=TestSuite.fromFile(fullfile(testPath,'testSigma.m'));
@@ -80,7 +80,7 @@ suite27=TestSuite.fromFile(fullfile(testPath,'testSolveLse.m'));
 suite28=TestSuite.fromFile(fullfile(testPath,'testSpy.m'));
 suite29=TestSuite.fromFile(fullfile(testPath,'testSs.m'));
 suite30=TestSuite.fromFile(fullfile(testPath,'testStep.m'));
-suite31=TestSuite.fromFile(fullfile(testPath,'testZeros.m'));
+suite31=TestSuite.fromFile(fullfile(testPath,'testZero.m'));
 suite32=TestSuite.fromFile(fullfile(testPath,'testZpk.m'));
 
 suiteSss=[suite1,suite2,suite3,suite4,suite5,suite6,suite7,suite8,suite9,suite10,...

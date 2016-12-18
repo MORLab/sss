@@ -1,23 +1,19 @@
-function z = zeros(sys,varargin)
-% ZEROS - Compute largest invariant zeros of an LTI system
+function z = zero(sys,varargin)
+% ZERO - Compute largest invariant zeros of an LTI system
 %
 % Syntax:
-%       z = zeros(sys)
-%       z = zeros(sys,k)
-%       z = zeros(sys,Opts)
-%       z = zeros(sys,k,Opts)
+%       z = zero(sys)
+%       z = zero(sys,k)
+%       z = zero(sys,Opts)
+%       z = zero(sys,k,Opts)
 %
 % Description:
-%       z = zeros(sys) returns the 6 invariant zeros with largest magnitude
+%       z = zero(sys) returns the 6 invariant zeros with largest magnitude
 %       of in the column vectors z of the continuous- or discrete-time 
 %       dynamic system model sys. The type of the computed zeros can be 
 %       specified with the option 'type'.
 %
-%       z = zeros(sys,k) returns the first k zeros of the system.
-%
-%//Note: The calculation of the invariant zeros is only defined for systems
-%       with the same number of inputs and outputs (m=p). That means that if
-%       zpk is called with a system with m~=p, then z = [ ].
+%       z = zero(sys,k) returns the first k zeros of the system.
 %
 % Input Arguments:
 %       -sys:      an sss-object containing the LTI system
@@ -31,16 +27,16 @@ function z = zeros(sys,varargin)
 %       -z: vector containing invariant zeros
 %
 % Examples:
-%       Load the benchmark 'rail_1357' (DSSS, MIMO) and compute the first 6
+%       Load the benchmark 'CDplayer' (SSS, MIMO) and compute the first 6
 %       zeros with largest magnitude:
 %
 %> load CDplayer.mat
 %> p = size(C,1); m = size(B,2);
 %> sys = sss(A,B,C,zeros(p,m))
-%> z=zeros(sys)
+%> z=zero(sys)
 %
 % See Also:
-%       pzmap, zpk, poles
+%       pzmap, zpk, pole
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
