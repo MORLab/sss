@@ -1,11 +1,11 @@
 function [ V, eqn, opts, oper ]=mess_solve_shifted_system(eqn, opts, oper, pc, W)
-% Solves (Ã + p*E)V = W for V, Ã = A or Ã = A - UV^T
+% Solves (Ãƒ + p*E)V = W for V, Ãƒ = A or Ãƒ = A - UV^T
 %
-% author  Björn Baran
+% author  BjÃ¶rn Baran
 % date    2015/09/01
 %
-%  Solves (Ã + p*E)V = W for V, Ã = A or Ã = A - UV^T if eqn.type == 'N'
-%  Solves (Ã + p*E)^T*V = W for V, Ã = A or Ã = A - UV^T if eqn.type == 'T'
+%  Solves (Ãƒ + p*E)V = W for V, Ãƒ = A or Ãƒ = A - UV^T if eqn.type == 'N'
+%  Solves (Ãƒ + p*E)^T*V = W for V, Ãƒ = A or Ãƒ = A - UV^T if eqn.type == 'T'
 %
 %
 % Input:
@@ -42,7 +42,7 @@ function [ V, eqn, opts, oper ]=mess_solve_shifted_system(eqn, opts, oper, pc, W
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, see <http://www.gnu.org/licenses/>.
 %
-% Copyright (C) Jens Saak, Martin Koehler and others 
+% Copyright (C) Jens Saak, Martin Koehler, Peter Benner and others 
 %               2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016
 %
 

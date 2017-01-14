@@ -1,10 +1,10 @@
-function [p, eqn, err_code, rw, Hp, Hm, Vp, Vm] = mess_para(eqn, opts, oper)
+function [p, err_code, rw, Hp, Hm, Vp, Vm, eqn, opts, oper] = mess_para(eqn, opts, oper)
 %
 %  Estimation of suboptimal ADI shift parameters for the matrix (operator) F=A
 %
 %  Calling sequence:
 %
-%    [p, err_code, rw, Hp, Hm, Vp, Vm] = mess_para(eqn, opts, oper)
+%    [p, err_code, rw, Hp, Hm, Vp, Vm, eqn, opts, oper] = mess_para(eqn, opts, oper)
 %
 %  Input:
 %
@@ -27,9 +27,6 @@ function [p, eqn, err_code, rw, Hp, Hm, Vp, Vm] = mess_para(eqn, opts, oper)
 %    Vm        Orthogonal matrix in Arnoldi process w.r.t. inv(F);
 %
 % Input fields in struct eqn:
-%   eqn.A_      sparse (n x n) matrix A
-%
-%   eqn.E_      sparse (n x n) matrix E
 %
 %   eqn.B       dense (n x m1) matrix B
 %
@@ -46,8 +43,14 @@ function [p, eqn, err_code, rw, Hp, Hm, Vp, Vm] = mess_para(eqn, opts, oper)
 %               (optional)
 %
 %   eqn.haveE   possible  values: 0, 1, false, true
-%               if haveE = 0: matrix E in eqn.E_ is assumed to be identity
+%               if haveE = 0: matrix E is assumed to be the identity
 %               (optional)
+%
+%   Depending on the operator chosen by the operatormanager, additional
+%   fields may be needed. For the "default", e.g., eqn.A_ and eqn.E_ hold
+%   the A and E matrices. For the second order types these are given
+%   implicitly by the M, D, K matrices stored in eqn.M_, eqn.D_ and eqn.K_,
+%   respectively.
 %
 % Input fields in struct opts:
 %   opts.adi.shifts.l0          possible  values: integer > 0
@@ -118,7 +121,7 @@ function [p, eqn, err_code, rw, Hp, Hm, Vp, Vm] = mess_para(eqn, opts, oper)
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, see <http://www.gnu.org/licenses/>.
 %
-% Copyright (C) Jens Saak, Martin Koehler and others 
+% Copyright (C) Jens Saak, Martin Koehler, Peter Benner and others 
 %               2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016
 %
 
@@ -201,13 +204,13 @@ switch opts.adi.shifts.method
             if nargout < 4
                 rw = oper.get_ritz_vals(eqn,opts,oper);
             else
-                [rw, Hp, Hm, Vp, Vm] = oper.get_ritz_vals(eqn,opts,oper);
+                [rw, Hp, Hm, Vp, Vm, eqn, opts, oper] = oper.get_ritz_vals(eqn,opts,oper);
             end
         else
             if nargout < 4
                 rw = mess_get_ritz_vals(eqn,opts,oper);
             else
-                [rw,  Hp, Hm, Vp, Vm] = mess_get_ritz_vals(eqn,opts,oper);
+                [rw,  Hp, Hm, Vp, Vm, eqn, opts, oper] = mess_get_ritz_vals(eqn,opts,oper);
             end
         end
         
@@ -219,13 +222,13 @@ switch opts.adi.shifts.method
             if nargout < 4
                 rw = oper.get_ritz_vals(eqn,opts,oper);
             else
-                [rw, Hp, Hm, Vp, Vm] = oper.get_ritz_vals(eqn,opts,oper);
+                [rw, Hp, Hm, Vp, Vm, eqn, opts, oper] = oper.get_ritz_vals(eqn,opts,oper);
             end
         else
             if nargout < 4
                 rw = mess_get_ritz_vals(eqn,opts,oper);
             else
-                [rw,  Hp, Hm, Vp, Vm] = mess_get_ritz_vals(eqn,opts,oper);
+                [rw,  Hp, Hm, Vp, Vm, eqn, opts, oper] = mess_get_ritz_vals(eqn,opts,oper);
             end
         end
         
@@ -329,6 +332,14 @@ switch opts.adi.shifts.method
     otherwise
         error('MESS:shift_method','unknown shift computation method requested.')
 end
+
+p = cplxpair( p, 1000*eps(p(1)) ); % ensure that complex pairs are
+                                % actually paired. The tolerance is
+                                % increased by a factor of 10
+                                % compared to the default to ensure
+                                % this also works in Octave where
+                                % eig seems to be less accurate. 
+
 %% finalize usfs
 [eqn,opts, oper] = oper.mul_A_post(eqn, opts, oper);
 [eqn,opts, oper] = oper.mul_E_post(eqn, opts, oper);

@@ -4,41 +4,19 @@ classdef testLyapchol < sssTest
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
                 if ~sys.isDae
-                    [actR,actL]=lyapchol(sys);
-
-                    if sys.isDescriptor
-                        actResR=norm(sys.A*(actR'*actR)'*sys.E'+sys.E*(actR'*actR)'*sys.A'+sys.B*sys.B');
-                        actResL=norm(sys.A'*(actL'*actL)'*sys.E+sys.E'*(actL'*actL)'*sys.A+sys.C'*sys.C);
-                    else
-                        actResR=(sys.A*(actR'*actR)+(actR'*actR)*sys.A'+sys.B*sys.B');
-                        actResL=(sys.A'*(actL'*actL)+(actL'*actL)*sys.A+sys.C'*sys.C);
-                    end
-
-                    actSolution={actResR, actResL};
-                    expSolution={zeros(size(actResR)),zeros(size(actResL))};
-                    verification(testCase, actSolution, expSolution);
+                    [S,R]=lyapchol(sys);
+                    verification(testCase, sys, S, R);
                 end
             end
         end
         function testLyapcholOpts(testCase)
-            Opts.type='adi';
+            Opts.method='adi';
             Opts.q=120;
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
                 if ~sys.isDae && sys.n>300
-                    [actR,actL]=lyapchol(sys,Opts);
-
-                    if sys.isDescriptor
-                        actResR=norm(sys.A*(actR'*actR)'*sys.E'+sys.E*(actR'*actR)'*sys.A'+sys.B*sys.B');
-                        actResL=norm(sys.A'*(actL'*actL)'*sys.E+sys.E'*(actL'*actL)'*sys.A+sys.C'*sys.C);
-                    else
-                        actResR=(sys.A*(actR'*actR)+(actR'*actR)*sys.A'+sys.B*sys.B');
-                        actResL=(sys.A'*(actL'*actL)+(actL'*actL)*sys.A+sys.C'*sys.C);
-                    end
-
-                    actSolution={actResR, actResL};
-                    expSolution={zeros(size(actResR)),zeros(size(actResL))};
-                    verification(testCase, actSolution, expSolution);
+                    [S,R]=lyapchol(sys,Opts);
+                    verification(testCase, sys, S, R);
                 end
             end
         end
@@ -49,24 +27,21 @@ classdef testLyapchol < sssTest
                 else
                     sys=loadSss('SpiralInductorPeec');
                 end
-                actR=lyapchol(sys);
-                
-                if sys.isDescriptor
-                    actRes=norm(sys.A*(actR'*actR)*sys.E'+sys.E*(actR'*actR)*sys.A'+sys.B*sys.B');
-                else
-                    actRes=(sys.A*(actR'*actR)+(actR'*actR)*sys.A'+sys.B*sys.B');
-                end
-                
-                actSolution={actRes};
-                expSolution={zeros(size(actRes))};
-                verification(testCase, actSolution, expSolution);
-                
+                [S,R]=lyapchol(sys);               
+                verification(testCase, sys, S, R);      
             end
         end
     end
 end
 
-function [] = verification(testCase, actSolution, expSolution)
-verifyEqual(testCase, actSolution,  expSolution,'RelTol',1e-5,'AbsTol',1e-3,...
-    'Difference between actual and expected exceeds relative tolerance');
+function [] = verification(testCase,sys,  S, R)
+    X = S*S'; Y = R*R';
+    tol = 1e-3;
+    verifyLessThan(testCase, ...
+        norm(sys.A*(X)*sys.E' + sys.E*(X)*sys.A' + sys.B*sys.B'),...
+        tol);
+    verifyLessThan(testCase, ...
+        norm(sys.A'*(Y)*sys.E + sys.E'*(Y)*sys.A + sys.C'*sys.C),...
+        tol);
+
 end

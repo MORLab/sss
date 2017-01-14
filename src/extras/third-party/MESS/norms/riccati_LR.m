@@ -20,7 +20,7 @@ function [ res ] = riccati_LR(W, DeltaK, opts, S, S_K )
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, see <http://www.gnu.org/licenses/>.
 %
-% Copyright (C) Jens Saak, Martin Koehler and others 
+% Copyright (C) Jens Saak, Martin Koehler, Peter Benner and others 
 %               2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016
 %
 
