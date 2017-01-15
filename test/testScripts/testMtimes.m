@@ -26,8 +26,8 @@ classdef testMtimes < sssTest
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
             
-                resultSparse = mtimes(sys, sys);
-                result=mtimes(ss(sys),ss(sys));
+                resultSparse = mtimes(sys, sys');
+                result=mtimes(ss(sys),ss(sys'));
                 verification(testCase, resultSparse, result);
             end
         end
