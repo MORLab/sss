@@ -51,12 +51,7 @@ disp('Loaded systems:');
 
 warning('off');
 for i=1:length(files)
-    if strcmp(files{i},'rail_1357.mat')
-        sys = loadSss(files{i});
-        benchmarksSysCell{nLoaded}=sys;
-        nLoaded=nLoaded+1;
-        disp(files{i});
-    elseif nLoaded<Opts.number+1
+    if nLoaded<Opts.number+1
         sys = loadSss(files{i});
         if (size(sys.A,1)<=Opts.maxSize && size(sys.A,1)>=Opts.minSize &&...
             ((strcmp(Opts.dae,'all') ||...
@@ -65,7 +60,11 @@ for i=1:length(files)
             switch(Opts.cond)
                 case 'good'
                      if ~any(strcmp(files{i},badBenchmarks))
-                        benchmarksSysCell{nLoaded}=sys;
+                        if strcmp(files{i},'CDplayer.mat')
+                           benchmarksSysCell{nLoaded}=sys(1,[1 2]);
+                        else
+                           benchmarksSysCell{nLoaded}=sys;
+                        end
                         nLoaded=nLoaded+1;
                         disp(files{i});
                      end
