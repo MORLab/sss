@@ -19,7 +19,7 @@ end
 
 function []=sysConnect(testCase,sys1,sys2)
             sys=append(sys1,sys2);
-            K=rand(sys.p, sys.m);
+            K=rand(sys.m, sys.p);
 
             [actSys]=connectSss(sys,K);
             [expSys]=feedback(ss(sys),-K);
