@@ -453,7 +453,9 @@ classdef sss
         function sys = set.y(sys,name); sys.OutputName = name; end
         function name = get.OutputName(sys)
             name = cell(repmat({''}, sys.p, 1));
-            name(1:size(sys.OutputName,1),1) = sys.OutputName;
+            if ~isempty(sys.OutputName)
+                name(1:size(sys.OutputName,1),1) = sys.OutputName;
+            end
         end
         function sys = set.OutputName(sys, name)
             if isempty(name) || all(cellfun(@isempty, name))
@@ -467,7 +469,9 @@ classdef sss
         % State
         function name = get.StateName(sys)
             name = cell(repmat({''}, sys.n, 1));
-            name(1:size(sys.StateName,1),1) = sys.StateName;
+            if ~isempty(sys.StateName)
+                name(1:size(sys.StateName,1),1) = sys.StateName;
+            end
         end
         function sys = set.StateName(sys, name)
             if isempty(name) || all(cellfun(@isempty, name))
@@ -483,7 +487,9 @@ classdef sss
         function sys = set.u(sys,name); sys.InputName = name; end
         function name = get.InputName(sys)
             name = cell(repmat({''}, sys.m, 1));
-            name(1:size(sys.InputName,1),1) = sys.InputName;
+            if ~isempty(sys.InputName)
+                name(1:size(sys.InputName,1),1) = sys.InputName;
+            end
         end
         function sys = set.InputName(sys, name)
             if  isempty(name) || all(cellfun(@isempty, name))
