@@ -41,7 +41,7 @@ function  varargout = step(varargin)
 %           -.tf: return tf object
 %                       [{0} / 1]
 %           -.ode: ode solver;
-%                       [{'ode45'} / 'ode113' / 'ode15s' / 'ode23'] 
+%                       [{'tbd'} / 'ode45' / 'ode113' / 'ode15s' / 'ode23'] 
 %           -.tsMin: minimum sample time if no time vector is specified
 %                       [{0} / positive float]
 %           -.htCell: return ode output as cell with irregularly spaced t
@@ -137,6 +137,7 @@ else
     Tfinal=0;
 end
 
+%% Run computation
 for i = 1:length(varargin)
     % Set name to input variable name if not specified
     if isprop(varargin{i},'Name')
@@ -321,7 +322,13 @@ end
 te = []; h = te;
 optODE.Events = @(t,x) eventsFcnT(t,x,C,D);
 
-switch Opts.ode
+if strcmp(Opts.ode,'tbd')
+    solver = chooseSolver(sys);
+else
+    solver = Opts.ode;
+end
+
+switch solver
     case 'ode113'
         [~,~] = ode113(odeFun,tSim,x0,optODE);
     case 'ode15s'
@@ -343,6 +350,25 @@ end
         h = [h, y_'];
         te = [te, t];
     end
+
+    function ode = chooseSolver(sys)
+        % choose between:
+        % ode23, ode45, ode113, ode15s, ode23s, ode23t, and ode23tb
+        %
+        % Characteristics: 
+        %{
+            ode45  | Nonstiff | Medium | Most of the time. This should be the first solver you try.
+            ode23  | Nonstiff | Low    | For problems with crude error tolerances or for solving moderately stiff problems.
+            ode113 | Nonstiff | Low to high | For problems with stringent error tolerances or for solving computationally intensive problems.
+            ode15s | Stiff    | Low to medium | If ode45 is slow because the problem is stiff.
+            ode23s | Stiff    | Low     | If using crude error tolerances to solve stiff systems and the mass matrix is constant.
+            ode23t | Moderately Stiff | Low | For moderately stiff problems if you need a solution without numerical damping.
+            ode23tb| Stiff | Low | If using crude error tolerances to solve stiff systems.
+        %}
+
+        ode = 'ode15s'; %hard coded. Try to find out if the problem is stiff
+    end
+
 end
 function status = outputFcn(t,x,flag,C,D,xFinal,yFinal,tolOutput,tolState)
 status = 0;
