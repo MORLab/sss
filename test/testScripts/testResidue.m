@@ -27,22 +27,45 @@ classdef testResidue < sssTest
     % ------------------------------------------------------------------
    
     methods(Test)
-        function test1(testCase)
+        function fullResidue(testCase)
+            Opts.nEigs = 'all';
             for i=1:length(testCase.sysCell)
-                sysSparse=testCase.sysCell{i};
-                sys=ss(sysSparse);
-                residue(sysSparse);
-                [r,p,d]=residue(sysSparse);
-                actNorm = {r,p,d};
-               % [r,p,d]=residue(sys);
-               % expNorm = {r,p,d};
-               % verification(testCase, actNorm, expNorm);
+                sys=testCase.sysCell{i};
+                
+                [r,p,d]=residue(sys,Opts);
+                l = eig(sys);
+                
+                verifyEqual(testCase,cplxpair(p),cplxpair(l),'RelTol',1e-3);
+                verifyEqual(testCase,d,sys.d,'RelTol',1e-3);
+                verifySize(testCase,r,[sys.n,1])
+            end
+        end
+        
+        function sparseResidueDefault(testCase)
+            for i=1:length(testCase.sysCell)
+                sys=testCase.sysCell{i};
+                
+                [r,p,d]=residue(sys);
+                l = eigs(sys,6,'sm');
+                
+                verifyEqual(testCase,cplxpair(p),cplxpair(l),'RelTol',1e-3);
+                verifyEqual(testCase,d,sys.d,'RelTol',1e-3);
+                verifySize(testCase,r,[6,1])
+            end
+        end
+        function sparseResidueCustom(testCase)
+            Opts.eigs   = 'lm';
+            Opts.nEigs  = 10;
+            for i=1:length(testCase.sysCell)
+                sys=testCase.sysCell{i};
+                
+                [r,p,d]=residue(sys,Opts);
+                l = eigs(sys,Opts.nEigs,Opts.eigs);
+                
+                verifyEqual(testCase,cplxpair(p),cplxpair(l),'RelTol',1e-3);
+                verifyEqual(testCase,d,sys.d,'RelTol',1e-3);
+                verifySize(testCase,r,[Opts.nEigs,1])
             end
         end
     end
-end
-
-function [] = verification(testCase, actSolution, expSolution)
-verifyEqual(testCase, actSolution(1:4),  expSolution(1:4),'RelTol',1e-3,...
-    'Difference between actual and expected exceeds relative tolerance');
 end
