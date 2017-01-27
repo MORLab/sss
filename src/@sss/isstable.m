@@ -86,7 +86,12 @@ if sys.n < 100
 else       
     %%  Compute the eigenvalue with largest real part
     try
-        lambda = eigs(sys,1,'lr',struct('v0',sys.b));
+        if sys.isSymm
+            eigsOpt = 'la';
+        else
+            eigsOpt = 'lr';
+        end
+        lambda = eigs(sys,1,eigsOpt,struct('v0',sys.b));
     catch err
         if strcmp(err.identifier,'MATLAB:eigs:ARPACKroutineErrorMinus14')
             %eigs did not converge: lower the tolerance

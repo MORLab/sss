@@ -33,23 +33,14 @@ classdef testNorm < sssTest
                 sys_sss=testCase.sysCell{i};
                 if ~sys_sss.isDae
                     sys_ss=ss(sys_sss);
+                    
                     actNorm1=norm(sys_sss);
                     [actNorm2,actFreq]=norm(sys_sss,inf);
-                    sys_sss.D=zeros(size(sys_sss.D));
-                    actNorm3=norm(sys_sss,2);
-                    actNorm = [actNorm1,actNorm2,actFreq,actNorm3];
+                    actNorm = [actNorm1,actNorm2,actFreq];
+                    
                     expNorm1=norm(sys_ss);
                     [expNorm2,expFreq]=norm(sys_ss,inf);
-                    sys_ss.D=zeros(size(sys_ss.D));
-                    expNorm3=norm(sys_ss,2);
-                    if norm(freqresp(sys_ss,actFreq),2)>expNorm2
-                        expNorm2=actNorm2;
-                        expFreq=actFreq;
-                    end
-                    if (actFreq==0 &&expFreq==0)
-                        expNorm2=actNorm2;
-                    end
-                    expNorm = [expNorm1,expNorm2,expFreq,expNorm3];
+                    expNorm = [expNorm1,expNorm2,expFreq];
                     verification(testCase, actNorm, expNorm);
                 end
             end
@@ -69,7 +60,7 @@ classdef testNorm < sssTest
                         oper = operatormanager('default');
                         
                         % get adi shifts
-                        [messOpts.adi.shifts.p, eqn]=mess_para(eqn,messOpts,oper);
+                        [messOpts.adi.shifts.p,~,~,~,~,~,~,eqn]=mess_para(eqn,messOpts,oper);
 
                         % low rank adi
                         [R,~,eqn]=mess_lradi(eqn,messOpts,oper);
@@ -92,6 +83,6 @@ classdef testNorm < sssTest
 end
 
 function [] = verification(testCase, actSolution, expSolution)
-verifyEqual(testCase, actSolution(1:4),  expSolution(1:4),'RelTol',1e-3,...
+verifyEqual(testCase, actSolution,  expSolution,'RelTol',1e-3,...
     'Difference between actual and expected exceeds relative tolerance');
 end

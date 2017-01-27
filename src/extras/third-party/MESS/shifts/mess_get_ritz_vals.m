@@ -1,4 +1,4 @@
-function [rw,  Hp, Hm, Vp, Vm] = mess_get_ritz_vals(eqn,opts,oper)
+function [rw,  Hp, Hm, Vp, Vm, eqn, opts, oper] = mess_get_ritz_vals(eqn,opts,oper)
 %% check data
 
 %
@@ -15,7 +15,7 @@ function [rw,  Hp, Hm, Vp, Vm] = mess_get_ritz_vals(eqn,opts,oper)
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, see <http://www.gnu.org/licenses/>.
 %
-% Copyright (C) Jens Saak, Martin Koehler and others 
+% Copyright (C) Jens Saak, Martin Koehler, Peter Benner and others 
 %               2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016
 %
 if ~isfield(opts,'adi') || ~isstruct(opts.adi)

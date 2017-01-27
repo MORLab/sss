@@ -53,8 +53,8 @@ function sys = truncate(sys, idxOut, idxIn)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-idxOut = string2index(sys.OutputName,idxOut);
-idxIn = string2index(sys.InputName,idxIn);
+idxOut  = string2index(sys.OutputName,idxOut);
+idxIn   = string2index(sys.InputName,idxIn);
 
 % truncate matrizes
 B = sys.B(:,idxIn);

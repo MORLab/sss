@@ -218,7 +218,7 @@ increment=w(2)/w(1);
 while(length(w)<=Opts.maxPoints)
     %Compute the currentIncrement between all the points
     currentIncrement=reshape(w(2:end)./w(1:end-1),1,1,numel(w)-1);
-    currentIncrement=repmat(currentIncrement,nOutputs,nInputs,1);
+    currentIncrement=repmat(currentIncrement,nOutputs,nInputs);
     %Compute expected value considering just first derivative (make the
     %plot smooth).
     Expected=exp(log(magnitude(:,:,1:end-1))+log(currentIncrement).*firstDerivLog(:,:,1:end-1));
@@ -311,7 +311,7 @@ for i=1:numel(wEval)
     end
 end
 %Computation of the first two derivatives for a log-log of the magnitude plot
-resppp=resppp.*repmat(reshape(wEval,1,1,numel(wEval)),nOutputs,nInputs,1).^2+respp;
+resppp=resppp.*repmat(reshape(wEval,1,1,numel(wEval)),nOutputs,nInputs).^2+respp;
 limit=sqrt(eps(0))*10^5; %Limit for change the order of computation (see below)
 magnitude=abs(resp);
 cond=(any(any(magnitude<limit,1),2));

@@ -47,14 +47,17 @@ function tmax = decayTime(sys)
 % More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Heiko Panzer, Sylvia Cremer, Maria Cruz Varona
+% Authors:      Heiko Panzer, Sylvia Cremer, Maria Cruz Varona, 
+%               Alessandro Castagnotto
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  04 Nov 2015
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Last Change:  19 Jan 2016
+% Copyright (c) 2015, 2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
-[res,p]=residue(sys);
+
+%% Compute poles/residues of poles with smallest magnitude
+[res,p]=residue(sys,struct('nEigs',min([20,sys.n])));
 
 % is system stable?
 if any(real(p)>0 & real(p)<1e6) % larger than 0 but, smaller than infinity-threshold
@@ -72,7 +75,7 @@ for i=1:sys.p
         for k=1:length(p)
             %we need the siso residual for all poles into on vectors
             resIJvec = squeeze(temp(i,j,:)).';
-            h2(k)=res{k}(i,j)*sum(resIJvec./(-p(k)-p));
+            h2(k)=res{k}(i,j)*sum(resIJvec./(-p(k)-p).');
         end
         
         [h2_sorted, I] = sort(real(h2));

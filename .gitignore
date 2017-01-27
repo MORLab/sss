@@ -95,3 +95,4 @@ _*.pdf
 
 # Complete directories
 test/testScripts/CURE.gif
+src/psss/benchmarks/

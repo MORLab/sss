@@ -27,10 +27,6 @@ function [Z,out,eqn,opts,oper]=mess_lradi(eqn,opts,oper)
 %                       with A and E
 %
 % Input fields in struct eqn:
-%   eqn.A_      sparse (n x n) matrix A
-%
-%   eqn.E_      sparse (n x n) matrix E
-%
 %   eqn.B       dense (n x m1) matrix B
 %
 %   eqn.C       dense (m2 x n) matrix C
@@ -53,7 +49,7 @@ function [Z,out,eqn,opts,oper]=mess_lradi(eqn,opts,oper)
 %               (optional)
 %
 %   eqn.haveE   possible  values: 0, 1, false, true
-%               if haveE = 0: matrix E in eqn.E_ is assumed to be identity
+%               if haveE = 0: matrix E is assumed to be the identity
 %               (optional)
 %
 %   eqn.setUV   possible  values: 0, 1, false, true
@@ -61,6 +57,12 @@ function [Z,out,eqn,opts,oper]=mess_lradi(eqn,opts,oper)
 %               if K or DeltaK are accumulated during the iteration they
 %               use only U1 and V1
 %               (optional)
+%
+%   Depending on the operator chosen by the operatormanager, additional
+%   fields may be needed. For the "default", e.g., eqn.A_ and eqn.E_ hold
+%   the A and E matrices. For the second order types these are given
+%   implicitly by the M, D, K matrices stored in eqn.M_, eqn.D_ and eqn.K_,
+%   respectively.
 %
 % Input fields in struct opts:
 %   opts.adi.maxiter            possible  values: integer > 0
@@ -170,7 +172,7 @@ function [Z,out,eqn,opts,oper]=mess_lradi(eqn,opts,oper)
 % and a 'MESS:control_data' warning is printed. to turn warnings off use
 % warning('OFF', 'MESS:control_data')
 %
-% Matrix A can have the form A = Ã + U*V'
+% Matrix A can have the form A = Ãƒ + U*V'
 %     if U (eqn.U) and V (eqn.V) are provided
 %     U and V are dense (n x m3) matrices and shoud have low rank m3 << n
 %
@@ -225,7 +227,7 @@ function [Z,out,eqn,opts,oper]=mess_lradi(eqn,opts,oper)
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, see <http://www.gnu.org/licenses/>.
 %
-% Copyright (C) Jens Saak, Martin Koehler and others 
+% Copyright (C) Jens Saak, Martin Koehler, Peter Benner and others 
 %               2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016
 %
 
@@ -783,10 +785,12 @@ while i<opts.adi.maxiter+1
                 outer_res(i - 1) = opts.nm.res0;
             end
         end
-        if i > 2 && opts.adi.restol~=0
-            res(i - 1) = res(i - 2);
-        else
-            res(i - 1) = res0;
+        if ~isempty(res)
+            if i > 2
+                res(i - 1) = res(i - 2);
+            else
+                res(i - 1) = res0;
+            end
         end
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

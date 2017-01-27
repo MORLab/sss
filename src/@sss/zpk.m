@@ -141,7 +141,9 @@ for i=1:sys.m
             if ~isreal(zTemp)
                 temp=zTemp(abs(imag(zTemp)-imag(sum(zTemp)))<1e-16);
                 if ~isempty(temp)
-                    zTemp(end+1)=conj(temp);
+                    for k=1:size(temp,1)
+                       zTemp(end+1)=conj(temp(k));
+                    end
                 end
             end
         end

@@ -104,14 +104,16 @@ classdef sss
         InputDelay, InternalDelay, OutputDelay
         UserData
         Name
+        
+        issymmetric
     end
     properties(Dependent)
+        isSiso, isSimo, isMiso, isMimo, isBig
+        isDae, isDescriptor
     end
     properties(Dependent, Hidden)
         a,b,c,d,e
         n,p,m
-        isSiso, isSimo, isMiso, isMimo, isBig
-        isDae, isDescriptor
         u,y
     end
     properties(Hidden)
@@ -129,7 +131,8 @@ classdef sss
         simulationTime
         decayTime
         
-        isSym
+        isSym %deprecated; backward compatibility; use issymmetric
+        
     end
     
     methods
@@ -366,16 +369,20 @@ classdef sss
             sys.E = [];
         end
         
-        function isSym = get.isSym(sys) %A=A', E=E'
-            if isequal(sys.isSym,0) || isequal(sys.isSym,1)
-                isSym = sys.isSym;
+        function isSym = get.isSym(sys)
+            isSym = sys.issymmetric;
+        end
+        
+        function issymmetric = get.issymmetric(sys) %A=A', E=E'
+            if isequal(sys.issymmetric,0) || isequal(sys.issymmetric,1)
+                issymmetric = sys.issymmetric;
             else
 %                 if issymmetric(sys.A) && issymmetric(sys.E)
 %                 if norm(sys.A-sys.A.','fro')<1e-6 && norm(sys.E-sys.E.','fro')<1e-6
                 if full(max(max(sys.A-sys.A.')))<1e-6 && full(max(max(sys.E-sys.E.')))<1e-6
-                    isSym = 1;
+                    issymmetric = true;
                 else
-                    isSym = 0;
+                    issymmetric = false;
                 end
             end
         end
@@ -446,7 +453,9 @@ classdef sss
         function sys = set.y(sys,name); sys.OutputName = name; end
         function name = get.OutputName(sys)
             name = cell(repmat({''}, sys.p, 1));
-            name(1:size(sys.OutputName,1),1) = sys.OutputName;
+            if ~isempty(sys.OutputName)
+                name(1:size(sys.OutputName,1),1) = sys.OutputName;
+            end
         end
         function sys = set.OutputName(sys, name)
             if isempty(name) || all(cellfun(@isempty, name))
@@ -460,7 +469,9 @@ classdef sss
         % State
         function name = get.StateName(sys)
             name = cell(repmat({''}, sys.n, 1));
-            name(1:size(sys.StateName,1),1) = sys.StateName;
+            if ~isempty(sys.StateName)
+                name(1:size(sys.StateName,1),1) = sys.StateName;
+            end
         end
         function sys = set.StateName(sys, name)
             if isempty(name) || all(cellfun(@isempty, name))
@@ -476,7 +487,9 @@ classdef sss
         function sys = set.u(sys,name); sys.InputName = name; end
         function name = get.InputName(sys)
             name = cell(repmat({''}, sys.m, 1));
-            name(1:size(sys.InputName,1),1) = sys.InputName;
+            if ~isempty(sys.InputName)
+                name(1:size(sys.InputName,1),1) = sys.InputName;
+            end
         end
         function sys = set.InputName(sys, name)
             if  isempty(name) || all(cellfun(@isempty, name))
