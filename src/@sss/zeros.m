@@ -95,11 +95,11 @@ end
 
 % zero function
 if ~sys.isSiso
-    zTemp=cell(sys.m,sys.p);
+    zTemp=cell(sys.p,sys.m);
 end
 
-for i=1:sys.m
-    for j=1:sys.p
+for i=1:sys.p
+    for j=1:sys.m
         % call zeros and moments for each siso transfer function
 
         if strcmp(Opts.type,'lm') || isa(Opts.type,'double')

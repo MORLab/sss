@@ -11,7 +11,7 @@ Def.cond = 'good'; % condition of benchmarks: 'good','bad','all'
                    % 'good': all benchmarks that are not 'bad'
 Def.minSize = 0; % test benchmarks with sys.n >= minSize
 Def.maxSize = 400; % test benchmarks with sys.n <= minSize
-Def.number = 3; % choose maximum number of tested benchmarks
+Def.number = 5; % choose maximum number of tested benchmarks
 Def.dae = 'all'; % 'all', 'withoutDae', 'onlyDae'
 
 % create the options structure
@@ -60,7 +60,11 @@ for i=1:length(files)
             switch(Opts.cond)
                 case 'good'
                      if ~any(strcmp(files{i},badBenchmarks))
-                        benchmarksSysCell{nLoaded}=sys;
+                        if strcmp(files{i},'iss.mat')
+                            benchmarksSysCell{nLoaded}=sys([1 3],[1 2 3]);
+                        else
+                            benchmarksSysCell{nLoaded}=sys;
+                        end
                         nLoaded=nLoaded+1;
                         disp(files{i});
                      end
@@ -82,6 +86,7 @@ for i=1:length(files)
 end
 benchmarksSysCell(nLoaded:end)=[];
 warning('on');
+
 
 % save loaded systems
 save(fullfile(fullfile(testpath),'benchmarksSysCell.mat'));

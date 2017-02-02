@@ -14,8 +14,8 @@ classdef testZpk < sssTest
                     end
                     
                     %% verification of z
-                    for k=1:sys.m
-                        for l=1:sys.p      
+                    for k=1:sys.p
+                        for l=1:sys.m      
                             if sys.isSiso
                                 z=zAll;
                             else

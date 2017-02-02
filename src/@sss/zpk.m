@@ -105,9 +105,9 @@ end
 
 pTemp=poles(sys,k,struct('type',Opts.typeP));
 
-p=cell(sys.m,sys.p);
-z=cell(sys.m,sys.p);
-c=zeros(sys.m,sys.p);
+p=cell(sys.p,sys.m);
+z=cell(sys.p,sys.m);
+c=zeros(sys.p,sys.m);
 
 if strcmp(Opts.typeZ,'lm')
     Opts.type=max(pTemp);
@@ -125,7 +125,7 @@ end
 for i=1:sys.m
     for j=1:sys.p
         % call zeros and moments for each siso transfer function
-        tempSys=sss(sys.A,sys.B(:,j),sys.C(i,:),sys.D(i,j),sys.E);
+        tempSys=sss(sys.A,sys.B(:,i),sys.C(j,:),sys.D(j,i),sys.E);
         zTemp=zeros(tempSys,k,Opts);
         
         if Opts.zpk
@@ -148,12 +148,12 @@ for i=1:sys.m
             end
         end
 
-        p{i,j}=pTemp;
-        z{i,j}=zTemp;
+        p{j,i}=pTemp;
+        z{j,i}=zTemp;
 
         % gain c is the first nonzero markov parameter
         ctemp=moments(tempSys,Inf,2);
-        c(i,j)=ctemp(:,:,2);
+        c(j,i)=ctemp(:,:,2);
     end
 end
 

@@ -11,8 +11,8 @@ classdef testZeros < sssTest
                     Opts.type='lm';
                     k=20;
                     zAll=zeros(sys,k,Opts);
-                    for k=1:sys.m
-                        for l=1:sys.p      
+                    for k=1:sys.p
+                        for l=1:sys.m      
                             if sys.isSiso
                                 z=zAll;
                             else
@@ -82,8 +82,8 @@ classdef testZeros < sssTest
                     Opts.type='sm';
                     k=20;
                     zAll=zeros(sys,k,Opts);
-                    for k=1:sys.m
-                        for l=1:sys.p      
+                    for k=1:sys.p
+                        for l=1:sys.m      
                             if sys.isSiso
                                 z=zAll;
                             else
