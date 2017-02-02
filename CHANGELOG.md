@@ -10,7 +10,7 @@ Roadmap (changes to come)
 - second order models
 ***
 
-v1.03 [tbd]
+v1.03 [02 February 2017]
 -----------------------
 ### Changes
 - LYAPCHOL
@@ -37,6 +37,8 @@ v1.03 [tbd]
 ### Bugfixes
 	- MINUS
 		* changed the function to be able to compute the difference of sss and ss objects as well.
+	- ZEROS, ZPK
+		* usage of sys.p and sys.m corrected
 
 ### Third-party
 - MMESS 1.0.1
