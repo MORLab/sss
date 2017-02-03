@@ -39,6 +39,8 @@ v1.03 [02 February 2017]
 		* changed the function to be able to compute the difference of sss and ss objects as well.
 	- ZEROS, ZPK
 		* usage of sys.p and sys.m corrected
+	- LOADSSS
+		* defining zero matrices with `spalloc` instead of `zeros` to reduce memory consumption.
 
 ### Third-party
 - MMESS 1.0.1
