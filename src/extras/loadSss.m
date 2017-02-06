@@ -161,7 +161,7 @@ if containsSystem == 0
 end
 
 %%  Set name for system
-splittedName = strsplit(fname,'\');
+splittedName = strsplit(fname,filesep);
     
 if length(splittedName) >= 2
     fname = splittedName{1,end};
