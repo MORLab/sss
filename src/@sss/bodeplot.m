@@ -71,7 +71,7 @@ end
 %% Get frd object
 for i=1:length(varargin)
     if isa(varargin{i},'sss')
-        varargin{i} = freqresp(varargin{i}, omega, struct('frd',1));
+        varargin{i} = frd(varargin{i}, omega);
     end
 end
 
