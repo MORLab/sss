@@ -47,12 +47,14 @@ function varargout = decayTime(varargin)
 % More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Heiko Panzer, Sylvia Cremer, Maria Cruz Varona
+% Authors:      Heiko Panzer, Sylvia Cremer, Maria Cruz Varona, 
+%               Alessandro Castagnotto
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  04 Nov 2015
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Last Change:  19 Jan 2016
+% Copyright (c) 2015, 2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
 [varargout{1:nargout}] = sss.decayTime(varargin{:});
+

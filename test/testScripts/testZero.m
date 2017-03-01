@@ -1,5 +1,5 @@
-classdef testZero < sssTest
-    % testZeros - testing of zero.m
+classdef testZeros < sssTest
+    % testZeros - testing of zeros.m
    
     methods(Test)
         function testLM(testCase)
@@ -10,7 +10,7 @@ classdef testZero < sssTest
                     sys.Name
                     Opts.type='lm';
                     k=20;
-                    zAll=zero(sys,k,Opts);
+                    zAll=zeros(sys,k,Opts);
                     for k=1:sys.p
                         for l=1:sys.m      
                             if sys.isSiso
@@ -81,7 +81,7 @@ classdef testZero < sssTest
                 if ~sys.isDae
                     Opts.type='sm';
                     k=20;
-                    zAll=zero(sys,k,Opts);
+                    zAll=zeros(sys,k,Opts);
                     for k=1:sys.p
                         for l=1:sys.m      
                             if sys.isSiso

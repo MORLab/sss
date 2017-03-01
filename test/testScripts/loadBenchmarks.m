@@ -61,9 +61,9 @@ for i=1:length(files)
                 case 'good'
                      if ~any(strcmp(files{i},badBenchmarks))
                         if strcmp(files{i},'iss.mat')
-                           benchmarksSysCell{nLoaded}=sys([1 3],[1 2 3]);
+                            benchmarksSysCell{nLoaded}=sys([1 3],[1 2 3]);
                         else
-                           benchmarksSysCell{nLoaded}=sys;
+                            benchmarksSysCell{nLoaded}=sys;
                         end
                         nLoaded=nLoaded+1;
                         disp(files{i});
@@ -86,6 +86,7 @@ for i=1:length(files)
 end
 benchmarksSysCell(nLoaded:end)=[];
 warning('on');
+
 
 % save loaded systems
 save(fullfile(fullfile(testpath),'benchmarksSysCell.mat'));

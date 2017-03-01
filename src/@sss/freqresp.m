@@ -5,7 +5,6 @@ function [varargout] = freqresp(varargin)
 %       [G, w] = freqresp(sys)
 %       G = freqresp(sys, w)
 %       G = freqresp(sys, ..., Opts)
-%       frdData = freqresp(sys,..., struct('frd',1))
 %
 % Description:
 %       Evaluates complex transfer function of LTI systems. 
@@ -16,9 +15,6 @@ function [varargout] = freqresp(varargin)
 %       first and second derivatives of the magnitude of the frequency
 %       response. 
 %
-%       If the function is called with only one ouput and the option 'frd'
-%       is specified as last input variable, than an frd object is
-%       returned.
 %
 %
 % Inputs:
@@ -38,7 +34,6 @@ function [varargout] = freqresp(varargin)
 %       -G: |sys.p| x |sys.m| x |N| array of complex frequency response values,
 %       where |N| is the number of sampling frequencies
 %       -w: vector with the frequencies at which the response was computed
-%       -frdData:   a frd object with the frequency response data
 %
 % Examples:
 %       The following code computes the frequency response of the benchmark
@@ -50,7 +45,7 @@ function [varargout] = freqresp(varargin)
 %> [G,omega]=freqresp(sys);
 %
 % See Also:
-%       bode, sigma, bodemag, bodeplot
+%       bode, sigma, bodemag, bodeplot, frd
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
@@ -68,13 +63,12 @@ function [varargout] = freqresp(varargin)
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  06 Apr 2016
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Last Change:  17 Feb 2017
+% Copyright (c) 2015-2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
 %% Parse inputs and options
 Def.maxPoints = 1500; % maximum number of refinement points
-Def.frd = 0; %return magnitude instead of frd object as in bult-in case 
 Def.lse = 'sparse'; % solveLse
 
 % create the options structure
@@ -197,14 +191,9 @@ else
     G(1:nOutputs,1:nInputs,:) = resp;
 end
 
-if nargout==1 && Opts.frd
-    varargout{1} = getfrd(sys, G, omega);
-elseif nargout==1
-    varargout{1}=G;
-else
-    varargout{1}=G;
-    varargout{2}=omega;
-end
+varargout{1}=G;
+varargout{2}=omega;
+
 
 end
 
@@ -218,7 +207,7 @@ increment=w(2)/w(1);
 while(length(w)<=Opts.maxPoints)
     %Compute the currentIncrement between all the points
     currentIncrement=reshape(w(2:end)./w(1:end-1),1,1,numel(w)-1);
-    currentIncrement=repmat(currentIncrement,nOutputs,nInputs,1);
+    currentIncrement=repmat(currentIncrement,nOutputs,nInputs);
     %Compute expected value considering just first derivative (make the
     %plot smooth).
     Expected=exp(log(magnitude(:,:,1:end-1))+log(currentIncrement).*firstDerivLog(:,:,1:end-1));
@@ -311,7 +300,7 @@ for i=1:numel(wEval)
     end
 end
 %Computation of the first two derivatives for a log-log of the magnitude plot
-resppp=resppp.*repmat(reshape(wEval,1,1,numel(wEval)),nOutputs,nInputs,1).^2+respp;
+resppp=resppp.*repmat(reshape(wEval,1,1,numel(wEval)),nOutputs,nInputs).^2+respp;
 limit=sqrt(eps(0))*10^5; %Limit for change the order of computation (see below)
 magnitude=abs(resp);
 cond=(any(any(magnitude<limit,1),2));
@@ -460,15 +449,4 @@ while(1)
     
 end
 maxWFinal=floor(log10(maxW(end)*10));
-end
-
-function resp = getfrd(sys, G, omega)
-
-%  remove frequencies at infinity to create frd object
-k = find(isinf(omega));
-omega(k) = []; G(:,:,k) = [];
-
-resp = frd(G,omega,sys.Ts,...
-    'InputName',sys.InputName,'OutputName',sys.OutputName,...
-    'Name',sys.Name);
 end

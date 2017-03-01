@@ -124,7 +124,7 @@ if containsSystem == 0
             end
         end
         if ~isfield(LoadData,'D'), 
-            LoadData.D = zeros(size(LoadData.C,1),size(LoadData.B,2)); 
+            LoadData.D = spalloc(size(LoadData.C,1),size(LoadData.B,2),0); 
         end
         if ~isfield(LoadData,'E'), LoadData.E = speye(size(LoadData.A)); end
 
@@ -134,7 +134,9 @@ if containsSystem == 0
     %     msgID = 'sssMOR:loadSss:2ndOrder';
         warning('The system is in 2nd order form and will be converted to 1st order.')
 
-        if ~isfield(LoadData,'D'), LoadData.D = zeros(size(LoadData.K)); end
+        if ~isfield(LoadData,'D'), 
+            LoadData.D = spalloc(size(LoadData.K,1),size(LoadData.K,2),0); 
+        end
 
         if ~isfield(LoadData,'C')
            if isfield(LoadData,'c')
@@ -151,7 +153,7 @@ if containsSystem == 0
         %Use the function second2first to create the system
 
         sys = second2first(LoadData.M,LoadData.D,LoadData.K,LoadData.B,...
-                           zeros(size(LoadData.C)),LoadData.C,Opts);
+                           spalloc(size(LoadData.C,1),size(LoadData.C,2),0),LoadData.C,Opts);
 
     else
         error('loadSss was not able to determine the form of the given system');
@@ -159,7 +161,7 @@ if containsSystem == 0
 end
 
 %%  Set name for system
-splittedName = strsplit(fname,'\');
+splittedName = strsplit(fname,filesep);
     
 if length(splittedName) >= 2
     fname = splittedName{1,end};

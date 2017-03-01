@@ -1,7 +1,7 @@
 classdef testDecayTime < sssTest
     
     methods (Test)  
-        function testDecayTime1(testCase)
+        function stableSys(testCase)
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
                 warning('off','sss:decayTime:UnstableSys');
@@ -22,10 +22,21 @@ classdef testDecayTime < sssTest
                 end
             end
         end
-        function testDecayTime2(testCase)
+        function unstableSys(testCase)
             warning('off','sss:decayTime:UnstableSys');
             tmax=decayTime(sss(1,1,1)); % unstable system
             verification(testCase,isnan(tmax),true);
+        end
+        function plausibleTime(testCase)
+            %   Confirm through ss/impulse that the decay time computed is
+            %   not too far away from the actual one
+            for i=1:length(testCase.sysCell)
+                sys=testCase.sysCell{i};
+                t = decayTime(sys);
+                [~,tI] = impulse(ss(sys));
+                dt = abs(t-tI(end))/t;
+                verifyLessThan(testCase,dt,10) %allow difference to be off by a factor 10
+            end
         end
     end
 end

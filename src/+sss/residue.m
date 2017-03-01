@@ -3,9 +3,8 @@ function [r,p,d] = residue(sys, Opts)
 % 
 % Syntax:
 %       RESIDUE(sys)
-%       [r] = RESIDUE(sys)
-%       [r,p] = RESIDUE (sys)
-%       [r,p,d] = RESIDUE(sys,Opts)
+%       [r,p,d] = RESIDUE (sys)
+%       [r,p,d] = RESIDUE (sys,Opts)
 %
 % Description:
 %       This function computes the pole/residual representation of a
@@ -15,8 +14,9 @@ function [r,p,d] = residue(sys, Opts)
 %       directions (low rank factors), useful especially in the MIMO 
 %       setting.
 %
-%       The computation requires the complete eigendecomposition of the
-%       system, so for large scale problems it might take a while.
+%       By default, only the first 6 residues corresponding to the
+%       eigenvalues with smallest magnitude are computed. This option can
+%       be changed by appropriate values in the Opts structure.
 %
 %       The output r is a cell array of residuals or residual directions
 %       depending on the option rType = {'res' (def), 'dir'}.
@@ -41,6 +41,10 @@ function [r,p,d] = residue(sys, Opts)
 %                       Chat = r{1} and the input residual matrix Bhat = r{2}
 %                       ('dir');
 %                       [{'res'} / 'dir']
+%			-.eigs:		option to eigs command;
+%						[{'SM'} / 'LM' / 'SA' / 'LA' / 'SR' / 'LR' / real or complex scalar]
+%           -.nEigs:    number of poles/residues;
+%                       [{6} / 'all' / integer]
 %
 % Output Arguments:
 %       -r: cell of residuals (format depends on Opts.rType)
@@ -53,7 +57,8 @@ function [r,p,d] = residue(sys, Opts)
 %
 %> load building; 
 %> sys = sss(A,B,C);
-%> [r,p,d] = residue(sys);
+%> Opts.nEig = 'all';
+%> [r,p,d] = residue(sys,Opts);
 %
 %       To get the residue directions instead of the residues, use the
 %       option Opts.rType = 'dir'
@@ -64,7 +69,7 @@ function [r,p,d] = residue(sys, Opts)
 %> [r,p,d] = residue(sys,Opts);
 %
 % See Also: 
-%		sss, eig
+%		sss, eig, eigs
 %
 % References:
 %		* *[1] Bryson (1994)*, Control of Spacecraft and Aircraft
@@ -84,11 +89,14 @@ function [r,p,d] = residue(sys, Opts)
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  28 Oct 2015
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Last Change:  19 Jan 2016
+% Copyright (c) 2015,2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
+%% Input Parsing
 Def.rType = 'res';
+Def.eigs  = 'sm';
+Def.nEigs = 6;
 
 if ~exist('Opts','var') || isempty(Opts)
     Opts = Def;
@@ -96,25 +104,28 @@ else
     Opts = parseOpts(Opts,Def);
 end
 
-%perform eigen-decomposition of system
-try
-    [T,J] = eig(sys);
-catch err
-    error('Computation of the eigenvalues and eigenvectors failed with message:%s',err.message);
+% change nEigs to numeric value
+if ischar(Opts.nEigs) && strcmp(Opts.nEigs,'all')
+    Opts.nEigs = sys.n;
+end
+%% Compute poles and eigenvectors
+if Opts.nEigs == sys.n  %full eigen/decomposition
+    try
+        [V,J,W] = eig(sys);
+    catch err
+        error('sss:residue:eigComputationFailed','Computation of the eigenvalues and eigenvectors failed with message:%s',err.message);
+    end
+else
+    [V,J] = eigs(sys,Opts.nEigs,Opts.eigs);
+    [W,~] = eigs(sys.',Opts.nEigs,Opts.eigs);
 end
 
+%% Compute residues
 % transform system to diagonal form
-p=diag(J).';
-if issparse(T)
-    rcondNumber = 1/condest(T);
-else
-    rcondNumber=rcond(T);
-end
-if rcondNumber<eps
-    warning(['Matrix of eigenvectors is close to singular or badly scaled. Results may be inaccurate. RCOND =',num2str(rcondNumber)]);
-end
-B=(sys.E*T)\sys.B;
-C=sys.C*T;
+p=diag(J);
+
+B=W'*sys.B;
+C=sys.C*V;
 d=sys.D;
 
 % calculate residues
@@ -123,8 +134,8 @@ if strcmp(Opts.rType,'dir')
     r = {C, B};  
 else
     % return the residuals
-    r = cell(1,sys.n);
-    for i=1:sys.n
+    r = cell(length(p),1);
+    for i=1:length(p)
         r{i} = full(C(:,i)*B(i,:));
     end
 end

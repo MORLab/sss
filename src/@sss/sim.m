@@ -7,7 +7,9 @@ function [data,X,tx] = sim(sys,data,method,Ts_sample)
 %       [data,x,tx] = sim(sys,data,method,Ts_sample)
 %
 % Description:
-%       Simulates a sss system using iddata input time series
+%       Simulates a sss system using iddata input time series.
+%
+%       //Note: Requires the System Identification Toolbox.
 %
 % Input Arguments:
 %       *Required Input Arguments:*

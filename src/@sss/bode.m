@@ -91,9 +91,9 @@ for i = 1:length(varargin)
     % Convert sss to frequency response data model
     if isa(varargin{i},'sss')
         if not(exist('omega','var')) || isempty(omega)
-            varargin{i} = freqresp(varargin{i},struct('frd',1));
+            varargin{i} = frd(varargin{i});
         else
-            varargin{i} = freqresp(varargin{i},omega, struct('frd',1));
+            varargin{i} = frd(varargin{i},omega);
         end
     end
 end

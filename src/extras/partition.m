@@ -1,27 +1,34 @@
-function [A11,A12,A21,A22] = partition(A,row,col)
-% PARTITION - Partitions a matrix into four submatrices
+function varargout = partition(A,row,col)
+% PARTITION - Partitions a matrix into submatrices
 %
 % Syntax:
-%       [A11,A12,A21,A22] = PARTITION(A,row)
-%       [A11,A12,A21,A22] = PARTITION(A,row,col)
+%       [A1,A2]             = PARTITION(A,row)
+%       [A1,A2]             = PARTITION(A,[],col)
+%       [A11,A12,A21,A22]   = PARTITION(A,row,col)
 %
 % Description:
-%       [A11,A12,A21,A22] = partition(A,row,col) partitions A into 4 submatrices. 
-%       A11 has the dimension (row x col), all other submatrices accordingly.
+%       [A1,A2] = PARTITION(A,row) partitions A into two
+%       submatrices, the first 1:row and last row+1:end rows, such that 
+%       A = [A1;A2].
 %
-%       The input argument |col| is optional. If it is not parsed to the
-%       function, then |col = row| is set.
+%       [A1,A2] = PARTITION(A,[],col) partitions A into two
+%       submatrices, the first 1:col and last col+1:end columns, such that
+%       A = [A1,A2].
+%
+%       [A11,A12,A21,A22] = partition(A,row,col) partitions A into 4 submatrices. 
+%       A11 has the dimension (row x col), all other submatrices
+%       accordingly, such that A = [A11, A12; A21, A22];
 %
 % Input Arguments:
 %       *Required Input Arguments:*
 %           -A:     matrix to be partitioned
-%           -row:   number of rows of the submatrix A11
-%           -col:   number of columns of the submatrix A11
+%           -row:   number of rows of the first partition
+%       *Optional Input Arguments:*
+%           -col:   number of columns of the first partition
 %
 % Output Arguments:
+%       -A1,A2: submatrices resulting from the partition of A
 %       -A11,A12,A21,A22: submatrices resulting from the partition of A
-%
-% See Also:
 %
 %
 %------------------------------------------------------------------
@@ -39,17 +46,30 @@ function [A11,A12,A21,A22] = partition(A,row,col)
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  11 Nov 2015
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Last Change:  06 Feb 2017
+% Copyright (c) 2015-2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-if ~exist('col','var') || isempty(col)
-    col = row;
+%% parse input
+if nargin < 3
+    %usage partition(A,row)
+    col = [];
 end
 
-A11 = A(1:row,1:col);
-if nargout > 1
+%% partition
+if isempty(col)
+    A1 = A(1:row,:);
+    A2 = A(row+1:end,:);
+    
+    varargout = {A1,A2};
+elseif isempty(row)
+    A1 = A(:, 1:col);
+    A2 = A(:, col+1:end);
+    varargout = {A1,A2};
+else
+    A11 = A(1:row,1:col);
     A12 = A(1:row,col+1:end);
     A21 = A(row+1:end,1:col);
     A22 = A(row+1:end,col+1:end);
+    varargout = {A11,A12,A21,A22};
 end

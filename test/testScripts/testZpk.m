@@ -5,7 +5,7 @@ classdef testZpk < sssTest
         function testZpkObject(testCase)
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
-                
+
                 % call zpk for the sys
                 kP = 8;
                 kZ = 8;

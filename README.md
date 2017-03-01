@@ -1,4 +1,6 @@
-# sss
+sss
+====
+
 A MATLAB toolbox for large-scale dynamical systems in state-space described by sparse matrices. It extends the capability of the Control System Toolbox by defining new Dynamic System Objects (sss) and analysis methods that exploit sparsity.
 
 Working with large-scale dynamical systems has never been easier. All you need to do is add an "s" in the system definition
@@ -6,30 +8,37 @@ Working with large-scale dynamical systems has never been easier. All you need t
 ``sys = sss(A,B,C,D,E)``
 
 and use all your favorite functions such as
-
-``bode(sys),
-step(sys),
-norm(sys),
-sys = sys1 - sys2,
-...``
-
+`` bode(sys), step(sys), norm(sys), sys = sys1 - sys2, ...``
 and many more!
 
-Check out our documentation (type ``doc`` in the command window) and demos to get started.
+For more information, type `doc` in the command window or visit http://www.rt.mw.tum.de/?sss. Check out also our demo by typing `sss_gettingStarted` in the command window.
 
-**COPYRIGHT**
+***
+*Programmed with:* MATLAB R2015b
+
+*Tested on:* MATLAB R2014b, R2015b, R2016b (both Windows 7 and Ubuntu 16.04.1 LTS)
+
+*Some functions require:* Control System Toolbox
+
+> Note: The Gitlab repositories hosting the sss project will become public soon, making it even easier for you to contribute to the sss project.
+>Sign up for our newsletter under https://lists.lrz.de/mailman/listinfo/sssmor to stay up to date.
+
+***
+Copyright
+----------
 This toolbox is developed by [MORLab](http://www.rt.mw.tum.de/en/research/fields-of-research/model-order-reduction/), the model reduction lab at the [Chair of Automatic Control](www.rt.mw.tum.de/en) in collaboration with the [Chair of Thermofluid Dynamics](http://www.tfd.mw.tum.de/index.php?id=5&L=1).
 
-**Programmed and tested with: MATLAB R2015b**
-
-*Some functions require the Dynamic Systems Toolbox*
-
-**ACKNOWLEDGEMENTS**
+***
+Acknowledgements
+-----------------
 The developing team is thankful to all the research assistants and students at [MORLab](http://www.rt.mw.tum.de/en/research/fields-of-research/model-order-reduction/) that have contributed at creating and developing the sss class since 2008.
 
 The team of [Morembs](http://www.itm.uni-stuttgart.de/research/model_reduction/MOREMBS_en.php), a model reduction software for elastic multibody systems, is sincerely acknowledged for the support in the automated generation of the documentation for the toolbox.
 
-# Developing guidelines
+***
+Developing guidelines
+----------------------
+
 We hope that you enjoy the the toolbox and would like to contribute by extending its capability.
 To make sure that the developing does not get out of hand, we prepared a few guidelines that we ask you to follow.
 
