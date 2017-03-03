@@ -5,7 +5,6 @@ function [varargout] = freqresp(varargin)
 %       [G, w] = freqresp(sys)
 %       G = freqresp(sys, w)
 %       G = freqresp(sys, ..., Opts)
-%       frdData = freqresp(sys,..., struct('frd',1))
 %
 % Description:
 %       Evaluates complex transfer function of LTI systems. 
@@ -24,8 +23,6 @@ function [varargout] = freqresp(varargin)
 %       *Optional Input Arguments:*
 %       -w: vector of frequencies or cell with {wmin,wmax}
 %       -Opts:  structure with execution parameters
-%			-.frd:  return frd object;
-%						[{0} / 1]
 %           -.maxPoints: Maximum number of refinement points
 %                       [{1500} / positive integer]
 %           -.lse:  solve linear system of equations
