@@ -63,6 +63,7 @@ suite10=TestSuite.fromFile(fullfile(testPath,'testDiag.m'));
 suite11=TestSuite.fromFile(fullfile(testPath,'testEig.m'));
 suite12=TestSuite.fromFile(fullfile(testPath,'testEigs.m'));
 suite13=TestSuite.fromFile(fullfile(testPath,'testFreqresp.m'));
+suite13a=TestSuite.fromFile(fullfile(testPath,'testFrd.m'));
 suite14=TestSuite.fromFile(fullfile(testPath,'testImpulse.m'));
 suite15=TestSuite.fromFile(fullfile(testPath,'testIssd.m'));
 suite16=TestSuite.fromFile(fullfile(testPath,'testIsstable.m'));
@@ -85,9 +86,14 @@ suite32=TestSuite.fromFile(fullfile(testPath,'testZpk.m'));
 suite33=TestSuite.fromFile(fullfile(testPath,'testSecondToFirst.m'));
 
 suiteSss=[suite1,suite2,suite3,suite4,suite5,suite6,suite7,suite8,suite9,suite10,...
+<<<<<<< Updated upstream
 suite11,suite12,suite13,suite14,suite15,suite16,suite17,suite18,suite19,...
 suite20, suite21, suite22, suite23, suite24, suite25, suite27, suite28, ...
 suite29, suite30, suite31, suite32,suite33];
+=======
+suite11,suite12,suite13,suite13a,suite14,suite15,suite16,suite17,suite18,suite19,...
+suite20, suite21, suite22, suite23, suite25, suite26, suite27, suite28];
+>>>>>>> Stashed changes
 
 
 %% Run and show results
