@@ -1,63 +1,50 @@
-function [varargout] = zpk(sys,varargin)
+function zpkData = zpk(sys,varargin)
 % ZPK - Compute largest poles and zeros or zpk object of an LTI system
 %
 % Syntax:
-%       [p,z] = ZPK(sys)
-%       [p,z] = ZPK(sys,k)
-%       zpkData = ZPK(sys,Opts)
-%       zpkData = ZPK(sys,k,Opts)
+%       zpkData = ZPK(sys)
+%       zpkData = ZPK(sys,kP,typeP,kZ,typeZ)
+%       zpkData = ZPK(sys,k,typeP,typeZ)
+%       zpkData = ZPK(sys,kP,kZ,type)
+%       zpkData = ZPK(sys,kP,kZ)
+%       zpkData = ZPK(sys,typeP,typeZ)
+%       zpkData = ZPK(sys,k,type)
+%       zpkData = ZPK(sys,k)
+%       zpkData = ZPK(sys,type)
 %
 % Description:
-%       [p,z] = zpk(sys) returns the 6 system poles and invariant zeros 
-%       with largest magnitude of in the column vectors p and z of the 
-%       continuous- or discrete-time dynamic system model sys. The type of 
-%       the computed poles and zeros can be specified with the options 
-%       'typeP' and 'typeZ'.
-%
-%       [p,z] = zpk(sys,k) returns the first k poles and zeros of the system.
-%       
-%       If the option 'zpk' is true, a zpk-object is returned instead of
-%       the poles and zeros.
-%
-%//Note: If the system is MIMO, the zeros are computed for all combination
-%       of inputs and outputs and z is returned in a cell array.
+%       zkpData = zpk(sys,k) converts a sparse state space model sys to
+%       the zpk representation by computing the k largest poles and zeros.
+%       The type of the computed poles and zeros can be specified with the  
+%       options 'typeP' and 'typeZ'. The resulting zpkData object is of 
+%       class @zpk.
 %
 % Input Arguments:
 %       -sys:      an sss-object containing the LTI system
 %       *Optional Input Arguments:*
-%       -k:     number of computed poles and zeros
-%       -Opts:  structure with execution parameters
-%			-.zpk:  return zpk object;
-%						[{0} / 1]
-%			-.typeP: eigs type of poles
-%						[{'lm'} / 'sm' / 'la' / 'sa']
-%			-.typeZ: eigs type of zeros
-%						[{'lm'} / 'sm' / 'la' / 'sa']
+%       -kP:     number of computed poles
+%       -kZ:     number of computed zeros
+%       -typeP:  eigs type of poles
+%				 [{'lm'} / 'sm' / 'la' / 'sa']
+%       -typeZ:  eigs type of zeros
+%                [{'lm'} / 'sm' / 'la' / 'sa']
 %
 % Output Arguments:
-%       -p: vector containing poles 
-%       -z: vector/cell array containing invariant zeros
+%       -zpkData:  object of class @zpk
 %
 % Examples:
-%       Create a random descriptor model (DSSS, SISO) and compute the poles
-%       and zeros.
+%       Create a random descriptor model (DSSS, SISO) and compute the
+%       corresponding zpk object by using the six poles and zeros with the
+%       largest magnitude:
 %
 %> A = randn(500,500); B = randn(500,1); C = randn(1,500); D = zeros(1,1);
 %> E = randn(500,500);
 %> sys = dss(A,B,C,D,E);
 %> sysSss = sss(sys);
-%> [p,z]=zpk(sysSss)
-%
-%       Load the benchmark 'CDplayer' (SSS, MIMO) and use zpk:
-%
-%> load CDplayer.mat
-%> p = size(C,1); m = size(B,2);
-%> sys = sss(A,B,C,zeros(p,m))
-%> [p,z]=zpk(sys)   %computing poles and zeros
-%> zpkData=zpk(sys) %computing zpkData (numerator and denominator data)
+%> zpkData=zpk(sysSss,6,'lm')
 %
 % See Also:
-%       pzmap, zeros, poles
+%       pzmap, zero, pole
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
@@ -103,7 +90,7 @@ if ~exist('k','var')
     k=6;
 end
 
-pTemp=poles(sys,k,struct('type',Opts.typeP));
+pTemp=pole(sys,k,struct('type',Opts.typeP));
 
 p=cell(sys.p,sys.m);
 z=cell(sys.p,sys.m);
@@ -126,7 +113,7 @@ for i=1:sys.m
     for j=1:sys.p
         % call zeros and moments for each siso transfer function
         tempSys=sss(sys.A,sys.B(:,i),sys.C(j,:),sys.D(j,i),sys.E);
-        zTemp=zeros(tempSys,k,Opts);
+        zTemp=zero(tempSys,k,Opts);
         
         if Opts.zpk
             % remove not converged eigenvalues
@@ -156,15 +143,21 @@ for i=1:sys.m
         c(j,i)=ctemp(:,:,2);
     end
 end
+ 
+zpkData=zpk(z,p,c);
+zpkData.Name=sys.Name;
+    
+    
+function tf = isInt(A)
+    if isnumeric(A) && mod(A,1) == 0
+        tf = 1;
+    else
+        tf = 0;
+    end
 
-if Opts.zpk    
-    varargout{1}=zpk(z,p,c);
-    varargout{1}.name=sys.Name;
-elseif sys.isSiso
-    varargout{1}=p{1,1};
-    varargout{2}=z{1,1};
-else
-    varargout{1}=p;
-    varargout{2}=z;
-end
-end
+function tf = isOpts(A)
+    if ischar(A) && ismember(A,{'lm','sm','la','sa'})
+       tf = 1;
+    else
+       tf = 0;
+    end
