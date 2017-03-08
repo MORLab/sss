@@ -353,9 +353,9 @@ classdef sss
         
         function isDae = get.isDae(sys)
             if condest(sys.E)==Inf
-                isDae = 1;
+                isDae = true;
             else
-                isDae = 0;
+                isDae = false;
             end
         end
         
