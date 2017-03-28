@@ -92,7 +92,9 @@ function [S,R] = lyapchol(sys, Opts)
 %  Default execution parameters
 Def.method  = 'auto';           % 'auto', 'adi', 'hammarling'
 Def.lse     = 'gauss';          % only for MESS (see solveLse)
-Def.rctol   = 1e-12;            % only for MESS
+Def.restol = 1e-12;    % only for MESS
+Def.rctol   = 0;            % only for MESS
+Def.messPara = 'projection';    % only for MESS
 Def.q       = 0;                % only for MESS
 Def.forceOrder  = false;        % only for MESS
 Def.maxiter = min([150,sys.n]); % only for MESS
@@ -148,16 +150,17 @@ switch Opts.method
         eqn=struct('A_',sys.A,'E_',sys.E,'B',sys.B,'C',sys.C,'prm',speye(size(sys.A)),'type','N','haveE',sys.isDescriptor);
 
         % opts struct: MESS options
-        messOpts.adi=struct('shifts',struct('l0',20,'kp',50,'km',25,'b0',ones(sys.n,1),...
-            'info',0),'maxiter',Opts.maxiter,'restol',0,'rctol',Opts.rctol,...
-            'info',0,'norm','fro');
+        messOpts.adi=struct('shifts',struct('l0',20,'kp',50,'km',25,'b0',ones(sys.n,1),'method',Opts.messPara,...
+            'info',1),'maxiter',Opts.maxiter,'restol',Opts.restol,'rctol',Opts.rctol,...
+            'info',1,'norm','fro');
 
         oper = operatormanager(lseType);
         messOpts.solveLse.lse=Opts.lse;
         messOpts.solveLse.krylov=0;
 
         % get adi shifts
-        [messOpts.adi.shifts.p,~,~,~,~,~,~,eqn]=mess_para(eqn,messOpts,oper);
+        [messOpts.adi.shifts.p]=mess_para(eqn,messOpts,oper);
+%         [messOpts.adi.shifts.p,~,~,~,~,~,~,eqn]=mess_para(eqn,messOpts,oper);
 
         % low rank adi
         [S,Sout]=mess_lradi(eqn,messOpts,oper);
