@@ -84,7 +84,7 @@ function [S,R] = lyapchol(sys, Opts)
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  15 Dec 2016
+% Last Change:  29 Mar 2017
 % Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
@@ -92,8 +92,10 @@ function [S,R] = lyapchol(sys, Opts)
 %  Default execution parameters
 Def.method  = 'auto';           % 'auto', 'adi', 'hammarling'
 Def.lse     = 'gauss';          % only for MESS (see solveLse)
-Def.rctol   = 1e-12;            % only for MESS
-Def.q       = 0;                % only for MESS
+Def.restol  = 1e-12;            % only for MESS
+Def.rctol   = 0;                % only for MESS
+Def.messPara = 'projection';    % only for MESS
+Def.q        = 0;               % only for MESS
 Def.forceOrder  = false;        % only for MESS
 Def.maxiter = min([150,sys.n]); % only for MESS
 
@@ -148,8 +150,8 @@ switch Opts.method
         eqn=struct('A_',sys.A,'E_',sys.E,'B',sys.B,'C',sys.C,'prm',speye(size(sys.A)),'type','N','haveE',sys.isDescriptor);
 
         % opts struct: MESS options
-        messOpts.adi=struct('shifts',struct('l0',20,'kp',50,'km',25,'b0',ones(sys.n,1),...
-            'info',0),'maxiter',Opts.maxiter,'restol',0,'rctol',Opts.rctol,...
+        messOpts.adi=struct('shifts',struct('l0',20,'kp',50,'km',25,'b0',ones(sys.n,1),'method',Opts.messPara,...
+            'info',0),'maxiter',Opts.maxiter,'restol',Opts.restol,'rctol',Opts.rctol,...
             'info',0,'norm','fro');
 
         oper = operatormanager(lseType);
@@ -157,7 +159,7 @@ switch Opts.method
         messOpts.solveLse.krylov=0;
 
         % get adi shifts
-        [messOpts.adi.shifts.p,~,~,~,~,~,~,eqn]=mess_para(eqn,messOpts,oper);
+        [messOpts.adi.shifts.p]=mess_para(eqn,messOpts,oper);
 
         % low rank adi
         [S,Sout]=mess_lradi(eqn,messOpts,oper);
@@ -166,11 +168,15 @@ switch Opts.method
             warning(['Because of small relative changes in the last ADI iterations,',...
                 ' the size of S is set to q_S = ',num2str(size(S,2),'%i'),'.']);
         end
-        if Sout.rc(end)>Opts.rctol
-            warning(['Maximum number of ADI iterations reached (maxiter = ',num2str(Opts.maxiter,'%d'),...
-                    '). rctol is not satisfied for S: ',num2str(Sout.rc(end),'%d'),' > rctol (',num2str(Opts.rctol,'%d'),').']);
+        
+        if Sout.niter >= Opts.maxiter
+            warning(['Maximum number of ADI iterations reached (maxiter = ',num2str(Opts.maxiter,'%d'), ').']);
+        elseif isfield(Sout,'res') && Sout.res(end)>Opts.restol
+            warning(['restol is not satisfied for S: ',num2str(Sout.res(end),'%d'),' > rctol (',num2str(Opts.restol,'%d'),').']);
+        elseif isfield(Sout,'rc') && Sout.rc(end)>Opts.rctol
+             warning(['rctol is not satisfied for S: ',num2str(Sout.rc(end),'%d'),' > rctol (',num2str(Opts.rctol,'%d'),').']);
         end
-
+        
         if nargout>1
             if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
                 R=S;
@@ -209,3 +215,4 @@ switch Opts.method
         error('sss:lyapchol:invalidMethod','The chosen method for lyapchol is invalid.')
 end
 end
+
