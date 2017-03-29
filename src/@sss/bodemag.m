@@ -73,4 +73,4 @@ for i=1:length(varargin)
 end
 
 %% Call ss/bodemag
-bodemag(varargin{:});
+bodemag(varargin{:}, omega);

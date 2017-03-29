@@ -152,8 +152,9 @@ elseif not(exist('omega','var')) || isempty(omega)
         maxW=findmaxW(sys,M);
     end
     %Compute first points of frequency response
-    qttyPoints=ceil(log(10^(maxW-minW))/log(2))+1;
-    omega=logspace(minW,maxW,qttyPoints)'; %w should be a column according to built-in MATLAB function
+    if minW == -Inf, minW = findminW(sys,M); end
+    qttyPoints=ceil((maxW-minW)/log(2))+1;
+    omega = real(logspace(minW,maxW,qttyPoints))'; %w should be a column according to built-in MATLAB function
     [firstDerivLog,secondDerivLog,magnitude,resp]=ComputeFreqResp(sys,omega*1i,M);
     %Refine the frequency response points
     [G,omega]=FreqRefinement(sys,omega,firstDerivLog,secondDerivLog,magnitude,resp,M,Opts);
