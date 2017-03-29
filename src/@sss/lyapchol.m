@@ -84,7 +84,7 @@ function [S,R] = lyapchol(sys, Opts)
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  15 Dec 2016
+% Last Change:  29 Mar 2017
 % Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
@@ -93,7 +93,7 @@ function [S,R] = lyapchol(sys, Opts)
 Def.method  = 'auto';           % 'auto', 'adi', 'hammarling'
 Def.lse     = 'gauss';          % only for MESS (see solveLse)
 Def.restol  = 1e-12;            % only for MESS
-Def.rctol   = 1e-12;            % only for MESS
+Def.rctol   = 0;                % only for MESS
 Def.messPara = 'projection';    % only for MESS
 Def.q        = 0;               % only for MESS
 Def.forceOrder  = false;        % only for MESS
@@ -160,7 +160,6 @@ switch Opts.method
 
         % get adi shifts
         [messOpts.adi.shifts.p]=mess_para(eqn,messOpts,oper);
-%         [messOpts.adi.shifts.p,~,~,~,~,~,~,eqn]=mess_para(eqn,messOpts,oper);
 
         % low rank adi
         [S,Sout]=mess_lradi(eqn,messOpts,oper);
@@ -170,7 +169,7 @@ switch Opts.method
                 ' the size of S is set to q_S = ',num2str(size(S,2),'%i'),'.']);
         end
         
-        if Sout.niter > Opts.maxiter
+        if Sout.niter >= Opts.maxiter
             warning(['Maximum number of ADI iterations reached (maxiter = ',num2str(Opts.maxiter,'%d'), ').']);
         elseif isfield(Sout,'res') && Sout.res(end)>Opts.restol
             warning(['restol is not satisfied for S: ',num2str(Sout.res(end),'%d'),' > rctol (',num2str(Opts.restol,'%d'),').']);
@@ -178,24 +177,6 @@ switch Opts.method
              warning(['rctol is not satisfied for S: ',num2str(Sout.rc(end),'%d'),' > rctol (',num2str(Opts.rctol,'%d'),').']);
         end
         
-%         if isfield(Sout,'res') 
-%             if Sout.niter > Opts.maxiter && Sout.res(end)>Opts.restol
-%                 warning(['Maximum number of ADI iterations reached (maxiter = ',num2str(Opts.maxiter,'%d'),...
-%                         '). restol is not satisfied for S: ',num2str(Sout.res(end),'%d'),' > rctol (',num2str(Opts.restol,'%d'),').']);
-%             else
-%                 warning(['restol is not satisfied for S: ',num2str(Sout.res(end),'%d'),' > rctol (',num2str(Opts.restol,'%d'),').']);
-%             end
-%         end
-%         
-%         if isfield(Sout,'rc')  
-%             if Sout.niter > Opts.maxiter && Sout.rc(end)>Opts.rctol
-%                 warning(['Maximum number of ADI iterations reached (maxiter = ',num2str(Opts.maxiter,'%d'),...
-%                         '). rctol is not satisfied for S: ',num2str(Sout.rc(end),'%d'),' > rctol (',num2str(Opts.rctol,'%d'),').']);
-%             else
-%                 warning(['rctol is not satisfied for S: ',num2str(Sout.rc(end),'%d'),' > rctol (',num2str(Opts.rctol,'%d'),').']);
-%             end
-%         end
-
         if nargout>1
             if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
                 R=S;
