@@ -93,5 +93,5 @@ function varargout = residue(varargin)
 % Copyright (c) 2015,2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-[varargout{1:nargout}] = sss.residue(varargin{:});
+[varargout{1:nargout}] = sssFunc.residue(varargin{:});
 

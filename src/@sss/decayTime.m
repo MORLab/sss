@@ -56,5 +56,5 @@ function varargout = decayTime(varargin)
 % Copyright (c) 2015, 2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-[varargout{1:nargout}] = sss.decayTime(varargin{:});
+[varargout{1:nargout}] = sssFunc.decayTime(varargin{:});
 

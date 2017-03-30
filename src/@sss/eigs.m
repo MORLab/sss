@@ -68,4 +68,4 @@ function varargout = eigs(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-[varargout{1:nargout}] = sss.eigs(varargin{:});
+[varargout{1:nargout}] = sssFunc.eigs(varargin{:});

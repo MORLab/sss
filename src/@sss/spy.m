@@ -50,4 +50,4 @@ function varargout = spy(varargin)
 % Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-[varargout{1:nargout}] = sss.spy(varargin{:});
+[varargout{1:nargout}] = sssFunc.spy(varargin{:});

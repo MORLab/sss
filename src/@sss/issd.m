@@ -64,5 +64,5 @@ function varargout = issd(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
-[varargout{1:nargout}] = sss.issd(varargin{:});
+[varargout{1:nargout}] = sssFunc.issd(varargin{:});
 

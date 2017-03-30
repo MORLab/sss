@@ -55,4 +55,4 @@ function varargout = minus(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-[varargout{1:nargout}] = sss.minus(varargin{:});
+[varargout{1:nargout}] = sssFunc.minus(varargin{:});

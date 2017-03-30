@@ -80,4 +80,4 @@ function varargout = diag(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-[varargout{1:nargout}] = sss.diag(varargin{:});
+[varargout{1:nargout}] = sssFunc.diag(varargin{:});

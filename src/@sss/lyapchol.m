@@ -88,4 +88,4 @@ function varargout = lyapchol(varargin)
 % Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-[varargout{1:nargout}] = sss.lyapchol(varargin{:});
+[varargout{1:nargout}] = sssFunc.lyapchol(varargin{:});

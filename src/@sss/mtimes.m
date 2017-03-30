@@ -38,4 +38,4 @@ function varargout = mtimes(varargin)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-[varargout{1:nargout}] = sss.mtimes(varargin{:});
+[varargout{1:nargout}] = sssFunc.mtimes(varargin{:});
