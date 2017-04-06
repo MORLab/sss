@@ -31,6 +31,25 @@ classdef testLyapchol < sssTest
                 verification(testCase, sys, S, R);      
             end
         end
+        function testMatrices(testCase) 
+            sys  = loadSss('SpiralInductorPeec');
+            
+            [S,R]=lyapchol(sys);  
+            verification(testCase, sys, S, R);  
+            
+            % compare to matrix call (should be the same)
+            S2 = sssFunc.lyapchol(sys.A,sys.B,sys.E);
+            R2 = sssFunc.lyapchol(sys.A',sys.C',sys.E');
+            verification(testCase, sys, S2, R2); 
+            verifyEqual(testCase,S,S2,'AbsTol',1e-3);
+            verifyEqual(testCase,R,R2,'AbsTol',1e-3);
+            
+            % only 2 matrices (E=I)
+            sysI = sys; sysI.E = speye(sysI.n);
+            S = sssFunc.lyapchol(sysI.A, sysI.B);
+            R = sssFunc.lyapchol(sysI.A',sysI.C');
+            verification(testCase, sysI, S, R); 
+        end
     end
 end
 

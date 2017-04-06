@@ -1,10 +1,12 @@
-function [S,R] = lyapchol(sys, Opts)
+function [S,R] = lyapchol(varargin)
 % LYAPCHOL - Solve Lyapunov equations
 %
 % Syntax:
 %       S				= LYAPCHOL(sys)
 %       [S,R]			= LYAPCHOL(sys)
-%       [S,R]  		    = LYAPCHOL(sys,Opts)
+%       S               = LYAPCHOL(A,B)
+%       S               = LYAPCHOL(A,B,E)
+%       ...             = LYAPCHOL(...,Opts)
 %
 % Description:
 %       This function returns the Cholesky factorization X=S*S' of the 
@@ -14,6 +16,9 @@ function [S,R] = lyapchol(sys, Opts)
 %       If the number of output arguments is 2, then the low rank factor 
 %       Y = R*R' of the dual (generalized) lyapunov equation 
 %       A'*Y*E+E'*Y*A+C'*C=0 is solved as well.
+%
+%       To call this version of lyapchol with matrices A,B,E, make sure to
+%       use |sssFunc.lyapchol(...)|.
 %
 %       If the option 'type' is set to 'adi',then a low rank approximation 
 %       of the Cholesky (like) factor is performed [1]. If this option is not 
@@ -28,6 +33,7 @@ function [S,R] = lyapchol(sys, Opts)
 % Input Arguments:
 %		*Required Input Arguments:*
 %       -sys:   an sss-object containing the LTI system
+%       -A,B,E: (alternatively) matrices of the Lyapunov equation
 %		*Optional Input Arguments:*
 %       -Opts:              a structure containing following options
 %           -.method:       select solver for lyapunov equation 
@@ -58,6 +64,11 @@ function [S,R] = lyapchol(sys, Opts)
 %> S = lyapchol(sys);
 %> R = lyapchol(sys');
 %
+%       To call this version of lyapchol with matrices use
+%
+%> [A,B,C,D,E] = dssdata(sys);
+%> S = sssFunc.lyapchol(A,B,E);
+%
 % See Also:
 %       solveLse, tbr, norm, numerics/lyapchol
 %
@@ -84,23 +95,46 @@ function [S,R] = lyapchol(sys, Opts)
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  29 Mar 2017
-% Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
+% Last Change:  06 Apri 2017
+% Copyright (c) 2016,2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
+%% Input parsing
+% Opts
+if ~isempty(varargin) && isstruct(varargin{end})
+    Opts = varargin{end};
+    varargin = varargin(1:end-1);
+else
+    Opts = struct();
+end
+
+% System/Matrices
+if isa(varargin{1},'sss')
+    sys = varargin{1};
+else
+    %create a mock system to perform computations
+    A = varargin{1};
+    B = varargin{2};
+    if length(varargin)>2
+        E = varargin{3};
+    else
+        E = speye(size(A));
+    end
+    sys = sss(A,B,sparse(1,size(A,2)),[],E);
+end 
 %% Option parsing
 %  Default execution parameters
-Def.method  = 'auto';           % 'auto', 'adi', 'hammarling'
-Def.lse     = 'gauss';          % only for MESS (see solveLse)
-Def.restol  = 1e-12;            % only for MESS
-Def.rctol   = 0;                % only for MESS
-Def.messPara = 'projection';    % only for MESS
-Def.q        = 0;               % only for MESS
-Def.forceOrder  = false;        % only for MESS
-Def.maxiter = min([150,sys.n]); % only for MESS
+Def.method      = 'auto';           % 'auto', 'adi', 'hammarling'
+Def.lse         = 'gauss';          % only for MESS (see solveLse)
+Def.restol      = 1e-12;            % only for MESS
+Def.rctol       = 0;                % only for MESS
+Def.messPara    = 'projection';     % only for MESS
+Def.q           = 0;                % only for MESS
+Def.forceOrder  = false;            % only for MESS
+Def.maxiter     = min([150,sys.n]); % only for MESS
 
 % create the options structure
-if ~exist('Opts','var') || isempty(Opts)
+if ~exist('Opts','var') || isempty(fieldnames(Opts))
     Opts = Def;
 else
     Opts = parseOpts(Opts,Def);
