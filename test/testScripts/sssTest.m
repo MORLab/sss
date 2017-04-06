@@ -7,7 +7,9 @@ classdef sssTest < matlab.unittest.TestCase
     end
     
     methods
-        function testCase=sssTest()            
+        function testCase=sssTest()   
+            warning('off','sss:loadSss:secondOrder');
+            
             p = mfilename('fullpath'); k = strfind(p, fullfile(filesep,'test')); 
             testCase.testPath = [p(1:k(end)-1), fullfile(filesep,'testScripts')];
             
@@ -28,6 +30,7 @@ classdef sssTest < matlab.unittest.TestCase
     
     methods(TestClassTeardown)
         function deleteBench(testCase)
+            warning('on','sss:loadSss:secondOrder');
             if testCase.deleteBenchmarks
                 delete(fullfile(testCase.testPath,'benchmarksSysCell.mat'));
             end

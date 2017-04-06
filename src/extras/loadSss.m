@@ -132,7 +132,8 @@ if containsSystem == 0
 
     elseif isfield(LoadData,'M') %2nd order form
     %     msgID = 'sssMOR:loadSss:2ndOrder';
-        warning('The system is in 2nd order form and will be converted to 1st order.')
+        warning('sss:loadSss:secondOrder',...
+            'The system is in 2nd order form and will be converted to 1st order.')
 
         if ~isfield(LoadData,'D'), 
             LoadData.D = spalloc(size(LoadData.K,1),size(LoadData.K,2),0); 
