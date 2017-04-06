@@ -109,7 +109,7 @@ else
 end
 
 % System/Matrices
-if isa(varargin{1},'sss')
+if isa(varargin{1},'sss') || isa(varargin{1},'ss')
     sys = varargin{1};
 else
     %create a mock system to perform computations
