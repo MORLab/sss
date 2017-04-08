@@ -48,6 +48,23 @@ classdef testMtimes < sssTest
                 end
             end
         end
+        function resultingClass(testCase)
+            sys     = testCase.sysCell{1};
+            sysRed  = ssRed(sys.A,sys.B,sys.C);
+            
+            %sparse * ss    -> sss
+            prod = sys*ss(sys);
+            verifyClass(testCase,prod,'sss');
+            
+            %ssRed  * sss   -> sss
+            prod = sys * sysRed;
+            verifyClass(testCase,prod,'sss');
+            
+            %ssRed  * ssRed -> ssRed
+            prod = sysRed * sysRed;
+            verifyClass(testCase,prod,'ssRed');
+            
+        end
     end
 end
 

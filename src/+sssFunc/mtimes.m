@@ -85,13 +85,19 @@ end
 % Store input and output names of the resulting system
 u = sys2.u;
 
-A = [sys1.A sys1.B*sys2.C; sparse(sys2n,sys1n) sys2.A];
-B = [sys1.B*sys2.D; sys2.B];
-C = [sys1.C, sys1.D*sys2.C];
-D = sys1.D*sys2.D;
-E = [sys1.E sparse(sys1n,sys2n); sparse(sys2n,sys1n) sys2.E];
-
-prod = sss(A,B,C,D,E);
+if isa(sys1,'sss') || isa(sys2,'sss')
+    prod = sss([sys1.A sys1.B*sys2.C; sparse(sys2n,sys1n) sys2.A], ...
+          [sys1.B*sys2.D; sys2.B], ...
+          [sys1.C, sys1.D*sys2.C], ...
+          sys1.D*sys2.D, ...
+          [sys1.E sparse(sys1n,sys2n); sparse(sys2n,sys1n) sys2.E]);
+else %ssRed
+        prod = ssRed([sys1.A sys1.B*sys2.C; zeros(sys2n,sys1n) sys2.A], ...
+          [sys1.B*sys2.D; sys2.B], ...
+          [sys1.C, sys1.D*sys2.C], ...
+          sys1.D*sys2.D, ...
+          [sys1.E zeros(sys1n,sys2n); zeros(sys2n,sys1n) sys2.E]);
+end
 
 prod.u = u;
 

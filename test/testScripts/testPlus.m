@@ -48,7 +48,35 @@ classdef testPlus < sssTest
                 end
             end
         end
-
+        function resultingClass(testCase)
+            sys     = testCase.sysCell{1};
+            sysRed  = ssRed(sys.A,sys.B,sys.C);
+            D       = ones(sys.p,sys.m);
+            
+            %sparse + ss    -> sss
+            sum = sys+ss(sys);
+            verifyClass(testCase,sum,'sss');
+            
+            %ssRed  + sss   -> sss
+            sum = sys + sysRed;
+            verifyClass(testCase,sum,'sss');
+            
+            %ssRed  + ssRed -> ssRed
+            sum = sysRed + sysRed;
+            verifyClass(testCase,sum,'ssRed');
+            
+            %sss  + D       -> sss
+            sum = sys + D;
+            verifyClass(testCase,sum,'sss');
+            verifyEqual(testCase,sum.D,sparse(sys.D+D)); %correct addition
+            verifyEqual(testCase,sys.n,sum.n);   %no dimension increase
+            
+            %ssRed  + D       -> ssRed
+            sum = sysRed + D;
+            verifyClass(testCase,sum,'ssRed');
+            verifyEqual(testCase,sum.D,sys.D+D); %correct addition
+            verifyEqual(testCase,sys.n,sum.n);   %no dimension increase
+        end
     end
 end
 

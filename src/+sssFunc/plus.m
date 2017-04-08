@@ -4,6 +4,7 @@ function sum = plus(sys1, sys2)
 % Syntax:
 %       sum = PLUS(sys1, sys2)
 %       sum = sys1+sys2
+%       sum = sys1+D
 % 
 % Description:
 %       PLUS gives as output the system sum, which is the combination of two 
@@ -11,6 +12,9 @@ function sum = plus(sys1, sys2)
 %       The output of the system sum will be equivalent to the sum of the 
 %       outputs from sys1 and sys2, considering that they are excited with 
 %       the same input u (u-->(sys1+sys2)-->y).
+%
+%       The second argument can also be a feedthrough matrix D with same
+%       count of input/outputs as sys1.
 %
 % Input Arguments:
 %       -sys1, sys2: summand sss-object
@@ -33,22 +37,35 @@ function sum = plus(sys1, sys2)
 % More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Heiko Panzer
+% Authors:      Heiko Panzer, Alessandro Castagnotto
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  05 Nov 2015
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Last Change:  08 Apr 2017
+% Copyright (c) 2015-2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
+
+% parse inputs
+if isa(sys2,'numeric') %feedthrough matrix
+    if sys1.m ~= size(sys2,2)
+        error('sys1 and sys2 must have same number of inputs.')
+    end
+    if sys1.p ~= size(sys2,1)
+        error('sys1 and sys2 must have same number of outputs.')
+    end
+    sum = sys1; sum.D = sys1.D + sys2;
+    return
+end
+
 
 % define system size, because sys.m, sys.n and sys.p are not defined for
 % ss-objects
 sys1n = size(sys1.A,1);
 sys2n = size(sys2.A,1);
-sys1p = size(sys1.B,2);
-sys2p = size(sys2.B,2);
-sys1m = size(sys1.C,1);
-sys2m = size(sys2.C,1);
+sys1m = size(sys1.B,2);
+sys2m = size(sys2.B,2);
+sys1p = size(sys1.C,1);
+sys2p = size(sys2.C,1);
 
 % change sys.E = [] to sys.E = eye(n)
 if isempty(sys1.E) sys1.E=sparse(eye(sys1n)); end
@@ -60,23 +77,26 @@ if isempty(sys2.E)
     end
 end
 
-if sys1n == 0
-    sum = sss(sys2.A, sys2.B, sys2.C, sys2.D, sys2.E);
-    return
-end
-if sys2n == 0
-    sum = sss(sys1.A, sys1.B, sys1.C, sys1.D, sys1.E);
-    return
-end
-if sys1p ~= sys2p
+if sys1n == 0, sum = sys2; return, end
+if sys2n == 0, sum = sys1; return, end
+if sys1m ~= sys2m
     error('sys1 and sys2 must have same number of inputs.')
 end
-if sys1m ~= sys2m
+if sys1p ~= sys2p
     error('sys1 and sys2 must have same number of outputs.')
 end
 
-sum = sss([sys1.A sparse(sys1n,sys2n); sparse(sys2n,sys1n) sys2.A], ...
+% Create the sum object
+if isa(sys1,'sss') || isa(sys2,'sss')
+    sum = sss([sys1.A sparse(sys1n,sys2n); sparse(sys2n,sys1n) sys2.A], ...
           [sys1.B; sys2.B], ...
           [sys1.C, sys2.C], ...
           sys1.D + sys2.D, ...
           [sys1.E sparse(sys1n,sys2n); sparse(sys2n,sys1n) sys2.E]);
+else %ssRed
+    sum = ssRed([sys1.A zeros(sys1n,sys2n); zeros(sys2n,sys1n) sys2.A], ...
+          [sys1.B; sys2.B], ...
+          [sys1.C, sys2.C], ...
+          sys1.D + sys2.D, ...
+          [sys1.E zeros(sys1n,sys2n); zeros(sys2n,sys1n) sys2.E]);
+end
