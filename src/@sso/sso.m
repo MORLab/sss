@@ -132,12 +132,12 @@ classdef sso
                 Df = sparse(sys.p,sys.m);
             end
         end
-%         function M = get.M(sys)
-%             M = sys.M;
-%             if isempty(M)
-%                 M = speye(sys.n);
-%             end
-%         end
+        function Cv = get.Cv(sys)
+            Cv = sys.Cv;
+            if isempty(Cv)
+                Cv = sparse(sys.p,sys.n);
+            end
+        end
         
         function x0 = get.x0(sys)
             x0 = sys.x0;
