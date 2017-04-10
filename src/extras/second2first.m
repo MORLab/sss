@@ -1,7 +1,8 @@
-function varargout = second2first(M, D, K, B, Cx, Cv, Opts)
+function varargout = second2first(varargin)
 %SECOND2FIRST - Convert a 2nd order system to state space representation
 %
 % Syntax:
+%       sys         = SECOND2FIRST(sysSO)
 %       sys         = SECOND2FIRST(M,D,K,B,Cx)
 %       sys         = SECOND2FIRST(M,D,K,B,[],Cv)
 %       sys         = SECOND2FIRST(M,D,K,B,Cx,Cv)
@@ -100,6 +101,31 @@ function varargout = second2first(M, D, K, B, Cx, Cv, Opts)
 % Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
+%% Parse inputs
+if ~isempty(varargin) && isstruct(varargin{end})
+    Opts = varargin{end};
+    varargin = varargin(1:end-1);
+else
+    Opts = struct();
+end
+
+if isa(varargin{1},'sso')
+    [M,D,K,B,Cx,Cv] = dssdata(varargin{1});
+else
+    M = varargin{1};
+    D = varargin{2};
+    K = varargin{3};
+    if length(varargin)>=4
+        B = varargin{4};
+    end
+    if length(varargin)>=5
+        Cx = varargin{5};
+    end
+    if length(varargin)>=6
+        Cv = varargin{6};
+    end
+end
+%%
 % check wheather options are specified or not 
 if ~exist('Opts','var')
     Opts = struct(); 
