@@ -8,6 +8,7 @@ function [varargout] = solveLse(varargin)
 %       [X,Y,Sx,Rx,Sy,Ly]                = SOLVELSE(A,B,E,s0)
 %       [X,Sx,Rx]                        = SOLVELSE(A,B,E,s0,Rt)
 %       [X,Y,Sx,Rx,Sy,Lx]                = SOLVELSE(A,B,C,E,s0,Rt,Lt)
+%       X                                = SOLVELSE(M,D,K,B,s0,Rt,Opts)
 %       [X,Y,Sx,Rx,Sy,Lx]                = SOLVELSE(sys)
 %       [X,Y,Sx,Rx,Sy,Lx]                = SOLVELSE(sys,s0)
 %       [X,Y,Sx,Rx,Sy,Lx]                = SOLVELSE(sys,s0,Rt,Lt)
@@ -21,7 +22,10 @@ function [varargout] = solveLse(varargin)
 %       reusing already computed factorizations, so it is recommended to
 %       sort the shifts in advance. If the output matrix C is passed in
 %       addition, then SOLVELSE computes the solutions X=(A-s0*E)\B and
-%       Y=C/(A-s0*E).'.
+%       Y=C/(A-s0*E).'. 
+%
+%       If matrices M, D, K are passed (or a sso object), then solveLse computes 
+%       X = (s0^2*M+s0*D+K)\B.
 %
 %       If the matrix E is empty or not specified, X=A\B is computed. If s0
 %       is Inf, then the Markov parameter X=(A-s0*E)*B is computed.
@@ -150,8 +154,8 @@ function [varargout] = solveLse(varargin)
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  14 Aug 2016
-% Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
+% Last Change:  10 Apr 2017
+% Copyright (c) 2016, 2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
 Def.lse         = 'sparse'; %use sparse or full LU or lse with Hessenberg decomposition {'sparse', 'full','hess','iterative', 'gauss'}
@@ -184,16 +188,16 @@ else
     Opts = parseOpts(Opts,Def);
 end
 
-% input of sys
-if isa(varargin{1},'sss') || isa(varargin{1},'ss') || isa(varargin{1},'ssRed')
+% parsing of VARARGIN
+if  isa(varargin{1},'sss') || isa(varargin{1},'ss') || isa(varargin{1},'ssRed')
+    % input of sys
+    firstOrder = true;
     sys=varargin{1};
     if isa(sys,'ssRed')
         Opts.lse='hess';
     end
-    A=sys.A;
-    B=sys.B;
-    C=sys.C;
-    E=sys.E;
+    A=sys.A;  B=sys.B;    C=sys.C;    E=sys.E;
+    
     initLse=false;
     if nargout==1 || nargout==3
         hermite=false;
@@ -211,153 +215,224 @@ if isa(varargin{1},'sss') || isa(varargin{1},'ss') || isa(varargin{1},'ssRed')
             hermite=true;
         end
     end
+elseif isa(varargin{1},'sso'); 
+    firstOrder = false;
+    sys=varargin{1};
+
+    M   =sys.M;
+    D   =sys.D;
+    K   =sys.K;
+    B   =sys.B;
+%     Cp  =sys.Cp;
+%     Cv  =sys.Cv;
     
-elseif length(varargin)>1
-    % input of matrices
-    A=varargin{1};
-    B=varargin{2};
     initLse=false;
     
-    switch length(varargin)
-        case 2
+%     if nargout==1 || nargout==3
+        hermite=false;
+%     else
+%         hermite=true;
+%     end
+    if length(varargin)>1
+        s0=varargin{2};
+        if length(varargin)==3
+            Rt=varargin{3};
             hermite=false;
-            % check if Rt directions are necessary
-            if size(B,2)>1
-                Rt = speye(size(B,2));
-                s0=zeros(1,size(B,2));
-                withoutE=true;
-            end
-        case 3
-            if ~isscalar(varargin{1}) && size(varargin{3},1)==size(A,1) && size(varargin{3},2)==size(A,2)
-                error('Please specify s0.');
-            elseif size(varargin{3},1)==size(B,2) && size(varargin{3},2)==size(B,1)
-                C=varargin{3};
-                hermite=true;
-                if size(B,2)>1
-                    Rt = speye(size(B,2));
-                    Lt = Rt;
-                    s0=zeros(1,size(B,2));
-                    withoutE=true;
-                end
-            else
-                error('Wrong input.');
-            end
-        case 4
-            if size(varargin{3},1)==size(A,1) && size(varargin{3},2)==size(A,2) && (nargout==1 || nargout==3)
-                E=varargin{3};
-                s0=varargin{4};
-                hermite=false;
-            elseif size(varargin{4},1)==size(A,1) && size(varargin{4},2)==size(A,2) && (nargout==2 || nargout >3)
-                C=varargin{3};
-                E=varargin{4};
-                s0=1;
-                hermite=true;
-            else
-                error('Wrong input');
-            end
-        case 5
-            if size(varargin{3},1)==size(A,1) && size(varargin{3},2)==size(A,2) && (nargout==1 || nargout==3)
-                E=varargin{3};
-                s0=varargin{4};
-                Rt=varargin{5};
-                hermite=false;
-            elseif size(varargin{4},1)==size(A,1) && size(varargin{4},2)==size(A,2) && (nargout==2 || nargout >3)
-                C=varargin{3};
-                E=varargin{4};
-                s0=varargin{5};
-                hermite=true;
-            else
-                error('Wrong input');
-            end
-        case 6
-            if isscalar(varargin{1})
-                jCol=varargin{1};
-                V=varargin{2};
-                A=varargin{3};
-                B=varargin{4};
-                E=varargin{5};
-                s0=varargin{6};
-                hermite=false;
-            else
-                error('Wrong input');
-            end
-        case 7
-            if isscalar(varargin{1}) && (nargout==1  || nargout==3)
-                jCol=varargin{1};
-                V=varargin{2};
-                A=varargin{3};
-                B=varargin{4};
-                E=varargin{5};
-                s0=varargin{6};
-                Rt=varargin{7};
-                hermite=false;
-            elseif nargout==2 || nargout>3
-                C=varargin{3};
-                E=varargin{4};
-                s0=varargin{5};
-                Rt=varargin{6};
-                Lt=varargin{7};
-                hermite=true;
-            else
-                error('Wrong input.');
-            end
-        case 8
-            if isscalar(varargin{1})
-                jCol=varargin{1};
-                V=varargin{2};
-                W=varargin{3};
-                A=varargin{4};
-                B=varargin{5};
-                C=varargin{6};
-                E=varargin{7};
-                s0=varargin{8};
-                hermite=true;
-            else
-                error('Wrong input');
-            end
-        case 10
-            if isscalar(varargin{1})
-                jCol=varargin{1};
-                V=varargin{2};
-                W=varargin{3};
-                A=varargin{4};
-                B=varargin{5};
-                C=varargin{6};
-                E=varargin{7};
-                s0=varargin{8};
-                Rt=varargin{9};
-                Lt=varargin{10};
-                hermite=true;
-            else
-                error('Wrong input');
-            end
-        otherwise
-            error('Wrong inputs');
+%         elseif length(varargin)==4
+%             Rt=varargin{3};
+%             Lt=varargin{4};
+%             hermite=true;
+        end
     end
+    %======= otherwise, matrices were passed ===============
 elseif length(varargin)==1
-    A=varargin{1};
+    firstOrder = true;
+    A = varargin{1};
     initLse=true;
     hermite=false;
     withoutE=true;
+elseif length(varargin)>1
+    % input of matrices
+    if isscalar(varargin{1}) ||  any(size(varargin{2})~=size(varargin{1})) %FIRST ODER FORM
+        firstOrder = true;
+        %first oder model
+        A=varargin{1};
+        B=varargin{2};
+        initLse=false;
+
+        switch length(varargin)
+            case 2
+                hermite=false;
+                % check if Rt directions are necessary
+                if size(B,2)>1
+                    Rt = speye(size(B,2));
+                    s0=zeros(1,size(B,2));
+                    withoutE=true;
+                end
+            case 3
+                if ~isscalar(varargin{1}) && size(varargin{3},1)==size(A,1) && size(varargin{3},2)==size(A,2)
+                    error('Please specify s0.');
+                elseif size(varargin{3},1)==size(B,2) && size(varargin{3},2)==size(B,1)
+                    C=varargin{3};
+                    hermite=true;
+                    if size(B,2)>1
+                        Rt = speye(size(B,2));
+                        Lt = Rt;
+                        s0=zeros(1,size(B,2));
+                        withoutE=true;
+                    end
+                else
+                    error('Wrong input.');
+                end
+            case 4
+                if size(varargin{3},1)==size(A,1) && size(varargin{3},2)==size(A,2) && (nargout==1 || nargout==3)
+                    E=varargin{3};
+                    s0=varargin{4};
+                    hermite=false;
+                elseif size(varargin{4},1)==size(A,1) && size(varargin{4},2)==size(A,2) && (nargout==2 || nargout >3)
+                    C=varargin{3};
+                    E=varargin{4};
+                    s0=1;
+                    hermite=true;
+                else
+                    error('Wrong input');
+                end
+            case 5
+                if size(varargin{3},1)==size(A,1) && size(varargin{3},2)==size(A,2) && (nargout==1 || nargout==3)
+                    E=varargin{3};
+                    s0=varargin{4};
+                    Rt=varargin{5};
+                    hermite=false;
+                elseif size(varargin{4},1)==size(A,1) && size(varargin{4},2)==size(A,2) && (nargout==2 || nargout >3)
+                    C=varargin{3};
+                    E=varargin{4};
+                    s0=varargin{5};
+                    hermite=true;
+                else
+                    error('Wrong input');
+                end
+            case 6
+                if isscalar(varargin{1})
+                    jCol=varargin{1};
+                    V=varargin{2};
+                    A=varargin{3};
+                    B=varargin{4};
+                    E=varargin{5};
+                    s0=varargin{6};
+                    hermite=false;
+                else
+                    error('Wrong input');
+                end
+            case 7
+                if isscalar(varargin{1}) && (nargout==1  || nargout==3)
+                    jCol=varargin{1};
+                    V=varargin{2};
+                    A=varargin{3};
+                    B=varargin{4};
+                    E=varargin{5};
+                    s0=varargin{6};
+                    Rt=varargin{7};
+                    hermite=false;
+                elseif nargout==2 || nargout>3
+                    C=varargin{3};
+                    E=varargin{4};
+                    s0=varargin{5};
+                    Rt=varargin{6};
+                    Lt=varargin{7};
+                    hermite=true;
+                else
+                    error('Wrong input.');
+                end
+            case 8
+                if isscalar(varargin{1})
+                    jCol=varargin{1};
+                    V=varargin{2};
+                    W=varargin{3};
+                    A=varargin{4};
+                    B=varargin{5};
+                    C=varargin{6};
+                    E=varargin{7};
+                    s0=varargin{8};
+                    hermite=true;
+                else
+                    error('Wrong input');
+                end
+            case 10
+                if isscalar(varargin{1})
+                    jCol=varargin{1};
+                    V=varargin{2};
+                    W=varargin{3};
+                    A=varargin{4};
+                    B=varargin{5};
+                    C=varargin{6};
+                    E=varargin{7};
+                    s0=varargin{8};
+                    Rt=varargin{9};
+                    Lt=varargin{10};
+                    hermite=true;
+                else
+                    error('Wrong input');
+                end
+            otherwise
+                error('Wrong inputs');
+        end
+    else %SECOND ORDER FORM
+        firstOrder = false;
+        %second oder model
+        M   = varargin{1};
+        D   = varargin{2};
+        K   = varargin{3};
+        B   = varargin{4};
+        if length(varargin)>=5
+            s0  = varargin{5};
+        end
+        if length(varargin)>=6
+            Rt  = varargin{6};
+        end
+        
+        initLse = false; %hard coded for the moment
+        hermite = false;   
+    end
 else
     error('Wrong input.');
 end
 
 
-% check E-matrix, tangential directions and IP
-if ~exist('E','var') || isempty(E)
-    withoutE=true;
-    if ~exist('s0','var') || isempty(s0)
-        s0=0;
+%% check E-matrix, tangential directions and IP
+if firstOrder
+    if ~exist('E','var') || isempty(E)
+        withoutE=true;
+        if ~exist('s0','var') || isempty(s0)
+            s0=0;
+        end
+    else
+        withoutE=false;
     end
-else
-    withoutE=false;
+
+    % If the 'full' option is selected for LU, convert E,A once to full
+    if withoutE
+        if strcmp(Opts.lse,'full')
+            A = full(A);
+        elseif strcmp(Opts.lse,'hess')
+            [P,A] = hess(full(A)); B = P.'*B; if hermite, C = C*P; end
+        elseif strcmp(Opts.lse,'sparse')
+            A=sparse(A);
+        end
+    else
+        if strcmp(Opts.lse,'full')
+            E = full(E); A = full(A);
+        elseif strcmp(Opts.lse,'hess')
+            [A,E,Q,Z] = hess(full(A),full(E)); B = Q*B; if hermite, C = C*Z; end
+        elseif strcmp(Opts.lse,'sparse')
+            E = sparse(E); A=sparse(A);
+        end
+    end
 end
 
 if ~exist('Rt','var') && ~initLse
     if size(B,2)==1 %siso
         Rt=ones(1,length(s0));
-        if hermite && size(C,1)==1
+        if firstOrder && hermite && size(C,1)==1
             Lt=ones(1,length(s0));
         end
     else
@@ -369,25 +444,7 @@ if exist('jCol','var') && ~isempty(jCol) && strcmp(Opts.lse,'hess')
     error('jCol and Opts.lse=hess are not compatible');
 end
 
-% If the 'full' option is selected for LU, convert E,A once to full
-if withoutE
-    if strcmp(Opts.lse,'full')
-        A = full(A);
-    elseif strcmp(Opts.lse,'hess')
-        [P,A] = hess(full(A)); B = P.'*B; if hermite, C = C*P; end
-    elseif strcmp(Opts.lse,'sparse')
-        A=sparse(A);
-    end
-else
-    if strcmp(Opts.lse,'full')
-        E = full(E); A = full(A);
-    elseif strcmp(Opts.lse,'hess')
-        [A,E,Q,Z] = hess(full(A),full(E)); B = Q*B; if hermite, C = C*Z; end
-    elseif strcmp(Opts.lse,'sparse')
-        E = sparse(E); A=sparse(A);
-    end
-end
-
+%% Computation
 if initLse
     if ~strcmp(Opts.lse,'sparse') && ~strcmp(Opts.lse,'full')
         error('Initialization of solveLse requires Opts.lse="sparse"/"full".');
@@ -396,13 +453,11 @@ if initLse
     nextDirection(1,0,zeros(size(A,1),1));
     
 elseif exist('jCol','var') && ~isempty(jCol)
-    
     if hermite
         [V, SRsylv, Rsylv, W, SLsylv, Lsylv] = nextDirection(jCol, s0, V, W);
     else
         [V, SRsylv, Rsylv] = nextDirection(jCol, s0, V);
-    end
-    
+    end 
     % output
     if hermite
         varargout{1}=V;
@@ -418,21 +473,25 @@ elseif exist('jCol','var') && ~isempty(jCol)
     end
 else
     % preallocate memory
-    q=length(s0)+nnz(imag(s0));
-    V=zeros(size(A,1),q);
-    Rv=zeros(size(B,2),q);
-    Sv=zeros(q);
+    q   =length(s0)+nnz(imag(s0));
+    if firstOrder
+        V   =zeros(size(A,1),q);
+    else
+        V   =zeros(size(M,1),q);
+    end
+    Rv  =zeros(size(B,2),q);
+    Sv  =zeros(q);
     if hermite
-        W = zeros(size(A,1),q);
-        Lw = zeros(size(C,1),q);
-        Sw=zeros(q);
+        W   = zeros(size(A,1),q);
+        Lw  = zeros(size(C,1),q);
+        Sw  =zeros(q);
     end
     
     for jCol=1:length(s0)
         if hermite
-            [V, SRsylv, Rsylv, W, SLsylv, Lsylv] = nextDirection(jCol, s0, V, W);
+            [V, SRsylv, Rsylv, W, SLsylv, Lsylv]    = nextDirection(jCol, s0, V, W);
         else
-            [V, SRsylv, Rsylv] = nextDirection(jCol, s0, V);
+            [V, SRsylv, Rsylv]                      = nextDirection(jCol, s0, V);
         end
         Sv(:,jCol) = SRsylv;
         Rv(:,jCol) = Rsylv*Rt(:,jCol);
@@ -471,6 +530,9 @@ else
     end
 end
 
+%% ==================================================================
+%   Auxiliary
+%  ==================================================================
     function [V, SRsylv, Rsylv, W, SLsylv, Lsylv] = nextDirection(jCol, s0, V, W)
         %   Get the next direction by solving the lse
         %   Input:  jCol:  Column to be treated
@@ -488,23 +550,23 @@ end
         %                  Lw (Lsylv either eye(size(C,1)) or
         %                  zeros(size(C,1)), e.g. Lsylv(:,jCol)=Lsylv*Lt(:,jCol)
         
-        SRsylv=zeros(size(V,2),1);
+        SRsylv  = zeros(size(V,2),1);
         if hermite
-            SLsylv=zeros(size(W,2),1);
+            SLsylv = zeros(size(W,2),1);
         end
         
         % build Krylov subspace or just solve lse with current s0, Rt and B
         switch Opts.krylov
             case 0
-                tempV=B*Rt(:,jCol);
-                newlu=1;
-                newtan=1;
-                SRsylv(jCol)=s0(jCol);
-                Rsylv=eye(size(B,2));
+                tempV   = B*Rt(:,jCol);
+                newlu   = 1;
+                newtan  = 1;
+                SRsylv(jCol) = s0(jCol);
+                Rsylv = eye(size(B,2));
                 if hermite
-                    SLsylv(jCol)=s0(jCol);
-                    Lsylv=eye(size(C,1));
-                    tempW = C.'*Lt(:,jCol);
+                    SLsylv(jCol)    = s0(jCol);
+                    Lsylv           = eye(size(C,1));
+                    tempW           = C.'*Lt(:,jCol);
                 end
                 % reuse old factors, but don't build Krylov subspace (tempV ~= E*V(:,jCol-1))
                 if jCol>1
@@ -516,19 +578,19 @@ end
                     end
                 end
                 if hermite
-                    [V(:,jCol), W(:,jCol)] = lse(newlu, newtan, jCol, s0, tempV, tempW);
+                    [V(:,jCol), W(:,jCol)]  = lse(newlu, newtan, jCol, s0, tempV, tempW);
                 else
-                    V(:,jCol) = lse(newlu, newtan, jCol, s0, tempV);
+                    V(:,jCol)               = lse(newlu, newtan, jCol, s0, tempV);
                 end
             case 'standardKrylov'
                 % new basis vector
-                tempV=B*Rt(:,jCol); newlu=1; newtan=1;
+                tempV       = B*Rt(:,jCol); newlu=1; newtan=1;
                 SRsylv(jCol)=s0(jCol);
-                Rsylv=eye(size(B,2));
+                Rsylv       =eye(size(B,2));
                 if hermite
-                    SLsylv(jCol)=s0(jCol);
-                    Lsylv=eye(size(C,1));
-                    tempW = C.'*Lt(:,jCol);
+                    SLsylv(jCol)    = s0(jCol);
+                    Lsylv           = eye(size(C,1));
+                    tempW           = C.'*Lt(:,jCol);
                 end
                 if jCol>1
                     if s0(jCol)==s0(jCol-1)
@@ -550,9 +612,9 @@ end
                     end
                 end
                 if hermite
-                    [V(:,jCol), W(:,jCol)] = lse(newlu, newtan, jCol, s0, tempV, tempW);
+                    [V(:,jCol), W(:,jCol)]  = lse(newlu, newtan, jCol, s0, tempV, tempW);
                 else
-                    V(:,jCol) = lse(newlu, newtan, jCol, s0, tempV);
+                    V(:,jCol)               = lse(newlu, newtan, jCol, s0, tempV);
                 end
             case 'cascadedKrylov'
                 if size(B,2)==1
@@ -736,21 +798,31 @@ end
                 end
                 
                 if newlu==1
-                    if withoutE
-                        switch Opts.lse
-                            case 'sparse'
-                                % vector LU for sparse matrices
-                                [L,U,a,o,S]=lu(A,'vector');
-                            case 'full'
-                                [L,U] = lu(A);
+                    if firstOrder
+                        if withoutE
+                            switch Opts.lse
+                                case 'sparse'
+                                    % vector LU for sparse matrices
+                                    [L,U,a,o,S]=lu(A,'vector');
+                                case 'full'
+                                    [L,U] = lu(A);
+                            end
+                        else
+                            switch Opts.lse
+                                case 'sparse'
+                                    % vector LU for sparse matrices
+                                    [L,U,a,o,S]=lu(A-s0(jCol)*E,'vector');
+                                case 'full'
+                                    [L,U] = lu(A-s0(jCol)*E);
+                            end
                         end
-                    else
-                        switch Opts.lse
+                    else %sso
+                         switch Opts.lse
                             case 'sparse'
                                 % vector LU for sparse matrices
-                                [L,U,a,o,S]=lu(A-s0(jCol)*E,'vector');
+                                [L,U,a,o,S]=lu(s0(jCol)^2*M +s0(jCol)*D + K ,'vector');
                             case 'full'
-                                [L,U] = lu(A-s0(jCol)*E);
+                                [L,U] = lu(s0(jCol)^2*M +s0(jCol)*D + K);
                         end
                     end
                 end
