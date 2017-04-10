@@ -107,7 +107,7 @@ classdef sso
             end
             
             if nargin >= 7
-                sys.Df = varargin{6};
+                sys.Df = varargin{7};
             end
             
             if nargin > 7
@@ -199,19 +199,19 @@ classdef sso
                 n_ = 0;
                 p_ = size(Df,1);
                 
-                sys.M = sparse(n_,n_);
-                sys.D = sparse(n_,n_);
-                sys.K = sparse(n_,n_);
-                sys.B = sparse(n_,m_);
-                sys.Cf = sparse(p_,n_);
-                sys.Cv = sparse(p_,n_);
-                sys.Df = Df;
+                sys.M   = sparse(n_,n_);
+                sys.D   = sparse(n_,n_);
+                sys.K   = sparse(n_,n_);
+                sys.B   = sparse(n_,m_);
+                sys.Cf  = sparse(p_,n_);
+                sys.Cv  = sparse(p_,n_);
+                sys.Df  = Df;
             else
                 if size(Df,2) ~= sys.m
-                    error('B and D must have the same number of columns.')
+                    error('B and Df must have the same number of columns.')
                 end
                 if size(Df,1) ~= sys.p
-                    error('Cp and D must have the same number of rows.')
+                    error('Cp and Df must have the same number of rows.')
                 end
                 sys.Df = Df;
             end
