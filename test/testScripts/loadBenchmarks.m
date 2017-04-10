@@ -33,9 +33,9 @@ badBenchmarks = {'LF10.mat','beam.mat','random.mat',...
 benchmarksCheck;
 
 % load files
-filesAll=dir(fullfile(pathBenchmarks));
-files=cell(length(filesAll),1);
-nFiles=1; % count of .mat files
+filesAll    =dir(fullfile(pathBenchmarks));
+files       =cell(length(filesAll),1);
+nFiles      =1; % count of .mat files
 for i=1:length(filesAll)
     [~,~,ext]=fileparts(filesAll(i).name);
     if strcmp(ext,'.mat')
@@ -52,8 +52,9 @@ disp('Loaded systems:');
 warning('off');
 for i=1:length(files)
     if nLoaded<Opts.number+1
-        sys = loadSss(files{i});
-        if (size(sys.A,1)<=Opts.maxSize && size(sys.A,1)>=Opts.minSize &&...
+        if ~strcmp(files{i},'buildingSO.mat') %sso benchmark
+            sys = loadSss(files{i});
+            if (size(sys.A,1)<=Opts.maxSize && size(sys.A,1)>=Opts.minSize &&...
             ((strcmp(Opts.dae,'all') ||...
              (strcmp(Opts.dae,'withoutDae') && ~sys.isDae)||...
              (strcmp(Opts.dae,'onlyDae') && sys.isDae))))
@@ -81,6 +82,7 @@ for i=1:length(files)
                 otherwise 
                       error('Benchmark option is wrong.');
             end 
+            end
         end
     end
 end
