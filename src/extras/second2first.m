@@ -6,8 +6,8 @@ function varargout = second2first(varargin)
 %       sys         = SECOND2FIRST(M,D,K,B,Cx)
 %       sys         = SECOND2FIRST(M,D,K,B,[],Cv)
 %       sys         = SECOND2FIRST(M,D,K,B,Cx,Cv)
-%       sys         = SECOND2FIRST(M,D,K,B,Cx,Cv,Opts)
-%       [A,B,C,D,E] = SECOND2FIRST(M,D,K,B,Cx,Cv,Opts)
+%       sys         = SECOND2FIRST(M,D,K,B,Cx,Cv,Df,Opts)
+%       [A,B,C,D,E] = SECOND2FIRST(M,D,K,B,Cx,Cv,Df,Opts)
 %
 % Description:
 %       This function takes the system matrices of a 2nd order system and
@@ -110,7 +110,7 @@ else
 end
 
 if isa(varargin{1},'sso')
-    [M,D,K,B,Cx,Cv] = dssdata(varargin{1});
+    [M,D,K,B,Cp,Cv,Df] = dssdata(varargin{1});
 else
     M = varargin{1};
     D = varargin{2};
@@ -119,10 +119,13 @@ else
         B = varargin{4};
     end
     if length(varargin)>=5
-        Cx = varargin{5};
+        Cp = varargin{5};
     end
     if length(varargin)>=6
         Cv = varargin{6};
+    end
+    if length(varargin)>=7
+        Df = varargin{7};
     end
 end
 %%
@@ -199,18 +202,18 @@ E = [F O; O M];
 A = [O F; -K -D];
 
 % check the matrix-dimensions of Cx and Cv and B
-if isempty(Cx) && isempty(Cv)
+if isempty(Cp) && isempty(Cv)
     % both output vectors are empty
     error('All outputs are zero.');
-elseif isempty(Cx)
+elseif isempty(Cp)
     % only Cv is given
-    Cx = sparse(size(Cv,1),n);
+    Cp = sparse(size(Cv,1),n);
 elseif ~exist('Cv', 'var') || isempty(Cv)
     % only Cx is given
-    Cv = sparse(size(Cx,1),n);
-elseif any(size(Cx)-size(Cv))
+    Cv = sparse(size(Cp,1),n);
+elseif any(size(Cp)-size(Cv))
     error('Cx and Cv must have same size.');
-elseif size(Cx,2)~=size(M,2)
+elseif size(Cp,2)~=size(M,2)
     error('Cx, Cv must have same column dimension as M, D, K')
 end
 
@@ -222,13 +225,13 @@ end
 
 % create the matrices C, D and B for the first-order-system 
 B = [sparse(n,size(B,2)); B];
-C = [Cx, Cv];
-D = zeros(size(C,1),size(B,2));
+C = [Cp, Cv];
+D = Df;
 
 if nargout == 1
     % create the first-order-system
-    varargout{1} = sss(A, B, C, D, E);
+    varargout{1}    = sss(A, B, C, D, E);
 else
     % return system matrices
-    varargout = {A,B,C,D,E};
+    varargout       = {A,B,C,D,E};
 end
