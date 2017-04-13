@@ -7,6 +7,7 @@ classdef sss
 %       sys = SSS(A,B,C,D,E,Ts)
 %       sys = SSS(sys_ss)
 %       sys = SSS(D)
+%       sys = SSS('filename')
 %
 % Description:
 %       This class allows you to create sparse state-space (sss) objects by
@@ -147,6 +148,13 @@ classdef sss
                 %% Identity
                 if isa (varargin{1}, 'sss')
                     sys = varargin{1};
+                    return
+                end
+                %% filename
+                if isa (varargin{1}, 'char')
+                    warning('off','sss:loadSss:deprecated');
+                    sys = loadSss(varargin{1});
+                    warning('on','sss:loadSss:deprecated');
                     return
                 end
                 %% Convert matlab LTI systems

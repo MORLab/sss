@@ -5,6 +5,9 @@ function sys = loadSss(fname,Opts)
 %       sys = LOADSSS(fname,Opts)
 %
 % Description:
+%       //Note: loadSss is deprecated and will be removed in later releases
+%       of sss. Use |sss(fname)| instead.
+%   
 %       loadSss lets you define the path to a .mat file in which 
 %       the system matrices are stored, either in the form (A,B,C,D,E) - 1st
 %       order - or (M,Da,K,B,C) - 2nd order.
@@ -78,6 +81,9 @@ function sys = loadSss(fname,Opts)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
+warning('sss:loadSss:deprecated',['loadSss is deprecated and will be removed in later releases',...
+        ' of sss. Use ''sss(fname)'' instead.']);
+    
 %%  Parse input and define default options
 if nargin == 0, error('No benchmark system defined'),
 else
