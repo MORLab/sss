@@ -145,10 +145,16 @@ elseif any(size(M)-size(K))
     error('M and K must have same size.');
 end
 
-if isempty(D) || ~any(any(D))
+if ~exist('D','var') || isempty(D)
     D = sparse(size(M,1), size(M,1));
 elseif any(size(D)-size(K))
     error('D must have same size as M and K.');
+end
+
+if ~exist('Df','var') || isempty(Df)
+    Df = sparse(size(Cp,1), size(B,2));
+elseif any(size(Df)-[size(Cp,1),size(B,2)])
+    error('Df must have compatible size with B and C');
 end
 
 % check if user defined scalar or matrix is valid

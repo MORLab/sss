@@ -52,37 +52,35 @@ disp('Loaded systems:');
 warning('off');
 for i=1:length(files)
     if nLoaded<Opts.number+1
-        if ~strcmp(files{i},'buildingSO.mat') %sso benchmark
-            sys = loadSss(files{i});
-            if (size(sys.A,1)<=Opts.maxSize && size(sys.A,1)>=Opts.minSize &&...
-            ((strcmp(Opts.dae,'all') ||...
-             (strcmp(Opts.dae,'withoutDae') && ~sys.isDae)||...
-             (strcmp(Opts.dae,'onlyDae') && sys.isDae))))
-            switch(Opts.cond)
-                case 'good'
-                     if ~any(strcmp(files{i},badBenchmarks))
-                        if strcmp(files{i},'iss.mat')
-                            benchmarksSysCell{nLoaded}=sys([1 3],[1 2 3]);
-                        else
-                            benchmarksSysCell{nLoaded}=sys;
-                        end
-                        nLoaded=nLoaded+1;
-                        disp(files{i});
-                     end
-                case 'bad'
-                     if any(strcmp(files{i},badBenchmarks))
+        sys = loadSss(files{i});
+        if (size(sys.A,1)<=Opts.maxSize && size(sys.A,1)>=Opts.minSize &&...
+        ((strcmp(Opts.dae,'all') ||...
+         (strcmp(Opts.dae,'withoutDae') && ~sys.isDae)||...
+         (strcmp(Opts.dae,'onlyDae') && sys.isDae))))
+        switch(Opts.cond)
+            case 'good'
+                 if ~any(strcmp(files{i},badBenchmarks))
+                    if strcmp(files{i},'iss.mat')
+                        benchmarksSysCell{nLoaded}=sys([1 3],[1 2 3]);
+                    else
                         benchmarksSysCell{nLoaded}=sys;
-                        nLoaded=nLoaded+1;
-                        disp(files{i});
-                     end
-                case 'all'
-                      benchmarksSysCell{nLoaded}=sys;
-                      nLoaded=nLoaded+1;
-                      disp(files{i});
-                otherwise 
-                      error('Benchmark option is wrong.');
-            end 
-            end
+                    end
+                    nLoaded=nLoaded+1;
+                    disp(files{i});
+                 end
+            case 'bad'
+                 if any(strcmp(files{i},badBenchmarks))
+                    benchmarksSysCell{nLoaded}=sys;
+                    nLoaded=nLoaded+1;
+                    disp(files{i});
+                 end
+            case 'all'
+                  benchmarksSysCell{nLoaded}=sys;
+                  nLoaded=nLoaded+1;
+                  disp(files{i});
+            otherwise 
+                  error('Benchmark option is wrong.');
+        end 
         end
     end
 end
