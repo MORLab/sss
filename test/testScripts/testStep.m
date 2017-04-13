@@ -111,7 +111,7 @@ classdef testStep < sssTest
                 sys=testCase.sysCell{i};
                 if ~sys.isDae
                     close all
-                    sys2=loadSss('building');
+                    sys2=sss('building');
                     t=0.01:0.01:0.03;
                     Tfinal=0.01;
                     

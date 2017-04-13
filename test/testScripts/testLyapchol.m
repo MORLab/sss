@@ -23,16 +23,16 @@ classdef testLyapchol < sssTest
         function testLyapcholE(testCase) 
             for i=1:2
                 if i<2
-                    sys=loadSss('LF10'); % E is symmetric
+                    sys=sss('LF10'); % E is symmetric
                 else
-                    sys=loadSss('SpiralInductorPeec');
+                    sys=sss('SpiralInductorPeec');
                 end
                 [S,R]=lyapchol(sys);               
                 verification(testCase, sys, S, R);      
             end
         end
         function testMatrices(testCase) 
-            sys  = loadSss('SpiralInductorPeec');
+            sys  = sss('SpiralInductorPeec');
             
             [S,R]=lyapchol(sys);  
             verification(testCase, sys, S, R);  

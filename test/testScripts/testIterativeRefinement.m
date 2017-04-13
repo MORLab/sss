@@ -2,7 +2,7 @@ classdef testIterativeRefinement < sssTest
     
     methods (Test)  
         function testUsage(testCase)
-            sys= loadSss('CDplayer');
+            sys= sss('CDplayer');
             A = sys.A; B = sys.B; X = A\B;
             [L,U] = lu(A);
             
@@ -32,7 +32,7 @@ classdef testIterativeRefinement < sssTest
         end
         function testVectorBNoLu(testCase)
            % load model
-           sys = loadSss('CDplayer');
+           sys = sss('CDplayer');
            sys = sys(1,1); %make siso -> B is a vector
            
            % solve lse
@@ -63,7 +63,7 @@ classdef testIterativeRefinement < sssTest
         end
         function testMatrixBNoLu(testCase)
            % load model
-           sys = loadSss('CDplayer');
+           sys = sss('CDplayer');
            
            % solve lse
            A = sys.A; B = sys.B;
@@ -93,7 +93,7 @@ classdef testIterativeRefinement < sssTest
         end
         function testMatrixBLu(testCase)
            % load model
-           sys = loadSss('CDplayer');
+           sys = sss('CDplayer');
            
            % solve lse
            A = sys.A; B = sys.B;

@@ -121,8 +121,8 @@ classdef testImpulse < sssTest
             for i=1:length(testCase.sysCell)
                 sys=testCase.sysCell{i};
                 if ~sys.isDae
-                    sys2=loadSss('building');
-                    sys3=loadSss('CDplayer');
+                    sys2=sss('building');
+                    sys3=sss('CDplayer');
                     Tfinal=0.05;
                     
                     % test call
@@ -133,7 +133,7 @@ classdef testImpulse < sssTest
         function testImpulseTF(testCase)
         %Compare the impulse response recovered from the tf-object with the
         %solution from impulse
-            sys = loadSss('beam');
+            sys = sss('beam');
             
             %recover impulse response from the tf-object
             tf = impulse(sys,struct('tf',1));

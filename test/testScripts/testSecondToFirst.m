@@ -6,30 +6,30 @@ classdef testSecondToFirst < sssTest
             
             % option 'I'
             Opts.transf2nd = 'I';
-            sys_I = loadSss('LF10',Opts);
+            sys_I = sss('LF10',Opts);
             
             % option 'K'
             Opts.transf2nd = 'K';
-            sys_K = loadSss('LF10',Opts);
+            sys_K = sss('LF10',Opts);
             
             % option '-K'
             Opts.transf2nd = '-K';
-            sys_minK = loadSss('LF10',Opts);
+            sys_minK = sss('LF10',Opts);
             
             % optoin 'alpha'
             Opts.transf2nd = 'alpha';
-            sys_alpha = loadSss('LF10',Opts);
+            sys_alpha = sss('LF10',Opts);
             
             % option scalar value
             Opts.transf2nd = 5;
-            sys_scalar = loadSss('LF10',Opts);
+            sys_scalar = sss('LF10',Opts);
             
             % option user defined matrix
             F = rand(18);
             F = (F+F');
             F = F + 20*eye(18);
             Opts.transf2nd = F;
-            sys_matrix = loadSss('LF10',Opts);
+            sys_matrix = sss('LF10',Opts);
             
             % create bode-plots
             [mag_I,phase_I,omega] = bode(sys_I);
