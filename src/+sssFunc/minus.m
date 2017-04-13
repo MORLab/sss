@@ -55,14 +55,26 @@ function diff = minus(sys1, sys2)
 % Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
+% parse inputs
+if isa(sys2,'numeric') %feedthrough matrix
+    if sys1.m ~= size(sys2,2)
+        error('sys1 and sys2 must have same number of inputs.')
+    end
+    if sys1.p ~= size(sys2,1)
+        error('sys1 and sys2 must have same number of outputs.')
+    end
+    diff = sys1; diff.D = diff.D - sys2;
+    return
+end
+
 % define system size, because sys.m, sys.n and sys.p are not defined for
 % ss-objects
 sys1n = size(sys1.A,1);
 sys2n = size(sys2.A,1);
-sys1p = size(sys1.B,2);
-sys2p = size(sys2.B,2);
-sys1m = size(sys1.C,1);
-sys2m = size(sys2.C,1);
+sys1m = size(sys1.B,2);
+sys2m = size(sys2.B,2);
+sys1p = size(sys1.C,1);
+sys2p = size(sys2.C,1);
 
 % change sys.E = [] to sys.E = eye(n)
 if isempty(sys1.E) sys1.E=sparse(eye(sys1n)); end
@@ -83,15 +95,24 @@ if sys2n == 0
     diff = sss(sys1.A, sys1.B, sys1.C, sys1.D, sys1.E);
     return
 end
-if sys1p ~= sys2p
+if sys1m ~= sys2m
     error('sys1 and sys2 must have same number of inputs.')
 end
-if sys1m ~= sys2m
+if sys1p ~= sys2p
     error('sys1 and sys2 must have same number of outputs.')
 end
 
-diff = sss([sys1.A sparse(sys1n,sys2n); sparse(sys2n,sys1n) sys2.A], ...
+% Create the diff object
+if isa(sys1,'sss') || isa(sys2,'sss')
+    diff = sss([sys1.A sparse(sys1n,sys2n); sparse(sys2n,sys1n) sys2.A], ...
           [sys1.B; sys2.B], ...
           [sys1.C, -sys2.C], ...
-          sys1.D - sys2.D, ...
+          sys1.D  -sys2.D, ...
           [sys1.E sparse(sys1n,sys2n); sparse(sys2n,sys1n) sys2.E]);
+else %ssRed
+    diff = ssRed([sys1.A zeros(sys1n,sys2n); zeros(sys2n,sys1n) sys2.A], ...
+          [sys1.B; sys2.B], ...
+          [sys1.C, -sys2.C], ...
+          sys1.D  -sys2.D, ...
+          [sys1.E zeros(sys1n,sys2n); zeros(sys2n,sys1n) sys2.E]);
+end
