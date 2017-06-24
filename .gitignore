@@ -96,3 +96,10 @@ _*.pdf
 # Complete directories
 test/testScripts/CURE.gif
 src/psss/benchmarks/
+
+# Files generated automatically by running publishHelp.m
+# =======================================================
+doc/html/helpsearch-v3/
+doc/html/*.html
+doc/html/*.png
+doc/source/functions/*.m

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+SSS Toolbox
+Copyright (c) 2017 Institute of Automatic Control,
+  Technische Universitaet Muenchen
+See doc/html/txts/LICENSE.txt for license information.
+web: https://www.rt.mw.tum.de/
+
+(This file has been generated automatically)
+-->
+<toc version="2.0">
+    <tocitem image="$toolbox/matlab/icons/book_mat.gif" target="product_page.html">sss Toolbox
+        <tocitem image="HelpIcon.GETTING_STARTED" target="getting_started_index.html">Getting Started
+            <tocitem target="whatis_sss.html">What is sss?</tocitem>
+            <tocitem target="problemStatement_sss.html">Why sss?</tocitem>
+            <tocitem target="sssDoc.html">sss - Sparse State-Space Objects</tocitem><!--<tocitem target="setUp.html">Setting up the sssMOR toolbox</tocitem>-->
+        </tocitem>
+        <tocitem image="HelpIcon.EXAMPLES" target="examples_index.html">Examples
+            <!---<tocitem target="example_test.html">Example Test</tocitem>-->
+        </tocitem>
+        <tocitem image="HelpIcon.FUNCTION" target="functions_index.html">Functions Reference
+            <tocitem target="functions_index.html">Sparse State-Space
+                <tocitem image="HelpIcon.FUNCTION" target="appendhelp.html">append</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="bodehelp.html">bode</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="bodemaghelp.html">bodemag</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="bodeplothelp.html">bodeplot</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="c2dhelp.html">c2d</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="clearhelp.html">clear</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="connecthelp.html">connect</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="connectSsshelp.html">connectSss</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="dcgainhelp.html">dcgain</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="decayTimehelp.html">decayTime</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="diaghelp.html">diag</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="disphelp.html">disp</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="eighelp.html">eig</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="eigshelp.html">eigs</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="freqresphelp.html">freqresp</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="impulsehelp.html">impulse</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="issdhelp.html">issd</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="isstablehelp.html">isstable</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="lsimhelp.html">lsim</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="lyapcholhelp.html">lyapchol</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="minushelp.html">minus</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="mtimeshelp.html">mtimes</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="normhelp.html">norm</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="plushelp.html">plus</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="pzmaphelp.html">pzmap</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="residuehelp.html">residue</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="sigmahelp.html">sigma</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="simhelp.html">sim</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="sizehelp.html">size</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="spyhelp.html">spy</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="sshelp.html">ss</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="ssshelp.html">sss</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="stephelp.html">step</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="truncatehelp.html">truncate</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="zpkhelp.html">zpk</tocitem>
+            </tocitem>
+            <tocitem target="functions_index.html">Extras
+                <tocitem image="HelpIcon.FUNCTION" target="bodeToFighelp.html">bodeToFig</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="ispdhelp.html">ispd</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="iterativeRefinementhelp.html">iterativeRefinement</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="loadSsshelp.html">loadSss</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="parseOptshelp.html">parseOpts</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="partitionhelp.html">partition</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="second2firsthelp.html">second2first</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="solveLsehelp.html">solveLse</tocitem>
+            </tocitem>
+            <tocitem target="functions_index.html">Sim
+                <tocitem image="HelpIcon.FUNCTION" target="simBackwardEulerhelp.html">simBackwardEuler</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="simDiscretehelp.html">simDiscrete</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="simForwardEulerhelp.html">simForwardEuler</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="simRK4help.html">simRK4</tocitem>
+            </tocitem>
+            <tocitem target="functions_index.html">Third Party
+                <tocitem image="HelpIcon.FUNCTION" target="MESShelp.html">M.E.S.S.</tocitem>
+            </tocitem>
+            <tocitem target="functions_index.html">Demos
+                <tocitem image="HelpIcon.FUNCTION" target="sss_gettingStartedhelp.html">sss_gettingStarted</tocitem>
+            </tocitem>
+            <tocitem target="functions_index.html">Not Categorized
+                <tocitem image="HelpIcon.FUNCTION" target="frdhelp.html">frd</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="polehelp.html">pole</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="zerohelp.html">zero</tocitem>
+            </tocitem>
+        </tocitem>
+        <tocitem target="references_sss.html">References</tocitem>
+        <tocitem target="acknowledgements_sss.html">Acknowledgements</tocitem>
+        <tocitem image="HelpIcon.RELEASENOTES" target="txts/LICENSE.txt">License</tocitem>
+        <tocitem image="HelpIcon.RELEASENOTES" target="txts/RELEASE.txt">Release Notes</tocitem>
+    </tocitem>
+</toc>
