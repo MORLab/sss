@@ -87,7 +87,7 @@ benchmarksFolderPath = [sssFolderPath filesep 'benchmarks' filesep];
 %% Path to the Web benchmarks folder
 % nasFolderPath = [filesep filesep 'nas.ads.mwn.de' filesep 'tumw' filesep 'rtk' filesep 'MORLab' filesep 'Toolbox' filesep '05_benchmark' filesep'];
 
-webSource = 'https://webdisk.ads.mwn.de/Handlers/AnonymousDownload.ashx?folder=7d2d07de&path=MORLab%5csssMOR%5cbenchmarks%5c';
+webSource = 'https://webdisk.ads.mwn.de/Handlers/AnonymousDownload.ashx?folder=6104a79c&path=MORLab%5csssMOR%5cbenchmarks%5c';
 
 %% Parsing
 minInputs = 0;
