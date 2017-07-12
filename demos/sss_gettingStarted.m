@@ -63,6 +63,8 @@ fprintf(['\twith the Chair of Thermofluid Dynamics, TUM\n\n']);
 fprintf(['\tNote: for academic use only.\n']);
 rule
 
+downloadSoftware;
+
 %%  Sparse State Space (SSS)
 fprintf(['\t Sparse State-Space (SSS) objects\n\n']);
 
@@ -277,4 +279,22 @@ function init_demo
     [init1,init2] = step(sys);
     [init1,init2,init3] = bode(sys,0);
     clear sys init1 init2 init3;
+end
+
+function downloadSoftware
+    % check if the benchmarks and third-party software (MESS) are already
+    % installed
+    if ~exist('CDplayer.mat','file') || ~exist('mess_path.m','file')
+        fprintf('\n');
+        fprintf('The toolbox in general as well as this demonstration require\n');
+        fprintf('benchmark models and third-party software to be installed on\n');
+        fprintf('your machine.\n\n');
+        fprintf('Do you want to download the benchmark models and the third-party software?\nY/[N]: ');
+        inp = lower(strtrim(input('','s')));
+        fprintf('\n\n');
+        
+        if strcmp(inp , 'y')
+            downloadThirdParty;
+        end
+    end
 end
