@@ -1,17 +1,25 @@
 sss - Changelog
 ================
 
-A list of (major) changes between releases. Sometimes we add also changes to come to our **roadmap**.
+A list of (major) changes between releases, as well as information about MATLAB versions used and toolbox dependencies. Sometimes we add also changes to come to our **roadmap**.
 ***
 
 Roadmap (changes to come)
 -------------------------
-- pss: parametric models
 - second order models
 ***
 
+v1.04 [tbd]
+-----------------------
+
 v1.03 [02 February 2017]
 -----------------------
+|                 |                                                                      |
+|:----------------|:---------------------------------------------------------------------|
+| Dependencies    | Control System T., System Identification T., Optimization T., M-MESS |
+| Programmed with | MATLAB R2015a, R2015b                                                |
+| Tested with     | MATLAB R2014b, R2015b                                                |
+| on              | Windows 7, Ubuntu 16.04.1 LTS                                        |
 ### Changes
 - LYAPCHOL
 	* Changed nomenclature to be more consistent with the literature.
@@ -49,6 +57,12 @@ v1.03 [02 February 2017]
 
 v1.02 [05 October 2016]
 -----------------------
+|                 |                                                              |
+|:----------------|:-------------------------------------------------------------|
+| Dependencies    | Control System T., System Identification T., Optimization T. |
+| Programmed with | MATLAB R2015a, R2015b                                        |
+| Tested with     | MATLAB R2014b, R2015b                                        |
+| on              | Windows 7, Ubuntu 16.04.1 LTS                                |
 
 ### Changes
 - NORM
@@ -57,6 +71,13 @@ v1.02 [05 October 2016]
 
 v1.01 [16 September 2016]
 -------------------------
+|                 |                                                              |
+|:----------------|:-------------------------------------------------------------|
+| Dependencies    | Control System T., System Identification T., Optimization T. |
+| Programmed with | MATLAB R2015a, R2015b                                        |
+| Tested with     | MATLAB R2014b, R2015b                                        |
+| on              | Windows 7, Ubuntu 16.04.1 LTS                                |
+
 ### Changes
 - SOLVELSE
 	* **new function: solve linear system of equations**
@@ -82,3 +103,9 @@ v1.01 [16 September 2016]
 
 v1.00 - first Release [16 November 2015]
 -----------------------------------------
+|                 |                                                              |
+|:----------------|:-------------------------------------------------------------|
+| Dependencies    | Control System T., System Identification T., Optimization T. |
+| Programmed with | MATLAB R2015a, R2015b                                        |
+| Tested with     | MATLAB R2014b, R2015b                                        |
+| on              | Windows 7, Ubuntu 16.04.1 LTS                                |
