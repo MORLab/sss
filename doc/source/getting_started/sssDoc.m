@@ -22,7 +22,7 @@ clear
 %%
 % <html>
 %   <hr>
-%   <p class="copy">&copy; 2016 RT Technische Universit&auml;t M&uuml;nchen
+%   <p class="copy">&copy; 2015-2017 RT Technische Universit&auml;t M&uuml;nchen
 %        <tt class="minicdot">&#149;</tt>
 %        <a href="https://www.rt.mw.tum.de/?sssMOR">Website</a>
 %        <tt class="minicdot">&#149;</tt>
@@ -34,7 +34,7 @@ clear
 % <table>
 %  <tr>
 %   <td style="background-color:#ffffff; border:0; width:25%; vertical-align:middle; text-align:center">
-%             <img src="img/logo_sssMOR_long.png" alt="sssMOR_Logo" height="40px">
+%             <img src="img/logo_sss_long.png" alt="sssMOR_Logo" height="40px">
 %      </td>
 %   <td style="background-color:#ffffff; border:0; width:25%; vertical-align:middle; text-align:center">
 %      <img src="img/MORLAB_Logo.jpg" alt="MORLAB_Logo" height="40px"></td>
