@@ -1,4 +1,4 @@
-function [files,logo,web] = dataForDoc()
+function [files,logo,web,year] = dataForDoc()
 % This function provides additional data that is necessary to generate the
 % documentation
 
@@ -33,4 +33,6 @@ logo = sprintf('%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s',...
 web = sprintf('%s',...
 	'%        <a href="https://www.rt.mw.tum.de/?sss">Website</a>');
 
-    
+%% Year of the first release
+
+year = 2015;
