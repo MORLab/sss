@@ -84,11 +84,12 @@ suite30=TestSuite.fromFile(fullfile(testPath,'testStep.m'));
 suite31=TestSuite.fromFile(fullfile(testPath,'testZero.m'));
 suite32=TestSuite.fromFile(fullfile(testPath,'testZpk.m'));
 suite33=TestSuite.fromFile(fullfile(testPath,'testSecondToFirst.m'));
+suite34=TestSuite.fromFile(fullfile(testPath,'testDownloadLink.m'));
 
 suiteSss=[suite1,suite2,suite3,suite4,suite5,suite6,suite7,suite8,suite9,suite10,...
 suite11,suite12,suite13,suite13a,suite14,suite15,suite16,suite17,suite18,suite19,...
 suite20, suite21, suite22, suite23, suite24, suite25, suite27, suite28, ...
-suite29, suite30, suite31, suite32,suite33];
+suite29, suite30, suite31, suite32,suite33,suite34];
 
 
 %% Run and show results
