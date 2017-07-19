@@ -9,9 +9,8 @@
 % In fact, the large-scale dynamical system we could not define in the example above 
 % can now find place in your workspace
 %
-A = speye(10^8); b(10^8,1)=1;
-sys = sss(A,b,b'); whos sys
-clear
+% <<img/sssSparseStateSpaceObjects.png>>
+%
 %%	
 % Further, many functions control engineers use on a daily basis to analyze 
 % and manipulate dynamic system objects, such as |bode|, |step|, |pzmap|, 

@@ -26,11 +26,9 @@
 % challenge on the numerical treatment of such models, in first place due
 % to storage limitations. In fact, following code would cause MATLAB to
 % quit with an error
-try 
-    N = 10^5; A = eye(N);
-catch err
-    fprintf('%s\n',err.message)
-end
+%
+% <<img/whySss1.png>>
+%
 %%
 % The problem is that MATLAB is trying to store all $N^2 = 10^{10}$ entries
 % of the matrix. It is easy to estimate that in IEEE Standard 754
@@ -41,7 +39,9 @@ end
 % is only on the diagonal, i.e. there are only $N=10^5$ nonzero entries. By
 % recognizing and exploting the sparsity of the problem, for example
 % calling,
-N = 10^5; A = speye(N); whos A
+%
+% <<img/whySss2.png>>
+%
 %%
 % MATLAB stores only a triple of indices and values for each nonzero entry
 % of A, reducing the storage requirements from 80GB to 2.4 MB! Matrices
@@ -51,7 +51,9 @@ N = 10^5; A = speye(N); whos A
 %
 % In fact, in this fashion we are able to double the order of magnitude of
 % storable identity matrices to $\mathcal{O}(10^8)$:
-N = 10^8; A = speye(N); whos A
+%
+% <<img/whySss3.png>>
+%
 %%	
 % A similar problem arises when considering *large-scale dynamical
 % systems*. In fact, the number $N$ of state variables in $x$ can easily
@@ -96,12 +98,9 @@ N = 10^8; A = speye(N); whos A
 % exploited and the size limitation stated above hold, as demonstrated by
 % this short code:
 %
-N = 10^8; A = speye(N); b = rand(N,1);
-try
-    sys = ss(A,b,b',0)
-catch err
-    fprintf('%s\n',err.message);
-end
+%
+% <<img/whySss4.png>>
+%
 
 %%
 % *Is there a way to deal with such large-scale models in MATLAB
