@@ -33,6 +33,7 @@ web: https://www.rt.mw.tum.de/
                 <tocitem image="HelpIcon.FUNCTION" target="disphelp.html">disp</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="eighelp.html">eig</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="eigshelp.html">eigs</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="frdhelp.html">frd</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="freqresphelp.html">freqresp</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="impulsehelp.html">impulse</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="issdhelp.html">issd</tocitem>
@@ -42,6 +43,7 @@ web: https://www.rt.mw.tum.de/
                 <tocitem image="HelpIcon.FUNCTION" target="minushelp.html">minus</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="mtimeshelp.html">mtimes</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="normhelp.html">norm</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="polehelp.html">pole</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="plushelp.html">plus</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="pzmaphelp.html">pzmap</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="residuehelp.html">residue</tocitem>
@@ -53,6 +55,7 @@ web: https://www.rt.mw.tum.de/
                 <tocitem image="HelpIcon.FUNCTION" target="ssshelp.html">sss</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="stephelp.html">step</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="truncatehelp.html">truncate</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="zerohelp.html">zero</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="zpkhelp.html">zpk</tocitem>
             </tocitem>
             <tocitem target="functions_index.html">Extras
@@ -76,11 +79,6 @@ web: https://www.rt.mw.tum.de/
             </tocitem>
             <tocitem target="functions_index.html">Demos
                 <tocitem image="HelpIcon.FUNCTION" target="sss_gettingStartedhelp.html">sss_gettingStarted</tocitem>
-            </tocitem>
-            <tocitem target="functions_index.html">Not Categorized
-                <tocitem image="HelpIcon.FUNCTION" target="frdhelp.html">frd</tocitem>
-                <tocitem image="HelpIcon.FUNCTION" target="polehelp.html">pole</tocitem>
-                <tocitem image="HelpIcon.FUNCTION" target="zerohelp.html">zero</tocitem>
             </tocitem>
         </tocitem>
         <tocitem target="references_sss.html">References</tocitem>

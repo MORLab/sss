@@ -17,6 +17,7 @@
 % * <.\disphelp.html |disp|>  --  Displays information about a sparse state-space model
 % * <.\eighelp.html |eig|>  --  Compute eigenvalues and eigenvectors of a sparse state-space model
 % * <.\eigshelp.html |eigs|>  --  Compute eigenvalues of the sparse state space system using sparse matrices.
+% * <.\frdhelp.html |frd|>  --  Convert to frequency-response data model
 % * <.\freqresphelp.html |freqresp|>  --  Frequency response of sparse state-space systems.
 % * <.\impulsehelp.html |impulse|>  --  Computes and/or plots the impulse response of a sparse LTI system
 % * <.\issdhelp.html |issd|>  --  Check strict dissipativity of sparse LTI system
@@ -26,6 +27,7 @@
 % * <.\minushelp.html |minus|>  --  Computes difference of two sparse LTI systems.
 % * <.\mtimeshelp.html |mtimes|>  --  Computes the product of two LTI systems.
 % * <.\normhelp.html |norm|>  --  Computes the p-norm of an sss LTI system
+% * <.\polehelp.html |pole|>  --  Compute largest poles of an LTI system
 % * <.\plushelp.html |plus|>  --  Computes sum of two sparse LTI systems.
 % * <.\pzmaphelp.html |pzmap|>  --  Pole-zero plot of sparse state-space system
 % * <.\residuehelp.html |residue|>  --  Computes residues, poles and feedthrough of an LTI system
@@ -37,6 +39,7 @@
 % * <.\ssshelp.html |sss|>  --  Create sparse state-space (sss) model, convert to sss model
 % * <.\stephelp.html |step|>  --  Computes and/or plots the step response of a sparse LTI system
 % * <.\truncatehelp.html |truncate|>  --  Truncates a sparse LTI system (sss)
+% * <.\zerohelp.html |zero|>  --  Compute largest invariant zeros of an LTI system
 % * <.\zpkhelp.html |zpk|>  --  Compute largest poles and zeros or zpk object of an LTI system
 
 %% Extras
@@ -64,12 +67,6 @@
 %% Demos
 %
 % * <.\sss_gettingStartedhelp.html |sss_gettingStarted|>  --  Introductory demo to sss toolbox
-
-%% Not Categorized
-%
-% * <.\frdhelp.html |frd|>  --  Convert to frequency-response data model
-% * <.\polehelp.html |pole|>  --  Compute largest poles of an LTI system
-% * <.\zerohelp.html |zero|>  --  Compute largest invariant zeros of an LTI system
 %
 %%
 % <html>
