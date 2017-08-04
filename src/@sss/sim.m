@@ -30,11 +30,11 @@ function [data,X,tx] = sim(sys,data,method,Ts_sample)
 %       The following code simulates the benchmark "building" (SSS, SISO) 
 %       using the backward Euler method
 %
-%> load building.mat; sys=sss(A,B,C);
-%> Ts = 1e-4; %sampling time
-%> t = 0:Ts:10; %time vector
-%> u = idinput(length(t),'rgs',[0 0.5/(1/2/Ts)])'; %random gaussian input signal
-%> datau = iddata([],u',Ts); %create an iddata object with the input information
+%> sys          = sss('building');
+%> Ts           = 1e-4; %sampling time
+%> t            = 0:Ts:10; %time vector
+%> u            = idinput(length(t),'rgs',[0 0.5/(1/2/Ts)])'; %random gaussian input signal
+%> datau        = iddata([],u',Ts); %create an iddata object with the input information
 %> dataBackward = sim(sys,datau,'backwardEuler'); %simulation with implicit Euler
 %> plot(t,dataBackward.y); xlabel('Time [s]'); ylabel('Amplitude');
 %
@@ -60,12 +60,12 @@ function [data,X,tx] = sim(sys,data,method,Ts_sample)
 % More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Stefan Jaensch
+% Authors:      Stefan Jaensch, Alessandro Castagnotto
 % Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  05 Nov 2015
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Last Change:  04 Aug 2017
+% Copyright (c) 2015-2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
 if ~any(cellfun(@(x) strcmp('',x),sys.u))
@@ -97,12 +97,15 @@ elseif nargin == 3
     Ts_sample = Ts;
 end
 
+Opts.method     = method;
+Opts.Ts_sample  = Ts_sample;
+
 if nargout == 1
-    y =  lsim(sys,u,Ts,method,Ts_sample);
+    y           = lsim(sys,u,Ts,[],Opts);
 else
-    [y,X,tx] = lsim(sys,u,Ts,method,Ts_sample);
-    tx = tx + data.Tstart;
+    [y,X,tx]    = lsim(sys,u,Ts,[],Opts);
+    tx          = tx + data.Tstart;
 end
 
-data = [data iddata(y',[],Ts,'OutputName',sys.OutputName,'Tstart',data.Tstart)];
+data = [data iddata(y,[],Ts,'OutputName',sys.OutputName,'Tstart',data.Tstart)];
 

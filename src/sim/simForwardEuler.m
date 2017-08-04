@@ -2,9 +2,9 @@ function [y,x_,tx] = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % simForwardEuler - Integrates sss model using forward (explicit) Euler
 % 
 % Syntax:
-%       y = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
-%       [y,x_] = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
-%       [y,x_,tx] = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
+%       y           = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
+%       [y,x_]      = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
+%       [y,x_,tx]   = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 %
 % Description:
 %       Integrates sss model using forward (explicit) Euler 
@@ -44,31 +44,27 @@ function [y,x_,tx] = simForwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Stefan Jaensch, Maria Cruz Varona 
+% Authors:      Stefan Jaensch, Maria Cruz Varona, Alessandro Castagnotto
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  05 Nov 2015
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Last Change:  04 Aug 2017
+% Copyright (c) 2015-2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-y = zeros(size(C,1),size(u,1));
-if nargout == 1
-    x_ = [];
-    m=inf;
-else
-    m = round(Ts_sample/Ts);
-    x_ = zeros(length(A),round(size(u,1)/m));    
-    k = 1;
-    index = 1;
-end
+%% Initialize variables using common function for all simulation methods
+%  Note: using one common simulation function having the methods as nested
+%  functions would be much better. Due to historical reasons, the
+%  simulation functions not have their present form. Later releases may
+%  include some significant restructuring. 
 
-y(:,1) = C*x + D*u(1,:)';
+argin = {A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor};
+
+[y,x_,m,k,index,L,U,p] = simInit(argin{:},nargin==1); %common function
+
+%% Run simulation
+
 ETsA = E+Ts*A; TsB = Ts*B;
-if isDescriptor
-    [L,U,p] = lu(E,'vector');
-end
-
 for i = 2:size(u,1)    
     if ~isDescriptor
         x = ETsA*x + TsB*u(i-1,:)';
@@ -76,19 +72,6 @@ for i = 2:size(u,1)
         x = ETsA*x + TsB*u(i-1,:)';
         x = U\(L\(x(p,:)));
     end
-    y(:,i) = C*x + D*u(i,:)';
-    if ~isempty(x_)
-        if mod(i,m) == 0
-            x_(:,k) = x;
-            index = [index i];
-            k = k+1;            
-        end
-    end
+    [y,x_,k,index] = simUpdate(y,x_,k,index,x,u,i,m,C,D); %common function
 end
-if m==inf
-    x_ = x;
-    index = size(u,1);
-end
-if nargout>1
-    tx = index*Ts;
-end
+tx = (index-1)*Ts;

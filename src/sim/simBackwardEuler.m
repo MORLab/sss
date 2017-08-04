@@ -44,48 +44,33 @@ function [y,x_,tx] = simBackwardEuler(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor)
 % More Toolbox Info by searching <a href="matlab:docsearch sssMOR">sssMOR</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Stefan Jaensch, Maria Cruz Varona 
+% Authors:      Stefan Jaensch, Maria Cruz Varona, Alessandro Castagnotto
 % Email:        <a href="mailto:sssMOR@rt.mw.tum.de">sssMOR@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/">www.rt.mw.tum.de</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  05 Nov 2015
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Last Change:  04 Aug 2017
+% Copyright (c) 2015-2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-y = zeros(size(C,1),size(u,1));
-if nargout == 1
-    x_ = [];
-    m=inf;
-else
-    m = round(Ts_sample/Ts);
-    x_ = zeros(length(A),round(size(u,1)/m));    
-    k = 1;
-    index = 1;
-end
 
-y(:,1) = C*x + D*u(1,:)';
+%% Initialize variables using common function for all simulation methods
+%  Note: using one common simulation function having the methods as nested
+%  functions would be much better. Due to historical reasons, the
+%  simulation functions not have their present form. Later releases may
+%  include some significant restructuring. 
+
 ETsA = E-Ts*A; TsB = Ts*B;
-[L,U,p] = lu(ETsA,'vector');
+argin = {A,B,C,D,ETsA,u,x,Ts,Ts_sample,true}; %isDescriptor = true to always compute LU
 
+[y,x_,m,k,index,L,U,p] = simInit(argin{:},nargin==1); %common function
+
+
+%% Run simulation
 for i = 2:size(u,1)
-%     x = ETsA\(E*x + TsB*u(i,:)');
     g = E*x + TsB*u(i,:)';
     x = U\(L\(g(p,:)));
 
-    y(:,i) = C*x + D*u(i,:)';
-    if ~isempty(x_)
-        if mod(i,m) == 0
-            x_(:,k) = x;
-            index = [index i];
-            k = k+1;            
-        end
-    end
+    % Update vectors
+    [y,x_,k,index] = simUpdate(y,x_,k,index,x,u,i,m,C,D); %common function
 end
-
-if m==inf
-    x_ = x;
-    index = size(u,1);
-end
-if nargout>1
-    tx = index*Ts;
-end
+tx = (index-1)*Ts;
