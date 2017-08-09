@@ -398,9 +398,9 @@ if initLse
 elseif exist('jCol','var') && ~isempty(jCol)
     
     if hermite
-        [V, SRsylv, Rsylv, W, SLsylv, Lsylv] = nextDirection(jCol, s0, V, W);
+        [V, SRsylv, Rsylv, W, SLsylv, Lsylv]    = nextDirection(jCol, s0, V, W);
     else
-        [V, SRsylv, Rsylv] = nextDirection(jCol, s0, V);
+        [V, SRsylv, Rsylv]                      = nextDirection(jCol, s0, V);
     end
     
     % output
@@ -430,9 +430,9 @@ else
     
     for jCol=1:length(s0)
         if hermite
-            [V, SRsylv, Rsylv, W, SLsylv, Lsylv] = nextDirection(jCol, s0, V, W);
+            [V, SRsylv, Rsylv, W, SLsylv, Lsylv]    = nextDirection(jCol, s0, V, W);
         else
-            [V, SRsylv, Rsylv] = nextDirection(jCol, s0, V);
+            [V, SRsylv, Rsylv]                      = nextDirection(jCol, s0, V);
         end
         Sv(:,jCol) = SRsylv;
         Rv(:,jCol) = Rsylv*Rt(:,jCol);
