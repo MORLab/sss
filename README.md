@@ -48,14 +48,16 @@ The folder structure of the toolbox is as follows
 - **sss** (main folder)
 	- **src** (source code)
 		- **@sss** (sss class and methods)
+		- **+sssFunc** (functions used by different classes)
 		- **extras** (additional functions)
+		- **sim** (simulation)
+    - **benchmarks**
+    - **doc**
 	- **demos**
 	- **test**
 
 ### Documentation
-The documentation for the toolbox is automatically generated from the function headers. Make sure to format the header according to the ``headerTemplate.m`` provided.
-
-The functions to publish the documentation are not included in the git repository as they belong to a third party.
+To automatically generated the documentation for the toolbox from the function headers, type `publishDoc('sss')` in the command window. Make sure to format the function headers according to the ``headerTemplate.m`` provided.
 
 ### When should a method be added within the ``sss`` constructor or within the @sss folder?
 
