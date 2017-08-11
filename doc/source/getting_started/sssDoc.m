@@ -11,6 +11,8 @@
 %
 % <<img/sssSparseStateSpaceObjects.png>>
 %
+% <<img/sssSparseStateSpaceObjectsResult.png>>
+%
 %%	
 % Further, many functions control engineers use on a daily basis to analyze 
 % and manipulate dynamic system objects, such as |bode|, |step|, |pzmap|, 

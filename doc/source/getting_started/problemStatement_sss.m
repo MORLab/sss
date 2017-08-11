@@ -29,6 +29,8 @@
 %
 % <<img/whySss1.png>>
 %
+% <<img/whySssResult1.png>>
+%
 %%
 % The problem is that MATLAB is trying to store all $N^2 = 10^{10}$ entries
 % of the matrix. It is easy to estimate that in IEEE Standard 754
@@ -42,6 +44,8 @@
 %
 % <<img/whySss2.png>>
 %
+% <<img/whySssResult2.png>>
+%
 %%
 % MATLAB stores only a triple of indices and values for each nonzero entry
 % of A, reducing the storage requirements from 80GB to 2.4 MB! Matrices
@@ -53,6 +57,8 @@
 % storable identity matrices to $\mathcal{O}(10^8)$:
 %
 % <<img/whySss3.png>>
+%
+% <<img/whySssResult3.png>>
 %
 %%	
 % A similar problem arises when considering *large-scale dynamical
@@ -100,6 +106,8 @@
 %
 %
 % <<img/whySss4.png>>
+%
+% <<img/whySssResult4.png>>
 %
 
 %%
