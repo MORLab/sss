@@ -19,13 +19,13 @@ function  sss_gettingStarted(Opts)
 % with the Professur fuer Thermofluiddynamik, Technische Universitaet Muenchen. 
 % For updates and further information please visit <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % For any suggestions, submission and/or bug reports, mail us at
-%                   -> <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a> <-
+%                   -> <a href="mailto:morlab@rt.mw.tum.de">morlab@rt.mw.tum.de</a> <-
 %
 % More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
 % Authors:      Alessandro Castagnotto
-% Email:        <a href="mailto:sss@rt.mw.tum.de">sss@rt.mw.tum.de</a>
+% Email:        <a href="mailto:morlab@rt.mw.tum.de">morlab@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
 % Last Change:  13 Nov 2015
@@ -210,7 +210,7 @@ fprintf('the capabilities of the sss toolbox by yourself! (Check out all \n');
 fprintf('other demos and benchmark systems that you can use!)\n');
 fprintf('For any further questions, please refer to the documentation of the\n');
 fprintf('toolbox. For comments and submissions, please send a mail to \n');
-fprintf('"sss@rt.mw.tum.de". If you want to stay up to date with new\n');
+fprintf('"morlab@rt.mw.tum.de". If you want to stay up to date with new\n');
 fprintf('releases, sign up for our newsletter under "www.rt.mw.tum.de". \n');
 rule
 close all;
