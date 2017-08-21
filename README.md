@@ -57,7 +57,7 @@ The folder structure of the toolbox is as follows
 	- **test**
 
 ### Documentation
-To automatically generated the documentation for the toolbox from the function headers, type `publishDoc('sss')` in the command window. Make sure to format the function headers according to the ``headerTemplate.m`` provided.
+To automatically generated the documentation for the toolbox from the function headers, type `publishDoc('sss')` in the command window. Make sure to format the function headers according to the ``headerTemplate.m`` provided. To publish the documentation for a single function, use syntax `publishFunction('function name')`.
 
 ### When should a method be added within the ``sss`` constructor or within the @sss folder?
 
