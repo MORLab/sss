@@ -26,12 +26,12 @@ For more information, type `doc` in the command window or visit http://www.rt.mw
 ***
 Copyright
 ----------
-This toolbox is developed by [MORLab](http://www.rt.mw.tum.de/en/research/fields-of-research/model-order-reduction/), the model reduction lab at the [Chair of Automatic Control](www.rt.mw.tum.de/en) in collaboration with the [Chair of Thermofluid Dynamics](http://www.tfd.mw.tum.de/index.php?id=5&L=1).
+This toolbox is developed by [MORLab](https://www.rt.mw.tum.de/?morlab), the model reduction lab at the [Chair of Automatic Control](https://www.rt.mw.tum.de/en/home/) in collaboration with the [Chair of Thermofluid Dynamics](http://www.tfd.mw.tum.de/index.php?id=5&L=1).
 
 ***
 Acknowledgements
 -----------------
-The developing team is thankful to all the research assistants and students at [MORLab](http://www.rt.mw.tum.de/en/research/fields-of-research/model-order-reduction/) that have contributed at creating and developing the sss class since 2008.
+The developing team is thankful to all the research assistants and students at [MORLab](https://www.rt.mw.tum.de/?morlab) that have contributed at creating and developing the sss class since 2008.
 
 The team of [Morembs](http://www.itm.uni-stuttgart.de/research/model_reduction/MOREMBS_en.php), a model reduction software for elastic multibody systems, is sincerely acknowledged for the support in the automated generation of the documentation for the toolbox.
 
