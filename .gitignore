@@ -97,6 +97,10 @@ _*.pdf
 test/testScripts/CURE.gif
 src/psss/benchmarks/
 
+# Single Files
+src/extras/third-party/mmread.m
+src/extras/third-party/uniquetol.m
+
 # Files generated automatically by running publishHelp.m
 # =======================================================
 doc/html/helpsearch-v3/
