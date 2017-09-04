@@ -24,7 +24,7 @@ function varargout = spy(varargin)
 %		The following code plots the sparsity pattern of the benchmark
 %		'SpiralInductorPeec' (DSSS, SISO):
 %
-%> sys = loadSss('SpiralInductorPeec.mat'); 
+%> sys = sss('SpiralInductorPeec.mat'); 
 %> figure; spy(sys,'Peec inductor');
 %
 %

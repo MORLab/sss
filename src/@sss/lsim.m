@@ -50,8 +50,9 @@ function [y,tx,x] = lsim(sys,u,t,x0,Opts)
 %       Check the results, e.g. by plotting the output and the second state
 %       variable over time.
 %> figure; plot(t,y)
-%
+%> xlabel('Time (sec)'); ylabel('y');
 %> figure; plot(t,x(:,2))
+%> xlabel('Time (sec)'); ylabel('x(:,2)');
 %
 % See Also:
 %       sss/sim sss/lsim

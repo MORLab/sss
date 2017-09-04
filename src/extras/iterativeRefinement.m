@@ -52,7 +52,7 @@ function [X,rNormVec] = iterativeRefinement(A,B,X,Opts)
 %       accuracy. Through a call to ITERATIVEREFINEMENT, the accurate
 %       solution is regained
 %
-%>sys = loadSss('CDplayer');
+%>sys = sss('CDplayer');
 %>A = sys.A; B = sys.B; X = A\B; 
 %>R = A*X-B; rNormOrig = norm(R,'fro')/norm(B,'fro')
 %>

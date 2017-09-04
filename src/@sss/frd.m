@@ -33,7 +33,7 @@ function sysfrd = frd(varargin)
 %       'building' and returns a respective frd object, which is then 
 %       plotted using |bodemag|.
 %
-%> sys = loadSss('building.mat');
+%> sys = sss('building.mat');
 %> sysfrd=frd(sys);
 %> bodemag(sysfrd);
 %

@@ -50,7 +50,7 @@ function varargout = lyapchol(varargin)
 % Examples:
 %       Compute the Cholesky factors for both Lyapunov equations
 %
-%> sys = loadSss('building');
+%> sys = sss('building');
 %> [S,R] = lyapchol(sys);
 %
 %       To compute a single Cholesky factor, use

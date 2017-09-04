@@ -21,15 +21,17 @@ function varargout = partition(A,row,col)
 %
 % Input Arguments:
 %       *Required Input Arguments:*
-%           -A:     matrix to be partitioned
-%           -row:   number of rows of the first partition
+%       -A:     matrix to be partitioned
+%       -row:   number of rows of the first partition
 %       *Optional Input Arguments:*
-%           -col:   number of columns of the first partition
+%       -col:   number of columns of the first partition
 %
 % Output Arguments:
-%       -A1,A2: submatrices resulting from the partition of A
+%       -A1,A2:           submatrices resulting from the partition of A
 %       -A11,A12,A21,A22: submatrices resulting from the partition of A
 %
+% See Also:
+%       sss
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

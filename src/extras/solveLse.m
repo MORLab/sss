@@ -123,7 +123,7 @@ function [varargout] = solveLse(varargin)
 %
 %       To solve a shifted system, pass a shift vector s0 to the function:
 %
-%> sys=loadSss('building'); s0=rand(8,1);
+%> sys=sss('building'); s0=rand(8,1);
 %> x=solveLse(sys,s0);
 %
 % See Also:

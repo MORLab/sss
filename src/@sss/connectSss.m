@@ -18,8 +18,9 @@ function sys = connectSss(sys, K)
 %> load CDplayer.mat
 %> K=eye(2);
 %> sys=sss(A,B,C); %Stable system
+%> figure; step(sys);
+%
 %> sysConnected=connectSss(sys,K); %Unstable system
-%> step(sys);
 %> figure, step(sysConnected);
 %
 % See Also:
