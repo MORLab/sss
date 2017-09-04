@@ -10,10 +10,16 @@ function [y,x_,m,k,index,L,U,p] = simInit(A,B,C,D,E,u,x,Ts,Ts_sample,isDescripto
 %       Auxiliary function for the initialization of the simulation functions.       
 %
 % Input Arguments:
-%       TODO
+%       -A,B,C,D,E:     state-space matrices
+%       -u:             input vector/matrix with dimension Nsample x Ninput
+%       -x:             initial state vector for time integration
+%       -Ts:            sampling time
+%       -Ts_sample:     sampling time for matrix of state-vectors
+%       -isDescriptor:  isDescriptor-boolean
 %
 % Output Arguments:
-%       TODO
+%       -y: output vector
+%       -x_: matrix of state vectors
 %
 % See Also:
 %       sim, simForwardEuler, simRK4

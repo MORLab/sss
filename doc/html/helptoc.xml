@@ -72,7 +72,9 @@ web: https://www.rt.mw.tum.de/
                 <tocitem image="HelpIcon.FUNCTION" target="simBackwardEulerhelp.html">simBackwardEuler</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="simDiscretehelp.html">simDiscrete</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="simForwardEulerhelp.html">simForwardEuler</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="simInithelp.html">simInit</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="simRK4help.html">simRK4</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="simUpdatehelp.html">simUpdate</tocitem>
             </tocitem>
             <tocitem target="functions_index.html">Third Party
                 <tocitem image="HelpIcon.FUNCTION" target="MESShelp.html">M.E.S.S.</tocitem>

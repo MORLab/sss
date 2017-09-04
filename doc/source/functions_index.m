@@ -58,7 +58,9 @@
 % * <.\simBackwardEulerhelp.html |simBackwardEuler|>  --  Integrates sss model using backward (implicit) Euler
 % * <.\simDiscretehelp.html |simDiscrete|>  --  Integrates discrete time model
 % * <.\simForwardEulerhelp.html |simForwardEuler|>  --  Integrates sss model using forward (explicit) Euler
+% * <.\simInithelp.html |simInit|>  --  Initialization for simulation functions
 % * <.\simRK4help.html |simRK4|>  --  Integrates sss model using Runge-Kutta 4
+% * <.\simUpdatehelp.html |simUpdate|>  --  Update for simulation functions
 
 %% Third Party
 %

@@ -10,10 +10,12 @@ function [y,x_,k,index] = simUpdate(y,x_,k,index,x,u,i,m,C,D)
 %       Auxiliary function for the update within the simulation functions.       
 %
 % Input Arguments:
-%       TODO
+%       -y:     output vector
+%       -x_:    matrix of state vectors
 %
 % Output Arguments:
-%       TODO
+%       -y:     output vector
+%       -x_:    matrix of state vectors
 %
 % See Also:
 %       sim, simForwardEuler, simRK4
