@@ -1,4 +1,41 @@
 function [y,x_,m,k,index,L,U,p] = simInit(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor,oneOutput)
+% SIMINIT - Initialization for simulation functions
+%
+% Syntax:
+%       y                      = simInit(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor,oneOutput)
+%       [y,x_,m,k]             = simInit(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor,oneOutput)
+%       [y,x_,m,k,index,L,U,p] = simInit(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor,oneOutput)
+%
+% Description:
+%       Auxiliary function for the initialization of the simulation functions.       
+%
+% Input Arguments:
+%       TODO
+%
+% Output Arguments:
+%       TODO
+%
+% See Also:
+%       sim, simForwardEuler, simRK4
+%
+%------------------------------------------------------------------
+% This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
+% Toolbox developed at the Chair of Automatic Control in collaboration
+% with the Professur fuer Thermofluiddynamik, Technische Universitaet Muenchen. 
+% For updates and further information please visit <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
+% For any suggestions, submission and/or bug reports, mail us at
+%                   -> <a href="mailto:morlab@rt.mw.tum.de">morlab@rt.mw.tum.de</a> <-
+%
+% More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
+%
+%------------------------------------------------------------------
+% Authors:      Alessandro Castagnotto
+% Email:        <a href="mailto:morlab@rt.mw.tum.de">morlab@rt.mw.tum.de</a>
+% Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
+% Work Adress:  Technische Universitaet Muenchen
+% Last Change:  04 Sep 2017
+% Copyright (c) 2015-2017 Chair of Automatic Control, TU Muenchen
+%------------------------------------------------------------------
 
 if oneOutput
     x_      = [];
