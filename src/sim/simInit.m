@@ -2,9 +2,9 @@ function [y,x_,m,k,index,L,U,p] = simInit(A,B,C,D,E,u,x,Ts,Ts_sample,isDescripto
 % SIMINIT - Initialization for simulation functions
 %
 % Syntax:
-%       y                      = simInit(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor,oneOutput)
-%       [y,x_,m,k]             = simInit(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor,oneOutput)
-%       [y,x_,m,k,index,L,U,p] = simInit(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor,oneOutput)
+%       y                      = SIMINIT(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor,oneOutput)
+%       [y,x_,m,k]             = SIMINIT(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor,oneOutput)
+%       [y,x_,m,k,index,L,U,p] = SIMINIT(A,B,C,D,E,u,x,Ts,Ts_sample,isDescriptor,oneOutput)
 %
 % Description:
 %       Auxiliary function for the initialization of the simulation functions.       
@@ -16,10 +16,15 @@ function [y,x_,m,k,index,L,U,p] = simInit(A,B,C,D,E,u,x,Ts,Ts_sample,isDescripto
 %       -Ts:            sampling time
 %       -Ts_sample:     sampling time for matrix of state-vectors
 %       -isDescriptor:  isDescriptor-boolean
+%       -oneOutput:     boolean specifying if only y is required as output
 %
 % Output Arguments:
-%       -y: output vector
-%       -x_: matrix of state vectors
+%       -y:             output vector
+%       -x_:            matrix of state vectors
+%       -m:             numbers of samples for x
+%       -k, index:      initialization of index variables for subsequent
+%                       loops
+%       -L,U,p:         results of LU factorization
 %
 % See Also:
 %       sim, simForwardEuler, simRK4
@@ -39,7 +44,7 @@ function [y,x_,m,k,index,L,U,p] = simInit(A,B,C,D,E,u,x,Ts,Ts_sample,isDescripto
 % Email:        <a href="mailto:morlab@rt.mw.tum.de">morlab@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  04 Sep 2017
+% Last Change:  05 Sep 2017
 % Copyright (c) 2015-2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 

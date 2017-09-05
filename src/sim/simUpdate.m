@@ -2,23 +2,29 @@ function [y,x_,k,index] = simUpdate(y,x_,k,index,x,u,i,m,C,D)
 % SIMUPDATE - Update for simulation functions
 %
 % Syntax:
-%       y              = simUpdate(y,x_,k,index,x,u,i,m,C,D)
-%       [y,x_,k]       = simUpdate(y,x_,k,index,x,u,i,m,C,D)
-%       [y,x_,k,index] = simUpdate(y,x_,k,index,x,u,i,m,C,D)
+%       y              = SIMUPDATE(y,x_,k,index,x,u,i,m,C,D)
+%       [y,x_,k]       = SIMUPDATE(y,x_,k,index,x,u,i,m,C,D)
+%       [y,x_,k,index] = SIMUPDATE(y,x_,k,index,x,u,i,m,C,D)
 %
 % Description:
-%       Auxiliary function for the update within the simulation functions.       
+%       Auxiliary function for the update of state and ouput after each 
+%       computation step of the simulation functions.
 %
 % Input Arguments:
-%       -y:     output vector
-%       -x_:    matrix of state vectors
+%       -y:         output vector
+%       -x_:        matrix of state vectors
+%       -k,index,i: loop variables
+%       -u, x:      input matrix and and current state vector
+%       -m:         see simulation functions (e.g. simRK4 for more info)
+%       -C,D:       matrices of state-space model
 %
 % Output Arguments:
-%       -y:     output vector
-%       -x_:    matrix of state vectors
+%       -y:         output vector
+%       -x_:        matrix of state vectors
+%       -k,index:   loop variables
 %
 % See Also:
-%       sim, simForwardEuler, simRK4
+%       sim, simForwardEuler, simRK4, simInit
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 
@@ -35,7 +41,7 @@ function [y,x_,k,index] = simUpdate(y,x_,k,index,x,u,i,m,C,D)
 % Email:        <a href="mailto:morlab@rt.mw.tum.de">morlab@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  04 Sep 2017
+% Last Change:  05 Sep 2017
 % Copyright (c) 2015-2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
