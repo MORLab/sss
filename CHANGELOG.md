@@ -9,8 +9,31 @@ Roadmap (changes to come)
 - second order models
 ***
 
-v1.04 [tbd]
+v2.00 [06 September 2017]
 -----------------------
+
+|                 |                                                                                        |
+|:----------------|:---------------------------------------------------------------------------------------|
+| Dependencies    | Control System T., System Identification T. Optimization T., M-MESS, uniquetol, mmread |
+| Programmed with | MATLAB R2015b, R2016b,                                                                 |
+| Tested with     | MATLAB R2014a, R2015b, R2016b, R2017a                                                  |
+| on              | Windows 7                                                                              |
+
+### New Features
+- DOCUMENTATION
+  * added documentation files to a folder doc/ inside sss. In this way, everybody can profit from the doc documentation of sss, not just those who download the release version.
+  * added p-Functions publishDoc.p and publishFunction.p to be able to update the documentation whenever headers are changed.
+- SIMINIT, SIMUPDATE
+  * added auxiliary functions in the folder sim/ that are used for the initialization and update of the simulation functions. Common computations are thus performed in these new functions.
+- @SSS, +SSSFUNC
+  * certain sss-functions (like e.g. `'decayTime', `'diag', `'eigs', `'lyapchol', etc.) can be now also passed with ssRed objects. This has the advantage that both full order models (sss objects) as well as reduced order models (ssRed objects) can be analyzed with our sss functions.
+
+### Changes
+- SSS
+  * updated to v2.00
+  * SSSMOR is no more a submodule of sss, hence it is not anymore in src/ folder. Instead, sss and sssMOR are now distributed independently and have to be both in the path for sssMOR to work.
+- LOADSSS
+  * loadSss is deprecated and will be removed in later releases of sss. Use |sss(fname)| instead.
 
 v1.03 [02 February 2017]
 -----------------------
