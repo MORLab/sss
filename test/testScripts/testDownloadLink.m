@@ -37,7 +37,7 @@ classdef testDownloadLink < sssTest
             websave(path,webSource);
             
             % load the benchmark
-            sys = loadSss('Temp.mat');
+            sys = sss('Temp.mat');
             
             % delete the downloaded file 
             delete(path);
