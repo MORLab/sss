@@ -35,6 +35,7 @@ web: https://www.rt.mw.tum.de/
                 <tocitem image="HelpIcon.FUNCTION" target="eigshelp.html">eigs</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="frdhelp.html">frd</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="freqresphelp.html">freqresp</tocitem>
+                <tocitem image="HelpIcon.FUNCTION" target="getfrdhelp.html">getfrd</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="impulsehelp.html">impulse</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="issdhelp.html">issd</tocitem>
                 <tocitem image="HelpIcon.FUNCTION" target="isstablehelp.html">isstable</tocitem>

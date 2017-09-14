@@ -19,6 +19,7 @@
 % * <.\eigshelp.html |eigs|>  --  Compute eigenvalues of the sparse state space system using sparse matrices.
 % * <.\frdhelp.html |frd|>  --  Convert to frequency-response data model
 % * <.\freqresphelp.html |freqresp|>  --  Frequency response of sparse state-space systems.
+% * <.\getfrdhelp.html |getfrd|>  --  Get frd-object(s) for frequency-response functions
 % * <.\impulsehelp.html |impulse|>  --  Computes and/or plots the impulse response of a sparse LTI system
 % * <.\issdhelp.html |issd|>  --  Check strict dissipativity of sparse LTI system
 % * <.\isstablehelp.html |isstable|>  --  Check stability of sparse LTI system
