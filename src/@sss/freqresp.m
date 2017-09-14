@@ -2,9 +2,9 @@ function [varargout] = freqresp(varargin)
 % FREQRESP - Frequency response of sparse state-space systems.
 % 
 % Syntax:
-%       [G, w] = freqresp(sys)
-%       G = freqresp(sys, w)
-%       G = freqresp(sys, ..., Opts)
+%       [G, w]  = freqresp(sys)
+%       G       = freqresp(sys, w)
+%       G       = freqresp(sys, ..., Opts)
 %
 % Description:
 %       Evaluates complex transfer function of LTI systems. 
@@ -73,8 +73,8 @@ Def.lse = 'sparse'; % solveLse
 
 % create the options structure
 if ~isempty(varargin) && isstruct(varargin{end})
-    Opts = varargin{end};
-    varargin = varargin(1:end-1);
+    Opts        = varargin{end};
+    varargin    = varargin(1:end-1);
 end
 if ~exist('Opts','var') || isempty(Opts)
     Opts = Def;
@@ -83,15 +83,15 @@ else
 end
 
 % Frequency vector
-omega = [];
-omegaIndex = cellfun(@isfloat,varargin);
-omegaCellIndex = cellfun(@iscell, varargin);
+omega           = [];
+omegaIndex      = cellfun(@isfloat,varargin);
+omegaCellIndex  = cellfun(@iscell, varargin);
 if ~isempty(omegaIndex) && nnz(omegaIndex)
-    omega = varargin{omegaIndex};
+    omega       = varargin{omegaIndex};
     varargin(omegaIndex)=[];
 elseif ~isempty(omegaCellIndex) && nnz(omegaCellIndex)
-    minW=log10(varargin{omegaCellIndex}{1});
-    maxW=log10(varargin{omegaCellIndex}{2});
+    minW        =log10(varargin{omegaCellIndex}{1});
+    maxW        =log10(varargin{omegaCellIndex}{2});
     varargin(omegaCellIndex)=[];
 end
 
@@ -101,17 +101,17 @@ if sys.isDae == true && isempty(omega)
     error('freqresp and bode only support DAEs, if a single frequency or a frequency vector omega is parsed to the functions');
 end
 
-nOutputs=sys.p;
-nInputs=sys.m;
-[A,B,C,D,E]=dssdata(sys);
+nOutputs        =sys.p;
+nInputs         =sys.m;
+[A,B,C,D,E]     =dssdata(sys);
 %Reordering Matrices
-reOrderMatrix=abs(A)+abs(E); %abs is used to guarantee that any terms will be cancelled in this combination of A and E
-reOrder=symrcm(reOrderMatrix);
-reOrderMatrix=reOrderMatrix(reOrder,reOrder);
-sys.A = A(reOrder,reOrder);
-sys.B = B(reOrder,:);
-sys.C = C(:,reOrder);
-sys.E = E(reOrder,reOrder);
+reOrderMatrix   =abs(A)+abs(E); %abs is used to guarantee that any terms will be cancelled in this combination of A and E
+reOrder         =symrcm(reOrderMatrix);
+reOrderMatrix   =reOrderMatrix(reOrder,reOrder);
+sys.A           = A(reOrder,reOrder);
+sys.B           = B(reOrder,:);
+sys.C           = C(:,reOrder);
+sys.E           = E(reOrder,reOrder);
 
 %% Verifying relation between Inputs and Outputs
 
@@ -148,17 +148,16 @@ if ~any(any(M))
 elseif not(exist('omega','var')) || isempty(omega)
     %Finding mininum and maximum frequencies
     if isempty(omegaCellIndex) || ~nnz(omegaCellIndex)
-        minW=findminW(sys,M);
-        maxW=findmaxW(sys,M);
+        minW    =findminW(sys,M);
+        maxW    =findmaxW(sys,M);
     end
     %Compute first points of frequency response
     if minW == -Inf, minW = findminW(sys,M); end
-    qttyPoints=ceil((maxW-minW)/log(2))+1;
-    omega = real(logspace(minW,maxW,qttyPoints))'; %w should be a column according to built-in MATLAB function
+    qttyPoints  = ceil((maxW-minW)/log(2))+1;
+    omega       = real(logspace(minW,maxW,qttyPoints))'; %w should be a column according to built-in MATLAB function
     [firstDerivLog,secondDerivLog,magnitude,resp]=ComputeFreqResp(sys,omega*1i,M);
     %Refine the frequency response points
-    [G,omega]=FreqRefinement(sys,omega,firstDerivLog,secondDerivLog,magnitude,resp,M,Opts);
-    
+    [G,omega]   = FreqRefinement(sys,omega,firstDerivLog,secondDerivLog,magnitude,resp,M,Opts);
 else
     %%  Compute the value of the transfer function at selected freq.
     %make sure it's a column vector
