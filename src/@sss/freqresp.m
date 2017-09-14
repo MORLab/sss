@@ -2,9 +2,10 @@ function [varargout] = freqresp(varargin)
 % FREQRESP - Frequency response of sparse state-space systems.
 % 
 % Syntax:
-%       [G, w] = freqresp(sys)
-%       G = freqresp(sys, w)
-%       G = freqresp(sys, ..., Opts)
+%       [G, omega] = freqresp(sys)
+%       G = freqresp(sys, omega)
+%       G = freqresp(sys, Opts)
+%       G = freqresp(sys, omega, Opts)
 %
 % Description:
 %       Evaluates complex transfer function of LTI systems. 
@@ -15,16 +16,12 @@ function [varargout] = freqresp(varargin)
 %       first and second derivatives of the magnitude of the frequency
 %       response. 
 %
-%
-%
 % Inputs:
 %       *Required Input Arguments:*
 %       -sys: an sss-object containing the LTI system
 %       *Optional Input Arguments:*
-%       -w: vector of frequencies or cell with {wmin,wmax}
+%       -omega: vector of frequencies or cell with {wmin,wmax}
 %       -Opts:  structure with execution parameters
-%			-.frd:  return frd object;
-%						[{0} / 1]
 %           -.maxPoints: Maximum number of refinement points
 %                       [{1500} / positive integer]
 %           -.lse:  solve linear system of equations
@@ -59,11 +56,11 @@ function [varargout] = freqresp(varargin)
 %
 %------------------------------------------------------------------
 % Authors:      Jorge Luiz Moreira Silva, Stefan Jaensch, Heiko Panzer, Sylvia Cremer, Rudy Eid
-%               Lisa Jeschek, Alessandro Castagnotto
+%               Lisa Jeschek, Alessandro Castagnotto, Maria Cruz Varona
 % Email:        <a href="mailto:morlab@rt.mw.tum.de">morlab@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  17 Feb 2017
+% Last Change:  14 Sep 2017
 % Copyright (c) 2015-2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
@@ -154,7 +151,7 @@ elseif not(exist('omega','var')) || isempty(omega)
     %Compute first points of frequency response
     if minW == -Inf, minW = findminW(sys,M); end
     qttyPoints=ceil((maxW-minW)/log(2))+1;
-    omega = real(logspace(minW,maxW,qttyPoints))'; %w should be a column according to built-in MATLAB function
+    omega = real(logspace(minW,maxW,qttyPoints))'; %omega should be a column according to built-in MATLAB function
     [firstDerivLog,secondDerivLog,magnitude,resp]=ComputeFreqResp(sys,omega*1i,M);
     %Refine the frequency response points
     [G,omega]=FreqRefinement(sys,omega,firstDerivLog,secondDerivLog,magnitude,resp,M,Opts);

@@ -5,9 +5,10 @@ function  [s, omega] = sigma(varargin)
 %       sigma(sys)
 %       sigma(sys, omega)
 %       [s, omega] = sigma(sys)
+%       [s, omega] = sigma(sys, omega)
 %       sigma(sys1,...,sysN)
 %       sigma(sys1,...,sysN, omega)
-%       sigma(sys1,LineSpec,...,sysN,omega)
+%       sigma(sys1,LineSpec,...,sysN, omega)
 %
 % Description:
 %       Computes and plots the singular values of the frequency response of one or 
@@ -50,40 +51,32 @@ function  [s, omega] = sigma(varargin)
 %
 %------------------------------------------------------------------
 % Authors:      Heiko Panzer, Sylvia Cremer, Rudy Eid, 
-%               Alessandro Castagnotto
+%               Alessandro Castagnotto, Maria Cruz Varona
 % Email:        <a href="mailto:morlab@rt.mw.tum.de">morlab@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  06 Apr 2016
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Last Change:  14 Sep 2017
+% Copyright (c) 2015-2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
 %% Evaluate options
-omegaIndex=0;
+sssIndex=0;
 for i=1:length(varargin)
-    if isa(varargin{i}, 'double')|| isa(varargin{i},'cell')
-        omegaIndex = i;
-        break
+    if isa(varargin{i},'sss') || isa(varargin{i},'ssRed')
+        sssIndex = i;
     end
+    if sssIndex > 1, break; end
 end
 
-if omegaIndex>0
-	omega=varargin{omegaIndex};
-    varargin(omegaIndex)=[];
-else
-    omega=[];
-end
-
-if nargout>0 && length(varargin)>1
-    error('The "sigma" command operates on a single model when used with output arguments.');
+if nargout
+    if sssIndex > 1 
+        error('sss:bode:RequiresSingleModelWithOutputArgs',...
+            'The "bode" command operates on a single model when used with output arguments.');
+    end
 end
 
 %% Get frd object
-for i=1:length(varargin)
-    if isa(varargin{i},'sss')
-        varargin{i} = frd(varargin{i}, omega);
-    end
-end
+varargin = getfrd(varargin{:});
 
 %% Call ss/sigma
 if nargout>0 %no plot

@@ -2,9 +2,10 @@ function sysfrd = frd(varargin)
 % FRD - Convert to frequency-response data model
 % 
 % Syntax:
-%       sysfrd = frd(sys)
-%       sysfrd = frd(sys,frequency)
-%       sysfrd = frd(sys,...,Opts)
+%       sysfrd = FRD(sys)
+%       sysfrd = FRD(sys, omega)
+%       sysfrd = FRD(sys, Opts)
+%       sysfrd = FRD(sys, omega, Opts)
 %
 % Description:
 %       Evaluates complex transfer function of LTI systems and return an
@@ -18,7 +19,7 @@ function sysfrd = frd(varargin)
 %       *Required Input Arguments:*
 %       -sys: an sss-object containing the LTI system
 %       *Optional Input Arguments:*
-%       -frequency: vector of frequencies or cell with {wmin,wmax}
+%       -omega: vector of frequencies or cell with {wmin,wmax}
 %       -Opts:  structure with execution parameters
 %           -.maxPoints: Maximum number of refinement points
 %                       [{1500} / positive integer]
@@ -51,11 +52,11 @@ function sysfrd = frd(varargin)
 % More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Alessandro Castagnotto
+% Authors:      Alessandro Castagnotto, Maria Cruz Varona
 % Email:        <a href="mailto:morlab@rt.mw.tum.de">morlab@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  17 Feb 2017
+% Last Change:  14 Sep 2017
 % Copyright (c) 2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 

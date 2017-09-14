@@ -1,11 +1,12 @@
-function  bodemag(varargin)
-% bodemag - Bode magnitude plot of an LTI system
+function bodemag(varargin)
+% BODEMAG - Bode magnitude plot of an LTI system
 % 
 % Syntax: 
-%       bodemag(sys)
-%       bodemag(sys,omega)
-%       bodemag(sys1,...,sysN,omega)
-%       bodemag(sys,LineSpec)
+%       BODEMAG(sys)
+%       BODEMAG(sys,omega)
+%       BODEMAG(sys1,...,sysN,omega)
+%       BODEMAG(sys,LineSpec)
+%       BODEMAG(sys1,'-r',sys2,'--k', omega);
 %
 % Description:
 %       Bode magnitude plot of one or several LTI systems.
@@ -40,37 +41,16 @@ function  bodemag(varargin)
 %
 %------------------------------------------------------------------
 % Authors:      Heiko Panzer, Sylvia Cremer, Rudy Eid, 
-%               Alessandro Castagnotto
+%               Alessandro Castagnotto, Maria Cruz Varona
 % Email:        <a href="mailto:morlab@rt.mw.tum.de">morlab@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  06 Apr 2016
-% Copyright (c) 2015, 2016 Chair of Automatic Control, TU Muenchen
+% Last Change:  14 Sep 2017
+% Copyright (c) 2015-2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
-
-%% Evaluate options
-omegaIndex=0;
-for i=1:length(varargin)
-    if isa(varargin{i}, 'double')|| isa(varargin{i},'cell')
-        omegaIndex = i;
-        break
-    end
-end
-
-if omegaIndex>0
-	omega=varargin{omegaIndex};
-    varargin(omegaIndex)=[];
-else
-    omega=[];
-end
-
 %% Get frd object
-for i=1:length(varargin)
-    if isa(varargin{i},'sss')
-        varargin{i} = frd(varargin{i}, omega);
-    end
-end
+varargin = getfrd(varargin{:});
 
 %% Call ss/bodemag
-bodemag(varargin{:}, omega);
+bodemag(varargin{:});
