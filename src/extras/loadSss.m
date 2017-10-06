@@ -73,12 +73,12 @@ function sys = loadSss(fname,Opts)
 % More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Alessandro Castagnotto
+% Authors:      Alessandro Castagnotto, Maria Cruz Varona
 % Email:        <a href="mailto:morlab@rt.mw.tum.de">morlab@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  11 Nov 2015
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Last Change:  06 Oct 2017
+% Copyright (c) 2015-2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
 warning('sss:loadSss:deprecated',['loadSss is deprecated and will be removed in later releases',...
@@ -115,7 +115,7 @@ end
 %% Compose and transform the system to first order form
 if containsSystem == 0
     if isfield(LoadData,'A') %1st order form
-        if ~isfield(LoadData,'B'), 
+        if ~isfield(LoadData,'B') 
             if ~isfield(LoadData,'b')
                error('This benchmark does not have a B matrix. Please load it manually'),
             else
@@ -129,7 +129,7 @@ if containsSystem == 0
                 LoadData.C = LoadData.c;
             end
         end
-        if ~isfield(LoadData,'D'), 
+        if ~isfield(LoadData,'D')
             LoadData.D = spalloc(size(LoadData.C,1),size(LoadData.B,2),0); 
         end
         if ~isfield(LoadData,'E'), LoadData.E = speye(size(LoadData.A)); end
@@ -141,7 +141,7 @@ if containsSystem == 0
         warning('sss:loadSss:secondOrder',...
             'The system is in 2nd order form and will be converted to 1st order.')
 
-        if ~isfield(LoadData,'D'), 
+        if ~isfield(LoadData,'D')
             LoadData.D = spalloc(size(LoadData.K,1),size(LoadData.K,2),0); 
         end
 
@@ -158,9 +158,8 @@ if containsSystem == 0
         end
 
         %Use the function second2first to create the system
-
-        sys = second2first(LoadData.M,LoadData.D,LoadData.K,LoadData.B,...
-                           spalloc(size(LoadData.C,1),size(LoadData.C,2),0),LoadData.C,Opts);
+        sys = second2first(LoadData.M,LoadData.D,LoadData.K,LoadData.B,LoadData.C,...
+                           spalloc(size(LoadData.C,1),size(LoadData.C,2),0),Opts);
 
     else
         error('loadSss was not able to determine the form of the given system');

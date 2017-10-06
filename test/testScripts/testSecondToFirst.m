@@ -69,7 +69,7 @@ classdef testSecondToFirst < sssTest
             [A,B,C,D,E] =   second2first(M,1e-6*K,K,B,C);
             sys2 = sss(A,B,C,D,E);
             verifyClass(testCase, sys,'sss');
-            verifyEqual(testCase, sys, sys2);        
+            verifyEqual(testCase, sys, sys2);
         end
     end
 end

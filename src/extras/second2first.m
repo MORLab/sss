@@ -3,7 +3,9 @@ function varargout = second2first(M, D, K, B, Cx, Cv, Opts)
 %
 % Syntax:
 %       sys         = SECOND2FIRST(M,D,K,B,Cx)
+%       sys         = SECOND2FIRST(M,D,K,B,Cx,[],Opts)
 %       sys         = SECOND2FIRST(M,D,K,B,[],Cv)
+%       sys         = SECOND2FIRST(M,D,K,B,[],Cv,Opts)
 %       sys         = SECOND2FIRST(M,D,K,B,Cx,Cv)
 %       sys         = SECOND2FIRST(M,D,K,B,Cx,Cv,Opts)
 %       [A,B,C,D,E] = SECOND2FIRST(M,D,K,B,Cx,Cv,Opts)
@@ -92,22 +94,21 @@ function varargout = second2first(M, D, K, B, Cx, Cv, Opts)
 %
 %------------------------------------------------------------------
 % Authors:      Heiko Panzer, Rudy Eid, Niklas Kochdumper,
-%               Alessandro Castagnotto
+%               Alessandro Castagnotto, Maria Cruz Varona
 % Email:        <a href="mailto:morlab@rt.mw.tum.de">morlab@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  10 Nov 2016
-% Copyright (c) 2016 Chair of Automatic Control, TU Muenchen
+% Last Change:  06 Oct 2017
+% Copyright (c) 2016-2017 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
-% check wheather options are specified or not 
+% check whether options are specified or not 
 if ~exist('Opts','var')
     Opts = struct(); 
 end
 
-Def = struct('transf2nd','I');
+Def.transf2nd = 'I';
 Opts = parseOpts(Opts,Def);
-
 
 % check the matrix-dimensions of M and D
 if size(M,1)~=size(M,2)
