@@ -594,7 +594,7 @@ end
                         V(:,jCol) = lse(newlu, newtan, jCol, s0, tempV);
                     end
                 else
-                    error('A cascaded Krylov basis is only available for SISO systems.');
+                    error('sss:solveLse:cascadeSiso','A cascaded Krylov basis is only available for SISO systems.');
                 end
             case 'init'
                 if ~initLse
