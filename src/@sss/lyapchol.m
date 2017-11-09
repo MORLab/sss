@@ -44,8 +44,8 @@ function varargout = lyapchol(varargin)
 %                           [{300} / positive integer]
 %
 % Output Arguments:
-%       -S:     Cholesky factor X=S*S' of Lyapunov equation A*X*E'+E*X*A'+B*B'=0
-%       -R:     Cholesky factor Y=R*R' of Lyapunov equation A'*Y*E+E'*Y*A+C'*C=0
+%       -S:     Cholesky factor X=S*S' of lyapunov equation A*X*E'+E*X*A'+B*B'=0
+%       -R:     Cholesky factor Y=R*R' of lyapunov equation A'*X*E+E'*Y*A+C'*C=0
 %
 % Examples:
 %       Compute the Cholesky factors for both Lyapunov equations
