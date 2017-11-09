@@ -50,8 +50,8 @@ function [S,R] = lyapchol(varargin)
 %                           [{300} / positive integer]
 %
 % Output Arguments:
-%       -S:     Cholesky factor X=S*S' of lyapunov equation A*X*E'+E*X*A'+B*B'=0
-%       -R:     Cholesky factor Y=R*R' of lyapunov equation A'*X*E+E'*Y*A+C'*C=0
+%       -S:     Cholesky factor X=S*S' of Lyapunov equation A*X*E'+E*X*A'+B*B'=0
+%       -R:     Cholesky factor Y=R*R' of Lyapunov equation A'*Y*E+E'*Y*A+C'*C=0
 %
 % Examples:
 %       Compute the Cholesky factors for both Lyapunov equations
@@ -91,11 +91,11 @@ function [S,R] = lyapchol(varargin)
 % More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Alessandro Castagnotto, Lisa Jeschek
+% Authors:      Alessandro Castagnotto, Lisa Jeschek, Maria Cruz Varona
 % Email:        <a href="mailto:morlab@rt.mw.tum.de">morlab@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  06 Apri 2017
+% Last Change:  09 Nov 2017
 % Copyright (c) 2016,2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
@@ -217,9 +217,12 @@ switch Opts.method
             else
                 eqn.type='T';
                 [R,Rout]=mess_lradi(eqn,messOpts,oper);
-                if Rout.rc(end)>Opts.rctol
-                    warning(['Maximum number of ADI iterations reached (maxiter = ',num2str(Opts.maxiter,'%d'),...
-                        '). rctol is not satisfied for R: ',num2str(Rout.rc(end),'%d'),' > rctol (',num2str(Opts.rctol,'%d'),').']);
+                if Rout.niter >= Opts.maxiter
+                    warning(['Maximum number of ADI iterations reached (maxiter = ',num2str(Opts.maxiter,'%d'), ').']);
+                elseif isfield(Rout,'res') && Rout.res(end)>Opts.restol
+                    warning(['restol is not satisfied for R: ',num2str(Rout.res(end),'%d'),' > rctol (',num2str(Opts.restol,'%d'),').']);
+                elseif isfield(Rout,'rc') && Rout.rc(end)>Opts.rctol
+                    warning(['rctol is not satisfied for R: ',num2str(Rout.rc(end),'%d'),' > rctol (',num2str(Opts.rctol,'%d'),').']);
                 end
             end
             if Opts.q && size(R,2)<Opts.q
