@@ -1,9 +1,9 @@
-function [S,R] = lyapchol(varargin)
+function [S,varargout] = lyapchol(varargin)
 % LYAPCHOL - Solve Lyapunov equations
 %
 % Syntax:
-%       S				= LYAPCHOL(sys)
-%       [S,R]			= LYAPCHOL(sys)
+%       [S,data]        = LYAPCHOL(sys)
+%       [S,R,data]		= LYAPCHOL(sys)
 %       S               = LYAPCHOL(A,B)
 %       S               = LYAPCHOL(A,B,E)
 %       ...             = LYAPCHOL(...,Opts)
@@ -37,17 +37,32 @@ function [S,R] = lyapchol(varargin)
 %		*Optional Input Arguments:*
 %       -Opts:              a structure containing following options
 %           -.method:       select solver for lyapunov equation 
-%                           [{'auto'} / 'adi' / 'hammarling' ]
-%           -.lse:          solve linear system of equations (only ADI)
+%                           [{'auto'} / 'adi' / 'hammarling' / 'crksm' ]
+%           -.lse:          solve linear system of equations (only ADI and CRKSM)
 %                           [{'gauss'} / 'luChol']
-%           -.rctol:        tolerance for difference between ADI iterates
+%           -.rctol:        tolerance for difference between ADI or crksm iterates
 %                           [{'1e-12'} / positive float]
+%           -.restol:       tolerance for the residual of the Lyapunov eqution
+%                           [{'1e-8'} / positive float]
+%           -.maxiter:      maximum number of iterations (only ADI and CRKSM)
+%                           [{150} / positive integer]
 %           -.q:            size of Cholesky factor (only ADI)
 %                           [{'0'} / positive integer]
 %           -.forceOrder:   return order q
 %                           [{'false'} / 'true']
-%           -.maxiter:      maximum number of iterations (only ADI)
-%                           [{300} / positive integer]
+%           -.subspace:     build block or tangential Krylov subspace (only CRKSM)
+%                           [{'block'} / 'tangential']
+%           -.projection:   choose projection method to get the reduced system (only CRKSM)
+%                           [{'onesided'} / 'twosided']
+%           -.initShifts:   choose initial shift strategy in INITIALIZESHIFTS (only CRKSM)
+%                           [{'ADI'} / 'eigs' / 'ROM' / 'const']
+%           -.nShifts:      set number of initial shifts (only CRKSM)
+%                           positive, even integer
+%           -.shifts:       choose, wether the shifts should be updatet
+%                           within the iterations (dynamical) or uses use
+%                           the initial set again during  the whole process
+%                           (fixedCyclic)
+%                           [{'dynamical'} / 'fixedCyclic']
 %
 % Output Arguments:
 %       -S:     Cholesky factor X=S*S' of Lyapunov equation A*X*E'+E*X*A'+B*B'=0
@@ -91,11 +106,12 @@ function [S,R] = lyapchol(varargin)
 % More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Alessandro Castagnotto, Lisa Jeschek, Maria Cruz Varona
+% Authors:      Alessandro Castagnotto, Lisa Jeschek, Paul Heidenreich,
+%               Maria Cruz Varona
 % Email:        <a href="mailto:morlab@rt.mw.tum.de">morlab@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  09 Nov 2017
+% Last Change:  21 Nov 2017
 % Copyright (c) 2016,2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
@@ -123,15 +139,24 @@ else
     sys = sss(A,B,sparse(1,size(A,2)),[],E);
 end 
 %% Option parsing
-%  Default execution parameters
-Def.method      = 'auto';           % 'auto', 'adi', 'hammarling'
-Def.lse         = 'gauss';          % only for MESS (see solveLse)
-Def.restol      = 1e-12;            % only for MESS
-Def.rctol       = 0;                % only for MESS
-Def.messPara    = 'projection';     % only for MESS
-Def.q           = 0;                % only for MESS
-Def.forceOrder  = false;            % only for MESS
-Def.maxiter     = min([150,sys.n]); % only for MESS
+% General default execution parameters
+Def.method          = 'auto';           % 'auto', 'adi', 'hammarling', 'crksm'
+Def.lse             = 'gauss';          % only for MESS (see solveLse) and CRKSM
+Def.restol          = 1e-8;             % only for MESS and CRKSM
+Def.rctol           = 0;                % only for MESS and CRKSM
+Def.maxiter         = min([150,sys.n]); % only for MESS and CRKSM
+Def.infoLyap        = 0;                % give output data-struct: [{0}, 1]
+
+% ADI default execution parameters
+Def.messPara        = 'projection';     % only for MESS 
+Def.q               = 0;                % only for MESS
+Def.forceOrder      = false;            % only for MESS
+
+% CRKSM default execution parameters
+Def.subspace        = 'block';          % only for CRKSM; build block or tangential Krylov subspace, [{'block'} / 'tangential']
+Def.initShifts      = 'ADI';            % only for CRKSM; choose shift strategy in INITIALIZESHIFTS, [{'ADI'} / 'eigs' / 'ROM' / 'const']
+Def.nShifts         = 10;               % only for CRKSM; set number of initial shifts
+Def.shifts          = 'dynamical';      % only for CRKSM; [{'dynamical'} / 'fixedCyclic']
 
 % create the options structure
 if ~exist('Opts','var') || isempty(fieldnames(Opts))
@@ -142,7 +167,7 @@ end
 
 %% check "method" option or make automatic selection
 
-if strcmp(Opts.method,'adi')
+if strcmp(Opts.method,'adi') ||  strcmp(Opts.method,'crksm')
     if sys.isDae %DAEs are not supported in sss yet
         warning('Dae-System detected. Using built-in lyapchol instead of ADI.');
         Opts.method='hammarling';
@@ -157,6 +182,15 @@ elseif strcmp(Opts.method,'auto')
     else
         Opts.method = 'hammarling';
     end
+end
+
+ % check if CRKSM and internal functions are available
+if strcmp(Opts.method, 'crksm') && (~exist('crksm.m','file') || ~exist('initializeShifts.m','file') || ~exist('getShifts.m','file')...
+   || ~exist('solveLse.m','file')) 
+    warning('One of the following files not found.');
+    warning('crksm.m, initializeShifts.m, getShifts.m, solveLse.m');
+    warning('Using ADI method instead of CRKSM.');
+    Opts.method='hammarling'; 
 end
 
 if strcmp(Opts.method, 'adi') % check if MESS is available
@@ -196,7 +230,9 @@ switch Opts.method
         [messOpts.adi.shifts.p]=mess_para(eqn,messOpts,oper);
 
         % low rank adi
+        %messOpts.adi.shifts.method = 'projection';
         [S,Sout]=mess_lradi(eqn,messOpts,oper);
+        data.Info_S = Sout;
 
         if Opts.q && size(S,2)<Opts.q
             warning(['Because of small relative changes in the last ADI iterations,',...
@@ -211,12 +247,15 @@ switch Opts.method
              warning(['rctol is not satisfied for S: ',num2str(Sout.rc(end),'%d'),' > rctol (',num2str(Opts.rctol,'%d'),').']);
         end
         
-        if nargout>1
+        if (nargout>1 && Opts.infoLyap == 1) || (nargout == 2 && Opts.infoLyap == 0) || nargout == 3
             if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
                 R=S;
+                data.Info_R = Sout;
             else
                 eqn.type='T';
                 [R,Rout]=mess_lradi(eqn,messOpts,oper);
+
+                data.Info_R = Rout;
                 if Rout.niter >= Opts.maxiter
                     warning(['Maximum number of ADI iterations reached (maxiter = ',num2str(Opts.maxiter,'%d'), ').']);
                 elseif isfield(Rout,'res') && Rout.res(end)>Opts.restol
@@ -239,17 +278,102 @@ switch Opts.method
             S = lyapchol(sys.A,sys.B);
         end
         S = S';
+        if nargout == 2 && Opts.infoLyap == 1
+            data.Info_S = 'No data available for Hammarling method';
+        end
 
-        if nargout>1
+        if (nargout > 1 && Opts.infoLyap == 1) || (nargout == 2 && Opts.infoLyap == 0) || nargout == 3 
             if sys.isDescriptor
                 R = lyapchol(sys.A', sys.C',sys.E');
             else
                 R = lyapchol(sys.A',sys.C');
             end
             R = R';
-        end  
+            if nargout == 3
+                data.Info_R = 'No data available for Hammarling method';
+            end
+        end 
+        
+    case 'crksm'
+        if strcmp(Opts.subspace,'block')
+            % get shifts
+            Opts.messPara = 'heur';
+            [s0_inp,~,s0_out] = initializeShifts(sys,Opts.nShifts,1,Opts);
+            [~,V,W,S,dataS] = crksm(sys,s0_inp,Opts);
+            if nargout == 2  && Opts.infoLyap == 1
+                data.Info_S = dataS;
+                data.Info_S.Basis_V = V;
+                data.Info_S.Basis_W = W;
+            elseif (nargout>1 && Opts.infoLyap == 1) || (nargout == 2 && Opts.infoLyap == 0) || nargout == 3
+                % call CRKSM for S and R
+                if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
+                    R = S;
+                    data.Info_R = dataS; 
+                    data.Info_R.Basis_V = V;
+                    data.Info_R.Basis_W = W;
+                else
+                    [~,~,~,R,~] = crksm(sys,[],s0_out,Opts);
+                end
+            elseif nargout == 3
+                % call CRKSM for S and R
+                if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
+                    R = S;
+                    data.Info_R = dataS; 
+                    data.Info_R.Basis_V = V;
+                    data.Info_R.Basis_W = W;
+                else
+                    [~,V,W,R,dataR] = crksm(sys,[],s0_out,Opts);
+                    data.Info_R = dataR; 
+                    data.Info_R.Basis_V = V;
+                    data.Info_R.Basis_W = W;
+                end
+            end
+        else
+            % get shifts and tangential directions
+            [s0_inp,Rt,s0_out,Lt] = initializeShifts(sys,Opts.nShifts,1,Opts);
+            [~,V,W,S,dataS] = crksm(sys,s0_inp,Rt,Opts);
+            if nargout == 2  && Opts.infoLyap == 1
+                data.Info_S = dataS;
+                data.Info_S.Basis_V = V;
+                data.Info_S.Basis_W = W;
+            elseif (nargout>1 && Opts.infoLyap == 1) || (nargout == 2 && Opts.infoLyap == 0) || nargout == 3
+                % call CRKSM for S and R
+                if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
+                    R = S;
+                    data.Info_R = dataS; 
+                    data.Info_R.Basis_V = V;
+                    data.Info_R.Basis_W = W;
+                else
+                    [~,~,~,R,~] = crksm(sys,[],s0_out,[],Lt,Opts);
+                end
+            elseif nargout == 3
+                % call CRKSM for S and R
+                if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
+                    R = S;
+                    data.Info_R = dataS;
+                    data.Info_R.Basis_V = V;
+                    data.Info_R.Basis_W = W;
+                else
+                    [~,V,W,R,dataR] = crksm(sys,[],s0_out,[],Lt,Opts);
+                    data.Info_R = dataR;
+                    data.Info_R.Basis_V = V;
+                    data.Info_R.Basis_W = W;
+                end
+            end
+        end
+        
     otherwise 
         error('sss:lyapchol:invalidMethod','The chosen method for lyapchol is invalid.')
 end
+% create output
+if nargout == 2 && Opts.infoLyap == 1
+    varargout{1} = data;
+elseif nargout == 2 && Opts.infoLyap == 0
+    varargout{1} = R;
+elseif nargout == 3
+     varargout{1} = R;
+     varargout{2} = data;
 end
+end
+
 
