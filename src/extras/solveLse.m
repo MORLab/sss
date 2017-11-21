@@ -578,7 +578,7 @@ end
                         else
                             tempV=E*V(:,jCol-1);
                             if hermite
-                                tempW=E*W(:,jCol-1);
+                                tempW=E.'*W(:,jCol-1);
                             end
                         end
                         Rsylv=0;
