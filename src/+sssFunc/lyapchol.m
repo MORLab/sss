@@ -169,10 +169,10 @@ end
 
 if strcmp(Opts.method,'adi') ||  strcmp(Opts.method,'crksm')
     if sys.isDae %DAEs are not supported in sss yet
-        warning('Dae-System detected. Using built-in lyapchol instead of ADI.');
+        warning('Dae-System detected. Using built-in lyapchol instead of ADI/CRKSM.');
         Opts.method='hammarling';
     elseif sys.n<100
-        warning('System is small (n<100). Using built-in lyapchol instead of ADI.');
+        warning('System is small (n<100). Using built-in lyapchol instead of ADI/CRKSM.');
         Opts.method='hammarling';
     end
 elseif strcmp(Opts.method,'auto')
@@ -190,7 +190,7 @@ if strcmp(Opts.method, 'crksm') && (~exist('crksm.m','file') || ~exist('initiali
     warning('One of the following files not found.');
     warning('crksm.m, initializeShifts.m, getShifts.m, solveLse.m');
     warning('Using ADI method instead of CRKSM.');
-    Opts.method='hammarling'; 
+    Opts.method='adi'; 
 end
 
 if strcmp(Opts.method, 'adi') % check if MESS is available
@@ -278,7 +278,7 @@ switch Opts.method
             S = lyapchol(sys.A,sys.B);
         end
         S = S';
-        if nargout == 2 && Opts.infoLyap == 1
+        if nargout == 2 && Opts.infoLyap == 1 
             data.Info_S = 'No data available for Hammarling method';
         end
 
@@ -297,14 +297,16 @@ switch Opts.method
     case 'crksm'
         if strcmp(Opts.subspace,'block')
             % get shifts
-            Opts.messPara = 'heur';
+            Opts.messPara = 'heur'; % Opts.strategy = 'ADI' / Opts.initShifts??
             [s0_inp,~,s0_out] = initializeShifts(sys,Opts.nShifts,1,Opts);
+            % call CRKSM for S
             [~,V,W,S,dataS] = crksm(sys,s0_inp,Opts);
-            if nargout == 2  && Opts.infoLyap == 1
+            if nargout == 2 && Opts.infoLyap == 1 % usage: [S,data] = lyapchol(sys) 
                 data.Info_S = dataS;
                 data.Info_S.Basis_V = V;
                 data.Info_S.Basis_W = W;
             elseif (nargout>1 && Opts.infoLyap == 1) || (nargout == 2 && Opts.infoLyap == 0) || nargout == 3
+                % usage: [S,data] = lyapchol(sys), [S,R] = lyapchol(sys), [S,R,data] = lyapchol(sys)
                 % call CRKSM for S and R
                 if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
                     R = S;
@@ -314,7 +316,7 @@ switch Opts.method
                 else
                     [~,~,~,R,~] = crksm(sys,[],s0_out,Opts);
                 end
-            elseif nargout == 3
+            elseif nargout == 3 % usage: [S,R,data] = lyapchol(sys) 
                 % call CRKSM for S and R
                 if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
                     R = S;
@@ -328,9 +330,10 @@ switch Opts.method
                     data.Info_R.Basis_W = W;
                 end
             end
-        else
+        else % Opts.subspace='tangential'
             % get shifts and tangential directions
             [s0_inp,Rt,s0_out,Lt] = initializeShifts(sys,Opts.nShifts,1,Opts);
+            % call CRKSM for S
             [~,V,W,S,dataS] = crksm(sys,s0_inp,Rt,Opts);
             if nargout == 2  && Opts.infoLyap == 1
                 data.Info_S = dataS;
