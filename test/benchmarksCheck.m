@@ -52,12 +52,12 @@ function benchmarksCheck(varargin)
 % More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %
 %------------------------------------------------------------------
-% Authors:      Rodrigo Mancilla
+% Authors:      Rodrigo Mancilla, Mulham Soudan
 % Email:        <a href="mailto:morlab@rt.mw.tum.de">morlab@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  15 Mar 2016
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Last Change:  02 Oct 2017
+% Copyright (c) 2015-2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
 
@@ -156,15 +156,24 @@ function transferfiles(sourcePath,destinationPath,isWeb,benchmarksList,iBenchmar
 
 if isWeb
     fprintf('Benchmark %s not found. Download in progress...\n',benchmarksList{iBenchmark});
-    
-    try
-        currBenchmark = fullfile(destinationPath,benchmarksList{iBenchmark});
-        websave(currBenchmark,[sourcePath benchmarksList{iBenchmark}]);
-    catch
-        fprintf('\n\n');
-        error('Download was unsuccesful. Please check your internet connection!')
-    end
-        
+    if verLessThan('MATLAB' , '8.4')
+        fprintf('MATLAB R2014a and earlier!\n\n');
+        try
+            urlwrite([sourcePath char(benchmarksList(iBenchmark))],[destinationPath char(benchmarksList(iBenchmark))]);
+        catch
+            fprintf('\n\n');
+            error('Download was unsuccesful. Please check your internet connection!')
+        end
+    else
+        fprintf('MATLAB R2014b and newer!\n\n');
+        try
+            currBenchmark = fullfile(destinationPath,benchmarksList{iBenchmark});
+            websave(currBenchmark,[sourcePath benchmarksList{iBenchmark}]);
+        catch
+            fprintf('\n\n');
+            error('Download was unsuccesful. Please check your internet connection!')
+        end
+    end     
     fprintf('%s succesfully downloaded!\n\n',benchmarksList{iBenchmark});
     
 else

@@ -15,8 +15,8 @@ classdef testDownloadLink < sssTest
 %
 % More Toolbox Info by searching <a href="matlab:docsearch sss">sss</a> in the Matlab Documentation
 %------------------------------------------------------------------
-% Authors:      Niklas Kochdumper
-% Last Change:  19 Jul 2017
+% Authors:      Niklas Kochdumper, Mulham Soudan, Maria Cruz Varona
+% Last Change:  02 Oct 2017
 % Copyright (c) 2015-2017 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
@@ -34,7 +34,13 @@ classdef testDownloadLink < sssTest
             path = fullfile(pathRoot,'Temp.mat');
             
             % download the file
-            websave(path,webSource);
+            if verLessThan('MATLAB' , '8.4')
+                fprintf('MATLAB R2014a and earlier!\n\n');
+                urlwrite(webSource,path);
+            else
+                fprintf('MATLAB R2014b and newer!\n\n');
+                websave(path,webSource);
+            end
             
             % load the benchmark
             sys = sss('Temp.mat');
