@@ -247,7 +247,7 @@ switch Opts.method
              warning(['rctol is not satisfied for S: ',num2str(Sout.rc(end),'%d'),' > rctol (',num2str(Opts.rctol,'%d'),').']);
         end
         
-        if (nargout>1 && Opts.infoLyap == 1) || (nargout == 2 && Opts.infoLyap == 0) || nargout == 3
+        if (nargout == 2 && Opts.infoLyap == 0) || nargout == 3
             if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
                 R=S;
                 data.Info_R = Sout;
@@ -282,7 +282,7 @@ switch Opts.method
             data.Info_S = 'No data available for Hammarling method';
         end
 
-        if (nargout > 1 && Opts.infoLyap == 1) || (nargout == 2 && Opts.infoLyap == 0) || nargout == 3 
+        if (nargout == 2 && Opts.infoLyap == 0) || nargout == 3
             if sys.isDescriptor
                 R = lyapchol(sys.A', sys.C',sys.E');
             else
@@ -292,7 +292,7 @@ switch Opts.method
             if nargout == 3
                 data.Info_R = 'No data available for Hammarling method';
             end
-        end 
+        end
         
     case 'crksm'
         if strcmp(Opts.subspace,'block')
@@ -304,29 +304,17 @@ switch Opts.method
                 data.Info_S = dataS;
                 data.Info_S.Basis_V = V;
                 data.Info_S.Basis_W = W;
-            elseif (nargout>1 && Opts.infoLyap == 1) || (nargout == 2 && Opts.infoLyap == 0) || nargout == 3
+            elseif (nargout == 2  && Opts.infoLyap == 0) || nargout == 3
                 % call CRKSM for S and R
                 if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
                     R = S;
                     data.Info_R = dataS; 
-                    data.Info_R.Basis_V = V;
-                    data.Info_R.Basis_W = W;
-                else
-                    [~,~,~,R,~] = crksm(sys,[],s0_out,Opts);
-                end
-            elseif nargout == 3
-                % call CRKSM for S and R
-                if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
-                    R = S;
-                    data.Info_R = dataS; 
-                    data.Info_R.Basis_V = V;
-                    data.Info_R.Basis_W = W;
                 else
                     [~,V,W,R,dataR] = crksm(sys,[],s0_out,Opts);
                     data.Info_R = dataR; 
-                    data.Info_R.Basis_V = V;
-                    data.Info_R.Basis_W = W;
                 end
+                data.Info_R.Basis_V = V;
+                data.Info_R.Basis_W = W;
             end
         else
             % get shifts and tangential directions
@@ -336,32 +324,19 @@ switch Opts.method
                 data.Info_S = dataS;
                 data.Info_S.Basis_V = V;
                 data.Info_S.Basis_W = W;
-            elseif (nargout>1 && Opts.infoLyap == 1) || (nargout == 2 && Opts.infoLyap == 0) || nargout == 3
+            elseif (nargout == 2  && Opts.infoLyap == 0) || nargout == 3
                 % call CRKSM for S and R
                 if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
                     R = S;
                     data.Info_R = dataS; 
-                    data.Info_R.Basis_V = V;
-                    data.Info_R.Basis_W = W;
-                else
-                    [~,~,~,R,~] = crksm(sys,[],s0_out,[],Lt,Opts);
-                end
-            elseif nargout == 3
-                % call CRKSM for S and R
-                if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
-                    R = S;
-                    data.Info_R = dataS;
-                    data.Info_R.Basis_V = V;
-                    data.Info_R.Basis_W = W;
                 else
                     [~,V,W,R,dataR] = crksm(sys,[],s0_out,[],Lt,Opts);
-                    data.Info_R = dataR;
-                    data.Info_R.Basis_V = V;
-                    data.Info_R.Basis_W = W;
+                    data.Info_R = dataR; 
                 end
+                data.Info_R.Basis_V = V;
+                data.Info_R.Basis_W = W;
             end
         end
-        
     otherwise 
         error('sss:lyapchol:invalidMethod','The chosen method for lyapchol is invalid.')
 end
