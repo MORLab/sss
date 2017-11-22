@@ -35,34 +35,36 @@ function [S,varargout] = lyapchol(varargin)
 %       -sys:   an sss-object containing the LTI system
 %       -A,B,E: (alternatively) matrices of the Lyapunov equation
 %		*Optional Input Arguments:*
-%       -Opts:              a structure containing following options
-%           -.method:       select solver for lyapunov equation 
-%                           [{'auto'} / 'adi' / 'hammarling' / 'crksm' ]
-%           -.lse:          solve linear system of equations (only ADI and CRKSM)
-%                           [{'gauss'} / 'luChol']
-%           -.rctol:        tolerance for difference between ADI or crksm iterates
-%                           [{'1e-12'} / positive float]
-%           -.restol:       tolerance for the residual of the Lyapunov eqution
-%                           [{'1e-8'} / positive float]
-%           -.maxiter:      maximum number of iterations (only ADI and CRKSM)
-%                           [{150} / positive integer]
-%           -.q:            size of Cholesky factor (only ADI)
-%                           [{'0'} / positive integer]
-%           -.forceOrder:   return order q
-%                           [{'false'} / 'true']
-%           -.subspace:     build block or tangential Krylov subspace (only CRKSM)
-%                           [{'block'} / 'tangential']
-%           -.projection:   choose projection method to get the reduced system (only CRKSM)
-%                           [{'onesided'} / 'twosided']
-%           -.initShifts:   choose initial shift strategy in INITIALIZESHIFTS (only CRKSM)
-%                           [{'ADI'} / 'eigs' / 'ROM' / 'const']
-%           -.nShifts:      set number of initial shifts (only CRKSM)
-%                           positive, even integer
-%           -.shifts:       choose, wether the shifts should be updatet
-%                           within the iterations (dynamical) or uses use
-%                           the initial set again during  the whole process
-%                           (fixedCyclic)
-%                           [{'dynamical'} / 'fixedCyclic']
+%       -Opts:                  a structure containing following options
+%           -.method:           select solver for lyapunov equation 
+%                               [{'auto'} / 'adi' / 'hammarling' / 'crksm' ]
+%           -.lse:              solve linear system of equations (only ADI and CRKSM)
+%                               [{'gauss'} / 'luChol']
+%           -.rctol:            tolerance for difference between ADI or crksm iterates
+%                               [{'1e-12'} / positive float]
+%           -.restol:           tolerance for the residual of the Lyapunov eqution
+%                               [{'1e-8'} / positive float]
+%           -.maxiter:          maximum number of iterations (only ADI and CRKSM)
+%                               [{150} / positive integer]
+%           -.adiShiftsMethod:  refer to opts.adi.shifts.method in
+%                               mess_para or mess_lradi
+%           -.q:                size of Cholesky factor (only ADI)
+%                               [{'0'} / positive integer]
+%           -.forceOrder:       return order q
+%                               [{'false'} / 'true']
+%           -.subspace:         build block or tangential Krylov subspace (only CRKSM)
+%                               [{'block'} / 'tangential']
+%           -.projection:       choose projection method to get the reduced system (only CRKSM)
+%                               [{'onesided'} / 'twosided']
+%           -.initShifts:       choose initial shift strategy in INITIALIZESHIFTS (only CRKSM)
+%                               [{'ADI'} / 'eigs' / 'ROM' / 'const']
+%           -.nShifts:          set number of initial shifts (only CRKSM)
+%                               positive, even integer
+%           -.shifts:           choose, wether the shifts should be updatet
+%                               within the iterations (dynamical) or uses use
+%                               the initial set again during  the whole process
+%                               (fixedCyclic)
+%                               [{'dynamical'} / 'fixedCyclic']
 %
 % Output Arguments:
 %       -S:     Cholesky factor X=S*S' of Lyapunov equation A*X*E'+E*X*A'+B*B'=0
@@ -148,7 +150,7 @@ Def.maxiter         = min([150,sys.n]); % only for MESS and CRKSM
 Def.infoLyap        = 0;                % give output data-struct: [{0}, 1]
 
 % ADI default execution parameters
-Def.messPara        = 'projection';     % only for MESS 
+Def.adiShiftsMethod = 'projection';     % only for MESS  
 Def.q               = 0;                % only for MESS
 Def.forceOrder      = false;            % only for MESS
 
@@ -156,7 +158,6 @@ Def.forceOrder      = false;            % only for MESS
 Def.subspace        = 'block';          % only for CRKSM; build block or tangential Krylov subspace, [{'block'} / 'tangential']
 Def.initShifts      = 'ADI';            % only for CRKSM; choose shift strategy in INITIALIZESHIFTS, [{'ADI'} / 'eigs' / 'ROM' / 'const']
 Def.nShifts         = 10;               % only for CRKSM; set number of initial shifts
-Def.shifts          = 'dynamical';      % only for CRKSM; [{'dynamical'} / 'fixedCyclic']
 
 % create the options structure
 if ~exist('Opts','var') || isempty(fieldnames(Opts))
@@ -169,10 +170,10 @@ end
 
 if strcmp(Opts.method,'adi') ||  strcmp(Opts.method,'crksm')
     if sys.isDae %DAEs are not supported in sss yet
-        warning('Dae-System detected. Using built-in lyapchol instead of ADI.');
+        warning('Dae-System detected. Using built-in lyapchol instead of ADI/CRKSM.');
         Opts.method='hammarling';
     elseif sys.n<100
-        warning('System is small (n<100). Using built-in lyapchol instead of ADI.');
+        warning('System is small (n<100). Using built-in lyapchol instead of ADI/CRKSM.');
         Opts.method='hammarling';
     end
 elseif strcmp(Opts.method,'auto')
@@ -190,7 +191,7 @@ if strcmp(Opts.method, 'crksm') && (~exist('crksm.m','file') || ~exist('initiali
     warning('One of the following files not found.');
     warning('crksm.m, initializeShifts.m, getShifts.m, solveLse.m');
     warning('Using ADI method instead of CRKSM.');
-    Opts.method='hammarling'; 
+    Opts.method='adi'; 
 end
 
 if strcmp(Opts.method, 'adi') % check if MESS is available
@@ -218,7 +219,7 @@ switch Opts.method
         eqn=struct('A_',sys.A,'E_',sys.E,'B',sys.B,'C',sys.C,'prm',speye(size(sys.A)),'type','N','haveE',sys.isDescriptor);
 
         % opts struct: MESS options
-        messOpts.adi=struct('shifts',struct('l0',20,'kp',50,'km',25,'b0',ones(sys.n,1),'method',Opts.messPara,...
+        messOpts.adi=struct('shifts',struct('l0',20,'kp',50,'km',25,'b0',ones(sys.n,1),'method',Opts.adiShiftsMethod,...
             'info',0),'maxiter',Opts.maxiter,'restol',Opts.restol,'rctol',Opts.rctol,...
             'info',0,'norm','fro');
 
@@ -230,7 +231,6 @@ switch Opts.method
         [messOpts.adi.shifts.p]=mess_para(eqn,messOpts,oper);
 
         % low rank adi
-        %messOpts.adi.shifts.method = 'projection';
         [S,Sout]=mess_lradi(eqn,messOpts,oper);
         data.Info_S = Sout;
 
@@ -278,7 +278,7 @@ switch Opts.method
             S = lyapchol(sys.A,sys.B);
         end
         S = S';
-        if nargout == 2 && Opts.infoLyap == 1
+        if nargout == 2 && Opts.infoLyap == 1 
             data.Info_S = 'No data available for Hammarling method';
         end
 
@@ -297,10 +297,11 @@ switch Opts.method
     case 'crksm'
         if strcmp(Opts.subspace,'block')
             % get shifts
-            Opts.messPara = 'heur';
+%             Opts.adiShiftsMethod = 'heur'; % Opts.strategy = 'ADI' / Opts.initShifts??
             [s0_inp,~,s0_out] = initializeShifts(sys,Opts.nShifts,1,Opts);
+            % call CRKSM for S
             [~,V,W,S,dataS] = crksm(sys,s0_inp,Opts);
-            if nargout == 2  && Opts.infoLyap == 1
+            if nargout == 2 && Opts.infoLyap == 1 % usage: [S,data] = lyapchol(sys) 
                 data.Info_S = dataS;
                 data.Info_S.Basis_V = V;
                 data.Info_S.Basis_W = W;
@@ -316,9 +317,10 @@ switch Opts.method
                 data.Info_R.Basis_V = V;
                 data.Info_R.Basis_W = W;
             end
-        else
+        else % Opts.subspace='tangential'
             % get shifts and tangential directions
             [s0_inp,Rt,s0_out,Lt] = initializeShifts(sys,Opts.nShifts,1,Opts);
+            % call CRKSM for S
             [~,V,W,S,dataS] = crksm(sys,s0_inp,Rt,Opts);
             if nargout == 2  && Opts.infoLyap == 1
                 data.Info_S = dataS;
