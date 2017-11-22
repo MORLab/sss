@@ -47,7 +47,8 @@ function [S,varargout] = lyapchol(varargin)
 %           -.maxiter:          maximum number of iterations (only ADI and CRKSM)
 %                               [{150} / positive integer]
 %           -.adiShiftsMethod:  refer to opts.adi.shifts.method in
-%                               mess_para or mess_lradi
+%                               MESS_PARA or MESS_LRADI for more info
+%                               [{'heur'} / 'wachspress' / 'projection']
 %           -.q:                size of Cholesky factor (only ADI)
 %                               [{'0'} / positive integer]
 %           -.forceOrder:       return order q
@@ -59,12 +60,7 @@ function [S,varargout] = lyapchol(varargin)
 %           -.initShifts:       choose initial shift strategy in INITIALIZESHIFTS (only CRKSM)
 %                               [{'ADI'} / 'eigs' / 'ROM' / 'const']
 %           -.nShifts:          set number of initial shifts (only CRKSM)
-%                               positive, even integer
-%           -.shifts:           choose, wether the shifts should be updatet
-%                               within the iterations (dynamical) or uses use
-%                               the initial set again during  the whole process
-%                               (fixedCyclic)
-%                               [{'dynamical'} / 'fixedCyclic']
+%                               [{10} / positive, even integer]
 %
 % Output Arguments:
 %       -S:     Cholesky factor X=S*S' of Lyapunov equation A*X*E'+E*X*A'+B*B'=0
@@ -150,7 +146,7 @@ Def.maxiter         = min([150,sys.n]); % only for MESS and CRKSM
 Def.infoLyap        = 0;                % give output data-struct: [{0}, 1]
 
 % ADI default execution parameters
-Def.adiShiftsMethod = 'projection';     % only for MESS  
+Def.adiShiftsMethod = 'heur';           % only for MESS  
 Def.q               = 0;                % only for MESS
 Def.forceOrder      = false;            % only for MESS
 
