@@ -158,7 +158,6 @@ Def.forceOrder      = false;            % only for MESS
 Def.subspace        = 'block';          % only for CRKSM; build block or tangential Krylov subspace, [{'block'} / 'tangential']
 Def.initShifts      = 'ADI';            % only for CRKSM; choose shift strategy in INITIALIZESHIFTS, [{'ADI'} / 'eigs' / 'ROM' / 'const']
 Def.nShifts         = 10;               % only for CRKSM; set number of initial shifts
-Def.shifts          = 'dynamical';      % only for CRKSM; [{'dynamical'} / 'fixedCyclic']
 
 % create the options structure
 if ~exist('Opts','var') || isempty(fieldnames(Opts))
@@ -232,7 +231,6 @@ switch Opts.method
         [messOpts.adi.shifts.p]=mess_para(eqn,messOpts,oper);
 
         % low rank adi
-        %messOpts.adi.shifts.method = 'projection';
         [S,Sout]=mess_lradi(eqn,messOpts,oper);
         data.Info_S = Sout;
 
