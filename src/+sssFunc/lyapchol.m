@@ -335,6 +335,8 @@ switch Opts.method
             end
         else % Opts.subspace='tangential'
             % get shifts and tangential directions
+            Opts.initShiftsStrategy = 'eigs';
+            fprintf('initial shift strategy is automatically set to "eigs" because ADI strategy does not support the tangential case');
             [s0_inp,Rt,s0_out,Lt] = initializeShifts(sys,Opts.nShifts,1,Opts);
             % call CRKSM for S
             [~,V_S,W_S,S,dataS] = crksm(sys,s0_inp,Rt,Opts);
