@@ -24,7 +24,7 @@ function [nrm, varargout] = norm(sys, varargin)
 %           [{'2'} / 'inf']
 %       -Opts:              a structure containing following options
 %           -.lyapchol:     choose lyapunov equation solver
-%                           [{'auto'} / 'adi' / 'hammarling']
+%                           [{'auto'} / 'adi' / 'hammarling' / 'crksm']
 %           -.lse:          solve linear system of equations
 %                           [{'sparse'} / 'full' / 'gauss' / 'hess' / 'iterative']
 %           -.stabcheck:    perform a stability check

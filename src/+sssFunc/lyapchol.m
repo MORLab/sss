@@ -37,16 +37,30 @@ function [S,varargout] = lyapchol(varargin)
 %		*Optional Input Arguments:*
 %       -Opts:                     a structure containing following options
 %           -.method:              select solver for lyapunov equation 
-%                                  [{'auto'} / 'adi' / 'hammarling' / 'crksm' ]
+%                                  [{'auto'} / 'adi' / 'hammarling' / 'crksm']
 %           -.lse:                 solve linear system of equations (only ADI and CRKSM)
 %                                  [{'gauss'} / 'luChol']
-%           -.rctol:               tolerance for difference between ADI or crksm iterates
+%           -.rctol:               tolerance for difference between ADI or CRKSM iterates
 %                                  [{'1e-12'} / positive float]
-%           -.restol:              tolerance for the residual of the Lyapunov eqution
+%           -.restol:              tolerance for the residual of the Lyapunov equation
 %                                  [{'1e-8'} / positive float]
 %           -.maxiter:             maximum number of iterations (only ADI and CRKSM)
 %                                  [{150} / positive integer]
-%           -.adiShiftsMethod:     refer to opts.adi.shifts.method in
+%           -.infoLyap:            output data-struct in varargout no/yes?
+%                                  [{0} / 1]
+%           -.adi.norm             refer to opts.adi.norm in MESS_LRADI for 
+%                                  more info  
+%                                  [2, {'fro'}]
+%           -.adi.shifts.l0:       refer to opts.adi.shifts.l0 in
+%                                  MESS_PARA or MESS_LRADI for more info
+%                                  [{20} / positive integer]
+%           -.adi.shifts.kp:       refer to opts.adi.shifts.kp in
+%                                  MESS_PARA or MESS_LRADI for more info
+%                                  [{50} / positive integer]
+%           -.adi.shifts.km:       refer to opts.adi.shifts.km in
+%                                  MESS_PARA or MESS_LRADI for more info
+%                                  [{25} / positive integer]
+%           -.adi.shifts.method:   refer to opts.adi.shifts.method in
 %                                  MESS_PARA or MESS_LRADI for more info
 %                                  [{'heur'} / 'wachspress' / 'projection']
 %           -.q:                   size of Cholesky factor (only ADI)
@@ -55,11 +69,9 @@ function [S,varargout] = lyapchol(varargin)
 %                                  [{'false'} / 'true']
 %           -.subspace:            build block or tangential Krylov subspace (only CRKSM)
 %                                  [{'block'} / 'tangential']
-%           -.projection:          choose projection method to get the reduced system (only CRKSM)
-%                                  [{'onesided'} / 'twosided']
 %           -.initShiftsStrategy:  choose initial shift strategy in INITIALIZESHIFTS (only CRKSM)
 %                                  [{'ADI'} / 'eigs' / 'ROM' / 'const']
-%           -.nShifts:             set number of initial shifts (only CRKSM)
+%           -.nShifts:             set number of initial shifts in INITIALIZESHIFTS (only CRKSM)
 %                                  [{10} / positive, even integer]
 %
 % Output Arguments:
@@ -143,10 +155,14 @@ Def.lse                 = 'gauss';          % only for MESS (see solveLse) and C
 Def.restol              = 1e-8;             % only for MESS and CRKSM
 Def.rctol               = 0;                % only for MESS and CRKSM
 Def.maxiter             = min([150,sys.n]); % only for MESS and CRKSM
-Def.infoLyap            = 0;                % give output data-struct: [{0}, 1]
+Def.infoLyap            = 0;                % output data-struct in varargout no/yes?
 
 % ADI default execution parameters
-Def.adiShiftsMethod     = 'heur';           % only for MESS  
+Def.adi.norm            = 'fro';            % only for MESS
+Def.adi.shifts.l0       = 20;               % only for MESS
+Def.adi.shifts.kp       = 50;               % only for MESS
+Def.adi.shifts.km       = 25;               % only for MESS
+Def.adi.shifts.method   = 'heur';           % only for MESS  
 Def.q                   = 0;                % only for MESS
 Def.forceOrder          = false;            % only for MESS
 
@@ -184,9 +200,9 @@ end
  % check if CRKSM and internal functions are available
 if strcmp(Opts.method, 'crksm') && (~exist('crksm.m','file') || ~exist('initializeShifts.m','file') || ~exist('getShifts.m','file')...
    || ~exist('solveLse.m','file')) 
-    warning('One of the following files not found.');
-    warning('crksm.m, initializeShifts.m, getShifts.m, solveLse.m');
-    warning('Using ADI method instead of CRKSM.');
+    warning(['One of the following files not found:',...
+        'crksm.m, initializeShifts.m, getShifts.m, solveLse.m',...
+        'Using ADI method instead of CRKSM.']);
     Opts.method='adi'; 
 end
 
@@ -215,9 +231,10 @@ switch Opts.method
         eqn=struct('A_',sys.A,'E_',sys.E,'B',sys.B,'C',sys.C,'prm',speye(size(sys.A)),'type','N','haveE',sys.isDescriptor);
 
         % opts struct: MESS options
-        messOpts.adi=struct('shifts',struct('l0',20,'kp',50,'km',25,'b0',ones(sys.n,1),'method',Opts.adiShiftsMethod,...
-            'info',0),'maxiter',Opts.maxiter,'restol',Opts.restol,'rctol',Opts.rctol,...
-            'info',0,'norm','fro');
+        messOpts.adi=struct('shifts',struct('l0',Opts.adi.shifts.l0,'kp',Opts.adi.shifts.kp,...
+            'km',Opts.adi.shifts.km,'b0',ones(sys.n,1),'method',Opts.adi.shifts.method,'info',0),...
+            'maxiter',Opts.maxiter,'restol',Opts.restol,'rctol',Opts.rctol,...
+            'info',0,'norm',Opts.adi.norm);
 
         oper = operatormanager(lseType);
         messOpts.solveLse.lse=Opts.lse;

@@ -31,7 +31,7 @@ function varargout = lyapchol(varargin)
 %		*Optional Input Arguments:*
 %       -Opts:              a structure containing following options
 %           -.method:       select solver for lyapunov equation 
-%                           [{'auto'} / 'adi' / 'hammarling' ]
+%                           [{'auto'} / 'adi' / 'hammarling' / 'crksm']
 %           -.lse:          solve linear system of equations (only ADI)
 %                           [{'gauss'} / 'luChol']
 %           -.rctol:        tolerance for difference between ADI iterates
