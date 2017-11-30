@@ -41,24 +41,23 @@ function prod = mtimes(sys1, sys2)
 
 %% Convert numeric gain to sss
 if isnumeric(sys1)
-    D = sparse(sys1);
-    if isvector(D)
-        % Apply static gain to all channels
-        D = speye(sys2.p)*diag(D);
-    end
-    % Give all properties to the returned model
-    sys1 = sys2.clear;
-    sys1.D = D;
-    sys1.y = sys2.y;
+    k = sys1;
+
+    prod    = sys2;
+    prod.D  = prod.D*k;
+    prod.C  = prod.C*k;
+    
+    return
 end
 if isnumeric(sys2)
-    D = sparse(sys2);
-    if isvector(D)
-        % Apply static gain to all channels
-        D = speye(sys1.m)*diag(D);
-    end
-    sys2 = sss(D);
-    sys2.u = sys1.u;
+  
+    k = sys2;
+    
+    prod    = sys1;
+    prod.D  = prod.D*k;
+    prod.B  = prod.B*k;
+        
+    return
 end
 
 % Define system size, because sys.m, sys.n and sys.p are not defined for
