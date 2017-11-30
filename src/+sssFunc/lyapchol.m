@@ -2,7 +2,9 @@ function [S,varargout] = lyapchol(varargin)
 % LYAPCHOL - Solve Lyapunov equations
 %
 % Syntax:
+%       S               = LYAPCHOL(sys)
 %       [S,data]        = LYAPCHOL(sys)
+%       [S,R]           = LYAPCHOL(sys)
 %       [S,R,data]		= LYAPCHOL(sys)
 %       S               = LYAPCHOL(A,B)
 %       S               = LYAPCHOL(A,B,E)
@@ -13,21 +15,28 @@ function [S,varargout] = lyapchol(varargin)
 %       solution of the Lyapunov equation A*X+X*A'+B*B'=0 or the generalized 
 %       Lyapunov equation A*X*E'+E*X*A'+B*B'=0.
 %
-%       If the number of output arguments is 2, then the low rank factor 
-%       Y = R*R' of the dual (generalized) lyapunov equation 
+%       If the function is called with [S,R]=lyapchol(sys), then the 
+%       low-rank factor Y = R*R' of the dual (generalized) Lyapunov equation 
 %       A'*Y*E+E'*Y*A+C'*C=0 is solved as well.
 %
 %       To call this version of lyapchol with matrices A,B,E, make sure to
 %       use |sssFunc.lyapchol(...)|.
 %
-%       If the option 'type' is set to 'adi',then a low rank approximation 
-%       of the Cholesky (like) factor is performed [1]. If this option is not 
-%       specified, then ADI is applied to systems with n>500. The options 
-%       'lse', 'rctol' and 'q' only apply to ADI.
+%       If the option 'method' is set to 'adi', then a low-rank approximation 
+%       of the Cholesky (like) factor is performed [2,3]. 
+%       If the option 'method' is set to 'crksm', then the Lyapunov equations
+%       are approximately solved using CRKSM [1].
+%       If this option is not specified, then 'method' is set to 'auto'. In
+%       this case, ADI/CRKSM is applied to systems with n>500. For systems
+%       with n<=500, 'hammarling' is applied.
+%
+%       To obtain a data-struct data containing information about the evolution
+%       of the residual and some more computed things during the ADI or CRKSM,
+%       then set the Opts.infoLyap = 1.
 %
 %       //Note: the definition of the Cholesky factors X = S*S' is
 %       different from built-in lyapchol, where X = S'*S. However, our
-%       definition is consistent both with standard literature (cp [3]) and
+%       definition is consistent both with standard literature (cp. [4]) and
 %       the low-rank approximation if R has fewer columns than rows.
 %
 % Input Arguments:
@@ -81,29 +90,40 @@ function [S,varargout] = lyapchol(varargin)
 % Examples:
 %       Compute the Cholesky factors for both Lyapunov equations
 %
-%> sys = loadSss('building');
-%> [S,R] = lyapchol(sys);
+%> sys = sss('building');
+%> [S,R] = lyapchol(sys); % using 'hammarling', since n<=500
 %
 %       To compute a single Cholesky factor, use
 %
-%> S = lyapchol(sys);
-%> R = lyapchol(sys');
+%> sys = sss('fom'); Opts.infoLyap = 1;
+%> [Sadi,dataSadi] = lyapchol(sys,Opts); % using 'auto', since n<=500
+%> [Radi,dataRadi] = lyapchol(sys',Opts);
+%
+%       Compute the Cholesky factors for both Lyapunov equations using CRKSM
+%
+%> clear
+%> sys = sss('fom'); Opts.method = 'crksm';
+%> [Scrksm,Rcrksm,dataCrksm] = lyapchol(sys,Opts);
+%> ScrksmLR = dataCrksm.Info_S.Basis_V*Scrksm'; % compute low-rank factor
 %
 %       To call this version of lyapchol with matrices use
 %
+%> sys = sss('building');
 %> [A,B,C,D,E] = dssdata(sys);
 %> S = sssFunc.lyapchol(A,B,E);
 %
 % See Also:
-%       solveLse, tbr, norm, numerics/lyapchol
+%       solveLse, tbr, norm, numerics/lyapchol, mess_lradi, crksm
 %
 % References:
-%       * *[1] Penzl (2000)*, LYAPACK - A MATLAB Toolbox for Large Lyapunov
+%       * *[1] Druskin, Simoncini (2011)*, Adaptive Rational Krylov Subspaces
+%       for large-scale dynamical systems
+%       * *[2] Penzl (2000)*, LYAPACK - A MATLAB Toolbox for Large Lyapunov
 %       and Riccati Equations, Model Reduction Problems, and Linear-Quadratic 
 %       Optimal Control Problems.
-%       * *[2] Saak, Köhler, Benner (2016)*, M-M.E.S.S. - The Matrix 
+%       * *[3] Saak, Koehler, Benner (2016)*, M-M.E.S.S. - The Matrix 
 %       Equation Sparse Solver Library.
-%       * *[3] Golub, Van Loan (1996)*, Matrix computations
+%       * *[4] Golub, Van Loan (1996)*, Matrix computations
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis
@@ -154,14 +174,14 @@ Def.method              = 'auto';           % 'auto', 'adi', 'hammarling', 'crks
 Def.lse                 = 'gauss';          % only for MESS (see solveLse) and CRKSM
 Def.restol              = 1e-8;             % only for MESS and CRKSM
 Def.rctol               = 0;                % only for MESS and CRKSM
-Def.maxiter             = min([150,sys.n]); % only for MESS and CRKSM
+Def.maxiter             = min([200,sys.n]); % only for MESS and CRKSM
 Def.infoLyap            = 0;                % output data-struct in varargout no/yes?
 
 % ADI default execution parameters
 Def.adi.norm            = 'fro';            % only for MESS
 Def.adi.shifts.l0       = 20;               % only for MESS
 Def.adi.shifts.kp       = 50;               % only for MESS
-Def.adi.shifts.km       = 25;               % only for MESS
+Def.adi.shifts.km       = 26;               % only for MESS
 Def.adi.shifts.method   = 'heur';           % only for MESS  
 Def.q                   = 0;                % only for MESS
 Def.forceOrder          = false;            % only for MESS
@@ -191,7 +211,7 @@ if strcmp(Opts.method,'adi') ||  strcmp(Opts.method,'crksm')
 elseif strcmp(Opts.method,'auto')
     %   Automatic selection of method depending on order and model method
     if sys.n>500 && ~sys.isDae
-        Opts.method = 'adi'; %set ADI as default
+        Opts.method = 'adi';    %set ADI/CRKSM as default in case 'auto'
     else
         Opts.method = 'hammarling';
     end
@@ -243,7 +263,7 @@ switch Opts.method
         % get adi shifts
         [messOpts.adi.shifts.p]=mess_para(eqn,messOpts,oper);
 
-        % low rank adi
+        % low-rank adi
         [S,Sout]=mess_lradi(eqn,messOpts,oper);
 
         if Opts.q && size(S,2)<Opts.q
@@ -330,7 +350,7 @@ switch Opts.method
                 data.Info_S = dataS;
                 data.Info_S.Basis_V = V_S;
                 data.Info_S.Basis_W = W_S;
-            elseif (nargout == 2  && Opts.infoLyap == 0) || nargout == 3 % usage: [S,R] = lyapchol(sys), [S,R,data] = lyapchol(sys)
+            elseif (nargout == 2 && Opts.infoLyap == 0) || nargout == 3 % usage: [S,R] = lyapchol(sys), [S,R,data] = lyapchol(sys)
                 % call CRKSM for R
                 if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
                     R = S;
@@ -358,11 +378,11 @@ switch Opts.method
             % call CRKSM for S
             [~,V_S,W_S,S,dataS] = crksm(sys,s0_inp,Rt,Opts);
             
-            if nargout == 2  && Opts.infoLyap == 1 % usage: [S,data] = lyapchol(sys)
+            if nargout == 2 && Opts.infoLyap == 1 % usage: [S,data] = lyapchol(sys)
                 data.Info_S = dataS;
                 data.Info_S.Basis_V = V_S;
                 data.Info_S.Basis_W = W_S;
-            elseif (nargout == 2  && Opts.infoLyap == 0) || nargout == 3 % usage: [S,R] = lyapchol(sys), [S,R,data] = lyapchol(sys)
+            elseif (nargout == 2 && Opts.infoLyap == 0) || nargout == 3 % usage: [S,R] = lyapchol(sys), [S,R,data] = lyapchol(sys)
                 % call CRKSM for R
                 if sys.isSym && ~any(size(sys.B)-size(sys.C')) && norm(full(sys.B-sys.C'))==0
                     R = S; 
