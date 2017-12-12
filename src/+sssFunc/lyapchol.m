@@ -178,6 +178,7 @@ Def.maxiter             = min([200,sys.n]); % only for MESS and CRKSM
 Def.infoLyap            = 0;                % output data-struct in varargout no/yes?
 
 % ADI default execution parameters
+Def.adi.LDL_T           = false;            % only for MESS
 Def.adi.norm            = 'fro';            % only for MESS
 Def.adi.shifts.l0       = 20;               % only for MESS
 Def.adi.shifts.kp       = 50;               % only for MESS
@@ -248,13 +249,23 @@ switch Opts.method
         
         %% M-MESS ADI
         % eqn struct: system data
-        eqn=struct('A_',sys.A,'E_',sys.E,'B',sys.B,'C',sys.C,'prm',speye(size(sys.A)),'type','N','haveE',sys.isDescriptor);
+%         eqn=struct('A_',sys.A,'E_',sys.E,'B',sys.B,'C',sys.C,...
+%             'prm',speye(size(sys.A)),'type','N','haveE',sys.isDescriptor);
+
+%         eqn=struct('A_',sys.A,'E_',sys.E,'B',sys.B,'C',sys.C,...
+%             'type','N','haveE',sys.isDescriptor);
+
+        eqn=struct('A_',sys.A,'E_',sys.E,'B',sys.B,'C',sys.C,'G',sys.B,'S',speye(size(sys.B,2)),...
+            'type','N','haveE',sys.isDescriptor);
+        
+%         eqn=struct('A_',sys.A,'E_',sys.E,'B',sys.B,'C',sys.C,'G',sys.B,'S',speye(size(sys.B,2)),...
+%             'prm',speye(size(sys.A)),'type','N','haveE',sys.isDescriptor);
 
         % opts struct: MESS options
         messOpts.adi=struct('shifts',struct('l0',Opts.adi.shifts.l0,'kp',Opts.adi.shifts.kp,...
             'km',Opts.adi.shifts.km,'b0',ones(sys.n,1),'method',Opts.adi.shifts.method,'info',0),...
             'maxiter',Opts.maxiter,'restol',Opts.restol,'rctol',Opts.rctol,...
-            'info',0,'norm',Opts.adi.norm);
+            'info',0,'norm',Opts.adi.norm,'LDL_T',Opts.adi.LDL_T);
 
         oper = operatormanager(lseType);
         messOpts.solveLse.lse=Opts.lse;
