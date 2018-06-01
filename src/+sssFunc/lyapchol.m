@@ -351,6 +351,8 @@ switch Opts.method
         end
         
     case 'crksm'
+        % check determination criteria
+        Opts.restolLyap = Opts.restol;
         if strcmp(Opts.subspace,'block')
             % get shifts
             [s0_inp,~,s0_out] = initializeShifts(sys,Opts.nShifts,1,Opts);
