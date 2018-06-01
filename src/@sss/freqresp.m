@@ -98,13 +98,13 @@ if sys.isDae == true && isempty(omega)
     error('freqresp and bode only support DAEs, if a single frequency or a frequency vector omega is parsed to the functions');
 end
 
-nOutputs        =sys.p;
-nInputs         =sys.m;
-[A,B,C,D,E]     =dssdata(sys);
+nOutputs        = sys.p;
+nInputs         = sys.m;
+[A,B,C,D,E]     = dssdata(sys);
 %Reordering Matrices
-reOrderMatrix   =abs(A)+abs(E); %abs is used to guarantee that any terms will be cancelled in this combination of A and E
-reOrder         =symrcm(reOrderMatrix);
-reOrderMatrix   =reOrderMatrix(reOrder,reOrder);
+reOrderMatrix   = abs(A)+abs(E); %abs is used to guarantee that any terms will be cancelled in this combination of A and E
+reOrder         = symrcm(reOrderMatrix);
+reOrderMatrix   = reOrderMatrix(reOrder,reOrder);
 sys.A           = A(reOrder,reOrder);
 sys.B           = B(reOrder,:);
 sys.C           = C(:,reOrder);
@@ -337,22 +337,22 @@ function [M]=InputOutputRelation(sys,S)
 [~,B,C,~,~]=dssdata(sys);
 C(find(C))=1;
 vec=zeros(sys.m,size(S,1));
- for k=1:sys.m
+for k=1:sys.m
     [i,~]=find(B(:,k));
     vec(k,i)=1;
-while(1)
-    [~,j]=find(S(i,:));
-    j=unique(j);
-    newVec=(not(vec(k,j)));
-    vec(k,j(newVec))=1;
-    i=j(newVec);
-    if numel(newVec)==0
-        break;
+    while(1)
+        [~,j]=find(S(i,:));
+        j=unique(j);
+        newVec=(not(vec(k,j)));
+        vec(k,j(newVec))=1;
+        i=j(newVec);
+        if numel(newVec)==0
+            break;
+        end
     end
 end
- end
- M=C*vec';
- M(find(M))=1;
+M=C*vec';
+M(find(M))=1;
 end
 
 function [minWFinal] = findminW(sys,M)
