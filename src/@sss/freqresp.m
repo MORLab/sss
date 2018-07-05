@@ -104,7 +104,7 @@ nInputs         = sys.m;
 %Reordering Matrices
 reOrderMatrix   = abs(A)+abs(E); %abs is used to guarantee that any terms will be cancelled in this combination of A and E
 reOrder         = symrcm(reOrderMatrix);
-reOrderMatrix   = reOrderMatrix(reOrder,reOrder);
+% reOrderMatrix   = reOrderMatrix(reOrder,reOrder);
 sys.A           = A(reOrder,reOrder);
 sys.B           = B(reOrder,:);
 sys.C           = C(:,reOrder);
@@ -118,7 +118,7 @@ outputs of the system. The value of M(i,j) is one when the input j is
 connected to the output i. When it is zero, then a change in the input j 
 doesn't influence the output i.
 %}
-M=InputOutputRelation(sys,reOrderMatrix);
+M=InputOutputRelation(sys);
 
 if ~any(any(M))
     %Disconnected, but static gain
@@ -330,18 +330,21 @@ if any(any(any(isinf(firstDerivLog)))) || any(any(any(isinf(secondDerivLog))))
 end
 end
 
-function [M]=InputOutputRelation(sys,S)
+function [M]=InputOutputRelation(sys)
 %Function to determine which inputs and outputs are connected through the
 %matrices A and E.
 %The output is a matrix M p x m.
 [~,B,C,~,~]=dssdata(sys);
 C(find(C))=1;
-vec=zeros(sys.m,size(S,1));
+% vec=zeros(sys.m,size(S,1));
+vec=zeros(sys.m,sys.n);
 for k=1:sys.m
     [i,~]=find(B(:,k));
     vec(k,i)=1;
     while(1)
-        [~,j]=find(S(i,:));
+%         [j,~]=find(S(:,i));
+        [~,K]=find(sys.E(i,:));
+        [j,~]=find(sys.A(:,K));
         j=unique(j);
         newVec=(not(vec(k,j)));
         vec(k,j(newVec))=1;
