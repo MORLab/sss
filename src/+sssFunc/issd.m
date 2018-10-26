@@ -60,25 +60,27 @@ function [issd, numericalAbscissa] = issd(sys)
 % Email:        <a href="mailto:morlab@rt.mw.tum.de">morlab@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  31 Oct 2015
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Last Change:  26 Oct 2018
+% Copyright (c) 2015-2018 Chair of Automatic Control, TU Muenchen
 % ------------------------------------------------------------------
 
 %%  Parse input
 if condest(sys.e)>1e16, error('issd does not support DAEs'),end
 
 %%  Perform computations
-% E >0?
+% E = E' > 0?
 if sys.isDescriptor
-    isPosDef = ispd(sys.e);
-    if ~isPosDef
+    isSymPosDef = isspd(sys.e);
+    if ~isSymPosDef
         if nargout == 0, warning('System is not strictly dissipative (E~>0).'); 
         else issd = 0; end
         return
     end
+else % E = I
+    isSymPosDef = 1;
 end
 
-% A + A' <0?  
+% A + A' < 0?  
 isNegDef = ispd(-sys.a-sys.a');
 if isNegDef
     if nargout == 0, fprintf('System is strictly dissipative.\n'); else issd = 1; end
@@ -87,14 +89,24 @@ else
 end
     
 if nargout==2 % computation of the numerical abscissa required
-    p    = 20;		% number of Lanczos vectors
+    p    = 10;		% number of Lanczos vectors
     tol  = 1e-10;	% convergence tolerance
-    opts = struct('issym',true, 'p',p, 'tol',tol, 'v0',sum(sys.e,2));
-    try
-        numericalAbscissa = eigs((sys.a+sys.a')/2, sys.e, 1, 'la', opts);
-    catch err
-        warning('Computation of the numerical abscissa failed with message:%s',err.message);
-        numericalAbscissa = NaN;
+    if isNegDef % 'sm'
+        try
+            opts = struct('spdB',isSymPosDef, 'p',p, 'tol',tol, 'v0',sum(sys.e,2));
+            numericalAbscissa = eigs((sys.a+sys.a')/2, sys.e, 1, 'sm', opts);
+        catch
+            opts = struct('p',p, 'tol',tol, 'v0',sum(sys.e,2));
+            numericalAbscissa = eigs((sys.a+sys.a')/2, sys.e, 1, 'sm', opts);
+        end
+    else % 'la'
+        try
+            opts = struct('spdB',isSymPosDef, 'p',p, 'tol',tol, 'v0',sum(sys.e,2));
+            numericalAbscissa = eigs((sys.a+sys.a')/2, sys.e, 1, 'la', opts);
+        catch
+            opts = struct('p',p, 'tol',tol, 'v0',sum(sys.e,2));
+            numericalAbscissa = eigs((sys.a+sys.a')/2, sys.e, 1, 'la', opts);
+        end
     end
 end
 

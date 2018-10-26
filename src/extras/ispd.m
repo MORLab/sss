@@ -22,7 +22,7 @@ function ispd = ispd(A)
 %
 %
 % See Also:
-%       chol, issd
+%       chol, isspd, issd
 %
 %------------------------------------------------------------------
 % This file is part of <a href="matlab:docsearch sss">sss</a>, a Sparse State-Space and System Analysis 

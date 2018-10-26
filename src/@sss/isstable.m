@@ -76,8 +76,8 @@ function [isstable,spectralAbscissa] = isstable(sys)
 % Email:        <a href="mailto:morlab@rt.mw.tum.de">morlab@rt.mw.tum.de</a>
 % Website:      <a href="https://www.rt.mw.tum.de/?sss">www.rt.mw.tum.de/?sss</a>
 % Work Adress:  Technische Universitaet Muenchen
-% Last Change:  05 Nov 2015
-% Copyright (c) 2015 Chair of Automatic Control, TU Muenchen
+% Last Change:  26 Oct 2018
+% Copyright (c) 2015-2018 Chair of Automatic Control, TU Muenchen
 %------------------------------------------------------------------
 
 if sys.n < 100
@@ -85,37 +85,35 @@ if sys.n < 100
     lambda = eig(sys);
 else       
     %%  Compute the eigenvalue with largest real part
-    try
-        if sys.isSymm
-            eigsOpt = 'la';
-        else
-            eigsOpt = 'lr';
-        end
-        lambda = eigs(sys,1,eigsOpt,struct('v0',sys.b));
-    catch err
-        if strcmp(err.identifier,'MATLAB:eigs:ARPACKroutineErrorMinus14')
-            %eigs did not converge: lower the tolerance
-            try
-                lambda=eigs(sys,1,'lr',struct('tol',1e-4','v0',sys.b));
-            catch
-                warning('sss:isstable:EigsFailed','eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
-                lambda = eig(sys);
-            end
-        else
+    if issymmetric(sys.A) && issymmetric(sys.E) % A = A' and E = E'
+        eigsOpt = 'la';
+        isSymPosDef = ispd(sys.e); % E > 0
+    else
+        eigsOpt = 'lr'; 
+        isSymPosDef = 0;
+    end
+    [~,lambda,flag] = eigs(sys,1,eigsOpt,struct('spdB',isSymPosDef,'v0',sum(sys.e,2)));
+    
+    if flag
+        %eigs did not converge: lower the tolerance
+        [~,lambda,flag]=eigs(sys,1,'lr',struct('tol',1e-4,'spdB',isSymPosDef,'v0',sum(sys.e,2)));
+        
+        if flag
+            %eigs did not converge: try with eig
             warning('sss:isstable:EigsFailed','eigs(..,''lr'') failed to compute the spectral abscissa. Trying with eig. This might take a while...');
             lambda = eig(sys);
         end
     end
 end
 lambda = lambda(~isinf(lambda)); %get only finite eigenvalues
-lambda = lambda(abs(real(lambda))<1e6); % infinity-threshold
+lambda = lambda(abs(real(lambda))<1e8); % infinity-threshold
 spectralAbscissa = max(real(lambda));
 
 if isempty(spectralAbscissa)
     warning('The spectral abscissa is empty.');
     isstable=NaN;
 
-%%  Check wether the spectral abscissa is strictly less than zero
+%%  Check whether the spectral abscissa is strictly less than zero
 elseif  spectralAbscissa < 0
     if nargout<1, fprintf('The system is asymptotically stable.\n');
     else isstable = 1; end
