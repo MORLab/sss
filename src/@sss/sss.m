@@ -403,7 +403,7 @@ classdef sss
         
         % Detect empty sss-models
         function empty = isempty(sys)
-            if sys.n == 0
+            if sys.n == 0 && isempty(sys.D)
                 empty = true;
             else
                 empty = false;
