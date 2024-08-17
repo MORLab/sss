@@ -132,7 +132,7 @@ end
 
 for i = 1:length(varargin)
     % Set name to input variable name if not specified
-    if isprop(varargin{i},'Name')
+    if isprop(varargin{i}(1,1),'Name')
         if isempty(varargin{i}.Name) % Cascaded if is necessary && does not work
             varargin{i}.Name = inputname(i);
         end
